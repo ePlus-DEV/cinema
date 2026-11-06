@@ -7,7 +7,7 @@
 import { readFile, writeFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
-const pathPart = (process.env.PAGES_BASE_PATH || '/cinema/').split('/').filter(Boolean).join('/');
+const pathPart = (process.env.PAGES_BASE_PATH || '/').split('/').filter(Boolean).join('/');
 const base = pathPart ? '/' + pathPart + '/' : '/';
 const root = 'dist';
 
