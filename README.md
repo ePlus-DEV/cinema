@@ -3,18 +3,16 @@
 Responsive, mobile-first concept for a Vietnamese cinema discovery and showtimes website.
 
 > [!IMPORTANT]
-> **UI preview only.** All movie titles, film descriptions, poster art, dates and showtimes are sample fixtures, not a live schedule. This project does **not** sell tickets or connect to MoMo. Preview pages include a temporary noindex directive until approved data is integrated.
+> **UI preview only.** All movie titles, film descriptions, poster art, dates, and showtimes are sample fixtures, not live cinema schedules. This project does **not** sell tickets or connect to MoMo. All current pages have **noindex** until approved real data is integrated.
 
-## Features in this layout PR
+## Features
 
-- Responsive landing page with search, film posters, schedule preview, theaters and an editorial CTA.
-- Movie catalog pages for currently showing and upcoming movies, including working keyword/genre filters.
-- Movie detail pages with sample showtimes.
-- Day selector with responsive cinema/showtime cards.
-- Theater directory and individual cinema pages, including name/district search.
-- Functional mobile navigation, keyboard-accessible buttons, empty states and demo disclaimers.
-- Original CSS poster illustrations (no copied posters, trademarks, or scraped provider assets).
-- Static generation with Astro 5, Tailwind CSS 4, GitHub Actions build verification.
+- Responsive landing page, current/upcoming movies and movie details.
+- Search and genre filtering.
+- Sample date switching and showtime cards.
+- Theater directory and individual theater pages.
+- Original illustrated posters without copying movie provider artwork.
+- GitHub Pages automated production deployment **and per-PR preview links**.
 
 ## Local development
 
@@ -24,30 +22,89 @@ Requires Node.js 22 or newer.
 npm install
 npm run dev
 npm run build
+node scripts/rewrite-links.mjs
+node scripts/smoke-test.mjs
 npm run preview
 ```
 
-## Project structure
+## GitHub Pages deployment
+
+Two workflows work together:
+
+1. **Build and stage GitHub Pages** (\`.github/workflows/pages-stage.yml\`):
+   - \`push\` to \`main\`: build production and publish its files to the root of the \`gh-pages\` branch, preserving other PR previews.
+   - \`pull_request\` opened/synchronized/reopened: build the PR branch and store it in \`gh-pages/previews/pr-N/\`. Works for **branches within this repository only**, not forks.
+   - \`pull_request\` closed/merged: remove \`previews/pr-N/\`.
+   - \`workflow_dispatch\`: manually rebuild production from \`main\`.
+   - Builds run with \`persist-credentials: false\`; the publish step receives the scoped \`GITHUB_TOKEN\` separately.
+2. **Publish GitHub Pages** (\`.github/workflows/pages-publish.yml\`):
+   - Runs from the repository's **default branch** after the staging workflow succeeds.
+   - Checks out the complete \`gh-pages\` branch, uploads one Pages artifact and deploys it with GitHub's official \`actions/deploy-pages\`.
+   - Does not execute PR source code and avoids deploying directly from a PR context.
+
+This staging/deployment split is necessary because public GitHub Pages does not offer native isolated PR preview deployments, and commits made by \`GITHUB_TOKEN\` alone do **not** reliably trigger a Pages publish. Our preview folders are part of the same complete GitHub Pages site.
+
+### One-time GitHub setup (required)
+
+1. Merge the deployment PR so both workflow files are on \`main\`.
+2. Visit **Repository → Settings → Pages** and set **Build and deployment → Source → GitHub Actions**. Do **not** select \`Deploy from a branch\` for this configuration.
+3. In **Settings → Actions → General**, ensure workflows can use the repository-scoped \`GITHUB_TOKEN\` with the requested \`contents: write\` permission. If your organization restricts writable workflow tokens, an administrator must allow the necessary policy.
+4. Under **Settings → Environments → github-pages**, allow default-branch deployments. The trusted publishing workflow runs from \`main\`.
+5. Trigger **Actions → Build and stage GitHub Pages → Run workflow** on \`main\` for the first production release (or use the automatic \`main\` push).
+6. Check **Actions → Publish GitHub Pages** for successful deployment.
+
+**Default production URL (after successful deployment):**
+
+https://eplus-dev.github.io/cinema/
+
+**Example preview URL (for PR #3, only after that PR is staged and published):**
+
+https://eplus-dev.github.io/cinema/previews/pr-3/
+
+Each PR preview also appears in the staging workflow run summary (and PR comment). URLs are only live after the downstream \`Publish GitHub Pages\` workflow succeeds. Closing a PR removes its preview path.
+
+### Optional cinema.eplus.dev custom domain
+
+1. Add the hostname in **Settings → Pages → Custom domain** and create the required DNS CNAME pointing to \`eplus-dev.github.io\`. Confirm domain verification and HTTPS.
+2. Add repository **Actions variables** in **Settings → Secrets and variables → Actions → Variables**:
+   - \`PAGES_SITE_ORIGIN\` = \`https://cinema.eplus.dev\`
+   - \`PAGES_ROOT_PATH\` = \`/\`
+3. Re-run **Build and stage GitHub Pages** on \`main\` to rebuild absolute asset paths. Open PRs should be synchronized/rebuilt so their preview links also use the new domain and base path.
+
+Under the custom domain, preview links become \`https://cinema.eplus.dev/previews/pr-N/\`. Do not set the custom domain until DNS and Pages ownership are ready.
+
+### Notes and security
+
+- Preview pages are **publicly accessible**; a preview URL is not a security boundary. Never put secrets or private information in the generated site.
+- Fork PRs intentionally do not receive deploy permissions or previews.
+- All content stays \`noindex\` until legitimate, verified movie data is available.
+- Production and preview share a single Pages site; deploy serialization protects other PR previews.
+- No Cloudflare account, Pages API token, or third-party deployment service is required.
+
+## Source layout
 
 ```text
 src/
-  components/       # Header, MovieCard, MovieCatalog, DatePicker, ShowtimeList
-  data/catalog.ts   # EXPLICITLY MOCK DATA
-  layouts/           # Page shell and SEO defaults
-  pages/             # Home, films, showtimes, cinemas and detail routes
-  styles/            # Responsive design tokens and layouts
-public/              # Own SVG icon
-.github/workflows/   # CI build
+  components/       # Header, films, date picker, showtimes
+  data/catalog.ts   # Explicit mock data
+  layouts/           # Site shell
+  pages/             # Film, theater and schedule routes
+  styles/            # Responsive design
+scripts/
+  rewrite-links.mjs # Route-prefix fix for GitHub Pages and PR previews
+  smoke-test.mjs    # Generated page + asset sanity tests
+  publish-pages.sh  # Preserve production and PR previews in gh-pages
+.github/workflows/
+  ci.yml            # Pull-request static build
+  pages-stage.yml   # Build and stage production / previews
+  pages-publish.yml # Official GitHub Pages deployment
 ```
 
 ## Next phase: real showtime data
 
-Before enabling indexation or ticket booking:
+1. Confirm a licensed partner/source API for movie and screening data (public MoMo pages are not an API license).
+2. Normalize and validate scheduled screenings, availability, time zone, and source attribution.
+3. Replace all fixtures with real authorized records and only then review the temporary noindex rule.
+4. Add map integration, booking deep links, sitemap, monitoring, and regression tests.
 
-1. Confirm a licensed source/partner API for movie and screening data (MoMo public pages are not an API license).
-2. Implement provider adapters with normalization, freshness checks, diagnostics and source attribution.
-3. Replace all fixtures with verified records. Distinguish stale, upcoming and unavailable shows; ensure time zone Asia/Ho_Chi_Minh.
-4. Add actual cinema addresses, deep links, SEO/schema, sitemap, monitoring, and regression tests.
-5. Remove temporary noindex only after real content is available and verified.
-
-The demo does not claim to be affiliated with CGV, Galaxy Cinema, Lotte Cinema, Beta Cinemas, or MoMo.
+The demo does not claim affiliation with CGV, Galaxy Cinema, Lotte Cinema, Beta Cinemas or MoMo.
