@@ -65,10 +65,7 @@ Each PR preview URL appears in the staging workflow run Summary. Automatic PR co
 
 ### Custom domain: cinema.eplus.dev
 
-The domain `cinema.eplus.dev` is the default target for this repository. Production builds use the root path `/` and PR previews use `/previews/pr-N/`. **No Actions variables are required** for the normal deployment. Two optional overrides remain available:
-
-- `PAGES_SITE_ORIGIN`: defaults to `https://cinema.eplus.dev`.
-- `PAGES_ROOT_PATH`: defaults to `/`.
+The domain `cinema.eplus.dev` is the default target for this repository. Production builds use the root path `/` and PR previews use `/previews/pr-N/`. **No Actions variables are required.** The GitHub Actions deployment pins `PAGES_SITE_ORIGIN=https://cinema.eplus.dev` and `PAGES_ROOT_PATH=/` so outdated repository variables cannot accidentally publish under `/cinema/`. Local Astro builds can still override these values for testing.
 
 For the first deployment:
 
