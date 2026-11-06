@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DatePicker from '../../components/DatePicker.astro';
+import ShowtimeList from '../../components/ShowtimeList.astro';
+import { cinemas } from '../../data/catalog';
+import type { Cinema } from '../../data/catalog';
+interface Props { cinema: Cinema; }
+export function getStaticPaths() {
+  return cinemas.map((cinema) => ({ params: { slug: cinema.slug }, props: { cinema } }));
+}
+const { cinema } = Astro.props;
+---
+<BaseLayout title={cinema.name + ' | ePlus Cinema'} active="cinemas">
+  <section class="page-hero"><div class="container">
+    <div class="breadcrumbs"><a href="/">Trang chủ</a><span>/</span><a href="/rap">Rạp chiếu</a><span>/</span><span>{cinema.name}</span></div>
+    <span class="eyebrow">KHÁM PHÁ CỤM RẠP</span><h1>{cinema.name}</h1>
+    <p>{cinema.chain} · {cinema.district} · {cinema.address}</p>
+  </div></section>
+  <section class="section container cinema-detail">
+    <div class="message-panel"><span>⌖</span><div><h2>Thông tin rạp minh họa</h2><p>{cinema.feature}. Địa chỉ cụ thể, bản đồ và dịch vụ của rạp sẽ được bổ sung sau khi kết nối nguồn dữ liệu chính thức.</p></div></div>
+    <div class="section-heading"><div><span class="eyebrow">LỊCH CHIẾU TẠI RẠP</span><h2>Chọn khung giờ phù hợp</h2><p>Suất chiếu mẫu dùng để kiểm tra giao diện.</p></div></div>
+    <div class="schedule-shell"><div class="schedule-shell__top"><div><strong>{cinema.name}</strong><span>{cinema.district} · {cinema.chain}</span></div><span class="schedule-shell__city">Bản demo</span></div><DatePicker /><ShowtimeList cinemaSlug={cinema.slug} /></div>
+  </section>
+</BaseLayout>

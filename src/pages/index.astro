@@ -1,0 +1,104 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MovieCard from '../components/MovieCard.astro';
+import DatePicker from '../components/DatePicker.astro';
+import ShowtimeList from '../components/ShowtimeList.astro';
+import { movies, cinemas } from '../data/catalog';
+const now = movies.filter((movie) => movie.status === 'now');
+const soon = movies.filter((movie) => movie.status === 'soon');
+---
+<BaseLayout active="home">
+  <section class="hero">
+    <div class="container hero__grid">
+      <div class="hero__content">
+        <div class="eyebrow eyebrow--light"><span class="eyebrow__spark">✦</span> Khám phá thế giới điện ảnh</div>
+        <h1>Một bộ phim hay.<br /><em>Một buổi tối tuyệt.</em></h1>
+        <p class="hero__description">Tìm phim hợp gu, chọn rạp thuận tiện và khám phá lịch chiếu chỉ trong vài chạm.</p>
+        <form class="hero-search" action="/phim-dang-chieu" method="GET" role="search">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m16 16 5 5"/></svg>
+          <label class="sr-only" for="hero-movie-search">Tìm phim</label>
+          <input id="hero-movie-search" name="q" type="search" placeholder="Bạn muốn xem phim gì?" autocomplete="off" />
+          <button type="submit">Tìm phim <span aria-hidden="true">↗</span></button>
+        </form>
+        <div class="hero__shortcuts"><span>Khám phá nhanh:</span><a href="/phim-dang-chieu">Đang chiếu</a><a href="/phim-sap-chieu">Sắp chiếu</a><a href="/rap">Tìm rạp</a></div>
+        <div class="hero__notice"><span>●</span> Bản demo giao diện · Chưa có lịch chiếu trực tiếp</div>
+      </div>
+      <div class="hero__visual" aria-label="Minh họa thiết kế poster phim">
+        <div class="hero__halo"></div>
+        <div class="hero__poster hero__poster--back">
+          <div class="poster-art poster-art--saigon">
+            <span class="poster-art__grain"></span><span class="poster-art__scene"></span>
+            <span class="poster-art__edition">ePlus Cinema · Demo</span><span class="poster-art__title">Đêm Ở<br/>Sài Gòn</span>
+          </div>
+        </div>
+        <div class="hero__poster hero__poster--front">
+          <div class="poster-art poster-art--sunset">
+            <span class="poster-art__grain"></span><span class="poster-art__scene"></span>
+            <span class="poster-art__edition">ePlus Cinema · Demo</span><span class="poster-art__title">Sau Ánh<br/>Hoàng Hôn</span>
+            <span class="poster-art__subtitle">BEYOND THE SUNSET</span>
+          </div>
+        </div>
+        <div class="hero__float hero__float--top"><span class="hero__float-icon">✦</span><div><strong>Chọn phim thật dễ</strong><small>Giao diện trực quan</small></div></div>
+        <div class="hero__float hero__float--bottom"><span class="hero__float-clock">◷</span><div><strong>Tra cứu theo giờ</strong><small>Linh hoạt cho mọi lịch trình</small></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features-band">
+    <div class="container features-band__grid">
+      <div><span class="feature-symbol">✦</span><div><strong>Khám phá phim mới</strong><p>Từ bom tấn đến phim yêu thích</p></div></div>
+      <div><span class="feature-symbol">◷</span><div><strong>Tra cứu theo giờ</strong><p>Chọn ngày và suất chiếu dễ dàng</p></div></div>
+      <div><span class="feature-symbol">⌖</span><div><strong>Tìm rạp thuận tiện</strong><p>Khám phá các cụm rạp trong khu vực</p></div></div>
+    </div>
+  </section>
+
+  <section class="section container">
+    <div class="section-heading">
+      <div><span class="eyebrow">ĐANG CÓ GÌ HAY?</span><h2>Phim đang chiếu <span class="title-spark">✳</span></h2><p>Những câu chuyện đáng để dành một buổi tối.</p></div>
+      <a class="section-link" href="/phim-dang-chieu">Xem tất cả <span>↗</span></a>
+    </div>
+    <div class="movie-grid">{now.map((movie) => <MovieCard movie={movie} />)}</div>
+  </section>
+
+  <section class="section section--tinted" id="lich-chieu">
+    <div class="container">
+      <div class="section-heading">
+        <div><span class="eyebrow">LÊN KẾ HOẠCH XEM PHIM</span><h2>Khung giờ dành cho bạn</h2><p>Chọn ngày để xem cách lịch chiếu sẽ được hiển thị.</p></div>
+        <a class="section-link" href="/lich-chieu">Tra cứu đầy đủ <span>↗</span></a>
+      </div>
+      <div class="schedule-shell">
+        <div class="schedule-shell__top"><div><strong>Lịch chiếu tại TP. Hồ Chí Minh</strong><span>Suất chiếu mẫu · Chưa thể đặt vé</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
+        <DatePicker />
+        <ShowtimeList limit={2} />
+        <div class="schedule-shell__footer"><a href="/lich-chieu" class="button button--outline">Xem các rạp và suất chiếu khác <span>↗</span></a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section container">
+    <div class="section-heading">
+      <div><span class="eyebrow">DÀNH CHO NGƯỜI MÊ PHIM</span><h2>Sắp ra rạp</h2><p>Thêm vài bộ phim vào danh sách mong chờ.</p></div>
+      <a class="section-link" href="/phim-sap-chieu">Khám phá thêm <span>↗</span></a>
+    </div>
+    <div class="movie-grid movie-grid--three">{soon.map((movie) => <MovieCard movie={movie} />)}</div>
+  </section>
+
+  <section class="section section--theaters">
+    <div class="container">
+      <div class="section-heading">
+        <div><span class="eyebrow">THẾ GIỚI RẠP CHIẾU</span><h2>Khám phá cụm rạp</h2><p>Những cụm rạp minh họa cho bản dựng giao diện.</p></div>
+        <a class="section-link" href="/rap">Xem tất cả rạp <span>↗</span></a>
+      </div>
+      <div class="cinema-grid">{cinemas.map((cinema, index) =>
+        <a class="cinema-tile" href={'/rap/' + cinema.slug}>
+          <span class:list={['cinema-tile__symbol', 'cinema-tile__symbol--' + index]}>{cinema.chain.slice(0, 1)}</span>
+          <span class="cinema-tile__body"><strong>{cinema.name}</strong><small>{cinema.district} · {cinema.chain}</small></span><span class="cinema-tile__arrow">↗</span>
+        </a>
+      )}</div>
+    </div>
+  </section>
+
+  <section class="container section">
+    <div class="closing-cta"><div><span class="eyebrow eyebrow--light">YOUR NEXT MOVIE NIGHT</span><h2>Tối nay, mình đi xem phim nhé?</h2><p>Khám phá bộ giao diện tra cứu lịch chiếu được thiết kế riêng cho ePlus.</p><a href="/lich-chieu" class="button button--light">Khám phá lịch chiếu <span>↗</span></a></div><span class="closing-cta__art" aria-hidden="true">✳</span></div>
+  </section>
+</BaseLayout>

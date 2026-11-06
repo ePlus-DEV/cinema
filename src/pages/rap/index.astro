@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { cinemas } from '../../data/catalog';
+---
+<BaseLayout title="Hệ thống rạp chiếu | ePlus Cinema" active="cinemas">
+  <section class="page-hero"><div class="container">
+    <div class="breadcrumbs"><a href="/">Trang chủ</a><span>/</span><span>Rạp chiếu</span></div>
+    <span class="eyebrow">CHỌN RẠP BẠN THÍCH</span><h1>Khám phá rạp chiếu<span class="title-spark"> ✳</span></h1>
+    <p>Giao diện danh mục rạp dự kiến, dễ tìm theo tên và khu vực.</p>
+  </div></section>
+  <section class="section container cinemas-page" data-cinema-catalog>
+    <div class="catalog__tools"><label class="catalog__search"><span aria-hidden="true">⌕</span><input type="search" aria-label="Tìm tên rạp" placeholder="Tìm tên rạp hoặc quận..." data-cinema-search /></label><span class="catalog__count">{cinemas.length} cụm rạp minh họa</span></div>
+    <div class="cinema-grid cinema-grid--page">
+      {cinemas.map((cinema, index) => <a href={'/rap/' + cinema.slug} class="cinema-tile cinema-tile--large" data-cinema-card data-search={(cinema.name + ' ' + cinema.district + ' ' + cinema.chain).toLocaleLowerCase('vi')}>
+        <span class:list={['cinema-tile__symbol', 'cinema-tile__symbol--' + index]}>{cinema.chain.slice(0, 1)}</span>
+        <span class="cinema-tile__body"><small>{cinema.chain}</small><strong>{cinema.name}</strong><small>⌖ {cinema.district} · {cinema.feature}</small></span><span class="cinema-tile__arrow">↗</span>
+      </a>)}
+    </div>
+    <div class="empty-results" data-cinema-empty hidden><h2>Không tìm thấy rạp phù hợp</h2><p>Thử tên rạp hoặc địa bàn khác.</p></div>
+    <p class="catalog__footnote">Tên các cụm rạp được đưa vào để minh họa bố cục, chưa xác thực lịch chiếu và thông tin kinh doanh.</p>
+  </section>
+</BaseLayout>
+<script>
+  const catalog = document.querySelector<HTMLElement>('[data-cinema-catalog]');
+  const search = catalog?.querySelector<HTMLInputElement>('[data-cinema-search]');
+  const cards = [...(catalog?.querySelectorAll<HTMLElement>('[data-cinema-card]') || [])];
+  search?.addEventListener('input', () => {
+    const query = search.value.trim().toLocaleLowerCase('vi');
+    let visible = 0;
+    cards.forEach((card) => {
+      const matches = (card.dataset.search || '').includes(query);
+      card.hidden = !matches;
+      if (matches) visible++;
+    });
+    const empty = catalog?.querySelector<HTMLElement>('[data-cinema-empty]');
+    if (empty) empty.hidden = visible > 0;
+  });
+</script>

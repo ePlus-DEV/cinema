@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DatePicker from '../../components/DatePicker.astro';
+import ShowtimeList from '../../components/ShowtimeList.astro';
+import MovieCard from '../../components/MovieCard.astro';
+import { movies } from '../../data/catalog';
+import type { Movie } from '../../data/catalog';
+interface Props { movie: Movie; }
+export function getStaticPaths() {
+  return movies.map((movie) => ({ params: { slug: movie.slug }, props: { movie } }));
+}
+const { movie } = Astro.props;
+const more = movies.filter((item) => item.slug !== movie.slug && item.status === movie.status).slice(0, 3);
+---
+<BaseLayout title={movie.title + ' | ePlus Cinema'} description={movie.synopsis} active={movie.status === 'now' ? 'now' : 'soon'}>
+  <section class="detail-backdrop">
+    <div class="container">
+      <div class="breadcrumbs breadcrumbs--light"><a href="/">Trang chủ</a><span>/</span><a href={movie.status === 'now' ? '/phim-dang-chieu' : '/phim-sap-chieu'}>{movie.status === 'now' ? 'Đang chiếu' : 'Sắp chiếu'}</a><span>/</span><span>{movie.title}</span></div>
+      <div class="detail-grid">
+        <div class:list={['poster-art', 'poster-art--' + movie.poster, 'detail-poster']} aria-label={'Poster minh họa phim ' + movie.title}><span class="poster-art__grain"></span><span class="poster-art__scene"></span><span class="poster-art__edition">ePlus Cinema · Demo</span><span class="poster-art__title">{movie.title}</span><span class="poster-art__subtitle">{movie.originalTitle}</span></div>
+        <div class="detail-info">
+          <span class="detail-info__pill">{movie.status === 'now' ? 'Đang chiếu · Demo' : 'Sắp chiếu · Demo'}</span>
+          <h1>{movie.title}</h1><p class="detail-info__original">{movie.originalTitle} · {movie.year}</p>
+          <p class="detail-info__tagline">“{movie.tagline}”</p>
+          <div class="detail-info__chips"><span>{movie.age}</span><span>{movie.duration} phút</span><span>{movie.genre}</span></div>
+          <h2>Nội dung phim</h2><p class="detail-info__synopsis">{movie.synopsis}</p>
+          <div class="detail-info__actions">
+            {movie.status === 'now' ? <a href="#lich-chieu" class="button button--gold">Xem suất chiếu mẫu <span>↗</span></a> : <a href="/phim-sap-chieu" class="button button--gold">Xem phim sắp chiếu <span>↗</span></a>}
+            <a href="/rap" class="button button--glass">Khám phá rạp</a>
+          </div>
+          <p class="detail-info__disclaimer">Nội dung và poster giả lập nhằm trình bày UI. Chưa kết nối hệ thống bán vé.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  {movie.status === 'now' &&
+    <section class="section container" id="lich-chieu">
+      <div class="section-heading"><div><span class="eyebrow">KHÁM PHÁ SUẤT CHIẾU</span><h2>Lịch chiếu minh họa</h2><p>Chọn ngày và xem bố cục các khung giờ theo rạp.</p></div></div>
+      <div class="schedule-shell"><div class="schedule-shell__top"><div><strong>{movie.title}</strong><span>TP. Hồ Chí Minh · Dữ liệu mẫu</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div><DatePicker /><ShowtimeList movieSlug={movie.slug} /></div>
+    </section>
+  }
+  {movie.status === 'soon' && <section class="section container"><div class="message-panel"><span>✦</span><div><h2>Phim sắp ra mắt</h2><p>Chưa có suất chiếu. Chúng mình sẽ bổ sung khi có nguồn dữ liệu được cấp phép.</p></div></div></section>}
+  <section class="section section--tinted"><div class="container"><div class="section-heading"><div><span class="eyebrow">CÓ THỂ BẠN QUAN TÂM</span><h2>Khám phá thêm phim</h2></div></div><div class="movie-grid movie-grid--three">{more.map((item) => <MovieCard movie={item} />)}</div></div></section>
+</BaseLayout>

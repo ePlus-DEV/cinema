@@ -1,0 +1,65 @@
+---
+import { cinemas, movies, showtimes } from '../data/catalog';
+interface Props { movieSlug?: string; cinemaSlug?: string; limit?: number; }
+const { movieSlug, cinemaSlug, limit } = Astro.props;
+const matching = showtimes.filter((slot) =>
+  (!movieSlug || slot.movieSlug === movieSlug) && (!cinemaSlug || slot.cinemaSlug === cinemaSlug)
+);
+const groups = cinemas
+  .map((cinema) => ({ cinema, slots: matching.filter((slot) => slot.cinemaSlug === cinema.slug) }))
+  .filter((group) => group.slots.length > 0)
+  .slice(0, limit || cinemas.length);
+---
+<div class="showtime-list" data-showtime-list>
+  {groups.map(({ cinema, slots }) =>
+    <article class="theater-showtime" data-theater-showtime>
+      <div class="theater-showtime__heading">
+        <div class="theater-monogram">{cinema.chain.slice(0, 1)}</div>
+        <div>
+          <h3><a href={'/rap/' + cinema.slug}>{cinema.name}</a></h3>
+          <p>{cinema.district} <span class="meta-dot">·</span> {cinema.chain}</p>
+        </div>
+        <a class="text-link theater-showtime__more" href={'/rap/' + cinema.slug}>Chi tiết rạp ↗</a>
+      </div>
+      <div class="theater-showtime__programs">
+        {slots.map((slot) => {
+          const movie = movies.find((item) => item.slug === slot.movieSlug);
+          return <div class="program" data-program data-day={slot.dayOffset} hidden={slot.dayOffset !== 0}>
+            {!movieSlug && <div class="program__movie"><a href={'/phim/' + slot.movieSlug}>{movie?.title}</a><span class="age-badge">{movie?.age}</span></div>}
+            <div class="program__schedule">
+              <span class="program__format">{slot.format}</span>
+              <div class="program__times">
+                {slot.times.map((time) => <a href={'/phim/' + slot.movieSlug + '#lich-chieu'} title="Xem chi tiết phim (chưa đặt vé)">{time}</a>)}
+              </div>
+            </div>
+          </div>;
+        })}
+      </div>
+    </article>
+  )}
+  <div class="showtime-empty" data-showtime-empty hidden>
+    <span aria-hidden="true">🎟️</span>
+    <strong>Chưa có suất chiếu minh họa cho ngày này</strong>
+    <p>Chọn một trong ba ngày đầu để xem bố cục lịch chiếu mẫu.</p>
+  </div>
+</div>
+<script>
+  const refresh = (offset: number) => {
+    document.querySelectorAll<HTMLElement>('[data-showtime-list]').forEach((list) => {
+      let hasAny = false;
+      list.querySelectorAll<HTMLElement>('[data-theater-showtime]').forEach((theater) => {
+        let hasTheaterProgram = false;
+        theater.querySelectorAll<HTMLElement>('[data-program]').forEach((program) => {
+          const visible = Number(program.dataset.day) === offset;
+          program.hidden = !visible;
+          if (visible) hasTheaterProgram = true;
+        });
+        theater.hidden = !hasTheaterProgram;
+        if (hasTheaterProgram) hasAny = true;
+      });
+      const empty = list.querySelector<HTMLElement>('[data-showtime-empty]');
+      if (empty) empty.hidden = hasAny;
+    });
+  };
+  window.addEventListener('cinema:day', (event) => refresh((event as CustomEvent<number>).detail));
+</script>
