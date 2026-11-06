@@ -1,0 +1,100 @@
+name: Build and stage GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# One writer at a time to keep production and all PR previews intact.
+concurrency:
+  group: cinema-pages-stage
+  cancel-in-progress: false
+
+jobs:
+  stage:
+    # Never execute/build third-party fork code with write-capable deployment.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PAGES_ROOT_PATH: ${{ vars.PAGES_ROOT_PATH || '/cinema/' }}
+      PAGES_SITE_ORIGIN: ${{ vars.PAGES_SITE_ORIGIN || 'https://eplus-dev.github.io' }}
+      PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+    steps:
+      - name: Checkout website source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Configure production or PR preview
+        id: config
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_ACTION: ${{ github.event.action || '' }}
+        run: |
+          set -euo pipefail
+          ROOT_PATH="$PAGES_ROOT_PATH"
+          if [[ ! "$ROOT_PATH" =~ ^/([a-zA-Z0-9_-]+/)*$ ]]; then
+            echo "Invalid PAGES_ROOT_PATH: $ROOT_PATH" >&2
+            exit 1
+          fi
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            if [[ ! "$PR_NUMBER" =~ ^[1-9][0-9]*$ ]]; then
+              echo "Invalid PR number" >&2
+              exit 1
+            fi
+            BASE_PATH="${ROOT_PATH}previews/pr-${PR_NUMBER}/"
+            if [[ "$PR_ACTION" == "closed" ]]; then
+              KIND="delete-preview"
+            else
+              KIND="preview"
+            fi
+          else
+            BASE_PATH="$ROOT_PATH"
+            KIND="production"
+          fi
+          echo "PAGES_BASE_PATH=$BASE_PATH" >> "$GITHUB_ENV"
+          echo "PAGES_DEPLOY_KIND=$KIND" >> "$GITHUB_ENV"
+          echo "preview_url=${PAGES_SITE_ORIGIN}${BASE_PATH}" >> "$GITHUB_OUTPUT"
+          echo "Deploy kind: $KIND | Base path: $BASE_PATH"
+
+      - name: Setup Node
+        if: github.event.action != 'closed'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        if: github.event.action != 'closed'
+        run: npm install --no-audit --no-fund
+
+      - name: Build Astro site
+        if: github.event.action != 'closed'
+        run: |
+          npm run build
+          node scripts/rewrite-links.mjs
+          node scripts/smoke-test.mjs
+
+      - name: Stage full site and preview into gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/publish-pages.sh
+
+      - name: Pages publishing summary
+        if: github.event_name == 'pull_request'
+        env:
+          PREVIEW_URL: ${{ steps.config.outputs.preview_url }}
+          PR_ACTION: ${{ github.event.action }}
+        run: |
+          if [[ "$PR_ACTION" == "closed" ]]; then
+            echo "Removed preview folder for PR #$PR_NUMBER. The default-branch Pages deployment updates the public site next." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### PR #$PR_NUMBER preview" >> "$GITHUB_STEP_SUMMARY"
+            echo "Preview URL (published after the downstream Pages deploy completes): $PREVIEW_URL" >> "$GITHUB_STEP_SUMMARY"
+          fi
