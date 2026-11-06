@@ -22,8 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      PAGES_ROOT_PATH: ${{ vars.PAGES_ROOT_PATH || '/cinema/' }}
-      PAGES_SITE_ORIGIN: ${{ vars.PAGES_SITE_ORIGIN || 'https://eplus-dev.github.io' }}
+      PAGES_ROOT_PATH: ${{ vars.PAGES_ROOT_PATH || '/' }}
+      PAGES_SITE_ORIGIN: ${{ vars.PAGES_SITE_ORIGIN || 'https://cinema.eplus.dev' }}
       PR_NUMBER: ${{ github.event.pull_request.number || '' }}
     steps:
       - name: Checkout website source
