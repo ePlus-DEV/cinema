@@ -61,7 +61,7 @@ https://eplus-dev.github.io/cinema/
 
 https://eplus-dev.github.io/cinema/previews/pr-3/
 
-Each PR preview also appears in the staging workflow run summary (and PR comment). URLs are only live after the downstream `Publish GitHub Pages` workflow succeeds. Closing a PR removes its preview path.
+Each PR preview URL appears in the staging workflow run Summary. Automatic PR comments are intentionally not required because organization token policies may prevent issue comments. URLs are only live after the downstream `Publish GitHub Pages` workflow succeeds. Closing a PR removes its preview path.
 
 ### Optional cinema.eplus.dev custom domain
 
