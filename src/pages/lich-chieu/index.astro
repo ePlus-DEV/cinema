@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DatePicker from '../../components/DatePicker.astro';
+import ShowtimeList from '../../components/ShowtimeList.astro';
+---
+<BaseLayout title="Lịch chiếu phim | ePlus Cinema" active="schedule">
+  <section class="page-hero page-hero--schedule"><div class="container">
+    <div class="breadcrumbs"><a href="/">Trang chủ</a><span>/</span><span>Lịch chiếu</span></div>
+    <span class="eyebrow">CHỌN GIỜ CHIẾU THUẬN TIỆN</span><h1>Lịch chiếu phim<span class="title-spark"> ✳</span></h1>
+    <p>Khám phá cách xem lịch chiếu theo ngày, phim và cụm rạp trên ePlus Cinema.</p>
+  </div></section>
+  <section class="container section schedule-page">
+    <aside class="schedule-aside">
+      <div class="schedule-aside__card"><span class="eyebrow">KHU VỰC ĐANG XEM</span><h2>⌖ TP. Hồ Chí Minh</h2><p>Bản preview sử dụng một khu vực cố định. Tính năng chọn tỉnh/thành sẽ bổ sung cùng nguồn dữ liệu thực tế.</p></div>
+      <div class="schedule-aside__tip"><strong>✦ Mẹo tra lịch</strong><p>Chọn một ngày bên phải, sau đó bấm tên phim hoặc giờ chiếu để xem thông tin chi tiết.</p></div>
+      <a href="/phim-dang-chieu" class="schedule-aside__link">Khám phá phim đang chiếu ↗</a>
+    </aside>
+    <div class="schedule-main"><div class="schedule-shell">
+      <div class="schedule-shell__top"><div><strong>Suất chiếu theo ngày</strong><span>Chỉ dùng để minh họa giao diện · Không bán vé</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
+      <DatePicker />
+      <ShowtimeList />
+    </div></div>
+  </section>
+</BaseLayout>

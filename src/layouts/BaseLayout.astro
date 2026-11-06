@@ -1,0 +1,53 @@
+---
+import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  active?: string;
+}
+const {
+  title = 'ePlus Cinema — Tìm phim, chọn giờ chiếu',
+  description = 'Giao diện thử nghiệm tra cứu phim và suất chiếu tại Việt Nam.',
+  active = ''
+} = Astro.props;
+---
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101827" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="preview-banner" role="note">
+      <span class="preview-banner__dot"></span>
+      Đây là bản xem trước giao diện. Phim, rạp và giờ chiếu bên dưới chỉ là dữ liệu minh họa.
+    </div>
+    <SiteHeader active={active} />
+    <main id="main-content"><slot /></main>
+    <footer class="footer">
+      <div class="container footer__inner">
+        <div>
+          <a href="/" class="footer__brand"><span class="brand__icon">✦</span> ePlus <strong>Cinema</strong></a>
+          <p>Khám phá phim và tìm lịch chiếu theo cách đơn giản hơn.</p>
+          <span class="footer__notice">Bản thiết kế demo · Không nhận đặt vé</span>
+        </div>
+        <div class="footer__links">
+          <div><strong>Khám phá</strong><a href="/phim-dang-chieu">Phim đang chiếu</a><a href="/phim-sap-chieu">Phim sắp chiếu</a></div>
+          <div><strong>Tra cứu</strong><a href="/lich-chieu">Lịch chiếu</a><a href="/rap">Hệ thống rạp</a></div>
+          <div><strong>ePlus</strong><a href="https://eplus.dev/" target="_blank" rel="noopener noreferrer">ePlus DEV ↗</a><a href="https://github.com/ePlus-DEV/cinema" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div>
+        </div>
+      </div>
+      <div class="container footer__bottom"><span>© {new Date().getFullYear()} ePlus Cinema. Giao diện thử nghiệm.</span><span>Made for movie lovers ✦</span></div>
+    </footer>
+  </body>
+</html>

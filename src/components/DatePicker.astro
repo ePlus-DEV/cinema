@@ -1,0 +1,31 @@
+<div class="date-picker" aria-label="Chọn ngày tra lịch chiếu" data-date-picker>
+  {[0, 1, 2, 3, 4].map((day) =>
+    <button type="button" class:list={['date-picker__day', { 'is-selected': day === 0 }]} aria-pressed={day === 0 ? 'true' : 'false'} data-day-offset={day}>
+      <span data-weekday>{day === 0 ? 'Hôm nay' : day === 1 ? 'Ngày mai' : 'Ngày'}</span>
+      <strong data-day-number>--</strong>
+    </button>
+  )}
+</div>
+<script>
+  const formatterDay = new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', day: '2-digit', month: '2-digit' });
+  const formatterWeek = new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', weekday: 'short' });
+  document.querySelectorAll<HTMLElement>('[data-date-picker]').forEach((picker) => {
+    const buttons = [...picker.querySelectorAll<HTMLButtonElement>('[data-day-offset]')];
+    buttons.forEach((button) => {
+      const offset = Number(button.dataset.dayOffset || 0);
+      const date = new Date(Date.now() + offset * 86400000);
+      const num = button.querySelector('[data-day-number]');
+      const label = button.querySelector('[data-weekday]');
+      if (num) num.textContent = formatterDay.format(date);
+      if (label && offset > 1) label.textContent = formatterWeek.format(date);
+      button.addEventListener('click', () => {
+        buttons.forEach((item) => {
+          const selected = item === button;
+          item.classList.toggle('is-selected', selected);
+          item.setAttribute('aria-pressed', String(selected));
+        });
+        window.dispatchEvent(new CustomEvent('cinema:day', { detail: offset }));
+      });
+    });
+  });
+</script>

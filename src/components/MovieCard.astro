@@ -1,0 +1,20 @@
+---
+import type { Movie } from '../data/catalog';
+interface Props { movie: Movie; compact?: boolean; }
+const { movie, compact = false } = Astro.props;
+---
+<a class:list={['movie-card', { 'movie-card--compact': compact }]} href={'/phim/' + movie.slug} aria-label={'Xem chi tiết phim ' + movie.title}>
+  <div class:list={['poster-art', 'poster-art--' + movie.poster]}>
+    <span class="poster-art__grain" aria-hidden="true"></span>
+    <span class="poster-art__scene" aria-hidden="true"></span>
+    <span class="poster-art__edition">ePlus Cinema · Demo</span>
+    <span class="poster-art__title">{movie.title}</span>
+    <span class="poster-art__subtitle">{movie.originalTitle}</span>
+    <span class="movie-card__hover">Xem chi tiết <span>↗</span></span>
+  </div>
+  <div class="movie-card__info">
+    <div class="movie-card__head"><h3>{movie.title}</h3><span class="age-badge">{movie.age}</span></div>
+    <p>{movie.genre} <span class="meta-dot">·</span> {movie.duration} phút</p>
+    <span class="movie-card__status">{movie.status === 'now' ? 'Đang chiếu (demo)' : 'Sắp chiếu (demo)'}</span>
+  </div>
+</a>

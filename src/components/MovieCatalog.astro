@@ -1,0 +1,55 @@
+---
+import MovieCard from './MovieCard.astro';
+import { movies } from '../data/catalog';
+interface Props { status: 'now' | 'soon'; }
+const { status } = Astro.props;
+const items = movies.filter((movie) => movie.status === status);
+const genres = [...new Set(items.map((movie) => movie.genre))];
+const isNow = status === 'now';
+---
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumbs"><a href="/">Trang chủ</a><span>/</span><span>{isNow ? 'Phim đang chiếu' : 'Phim sắp chiếu'}</span></div>
+    <span class="eyebrow">KHÁM PHÁ ĐIỆN ẢNH</span>
+    <h1>{isNow ? 'Phim đang chiếu' : 'Phim sắp chiếu'}<span class="title-spark"> ✳</span></h1>
+    <p>{isNow ? 'Tìm bộ phim hợp gu cho buổi hẹn tiếp theo.' : 'Lưu lại những cái tên bạn đang mong chờ.'}</p>
+  </div>
+</section>
+<section class="section container catalog" data-catalog>
+  <div class="catalog__tools">
+    <label class="catalog__search"><span aria-hidden="true">⌕</span><input type="search" placeholder="Tìm tên phim..." aria-label="Tìm tên phim" data-catalog-search /></label>
+    <label class="catalog__select"><span>Thể loại</span><select aria-label="Lọc theo thể loại" data-catalog-genre><option value="">Tất cả</option>{genres.map((genre) => <option value={genre}>{genre}</option>)}</select></label>
+    <span class="catalog__count" data-catalog-count>{items.length} phim minh họa</span>
+  </div>
+  <div class="movie-grid" data-catalog-grid>
+    {items.map((movie) => <div data-catalog-card data-name={(movie.title + ' ' + movie.originalTitle).toLocaleLowerCase('vi')} data-genre={movie.genre}><MovieCard movie={movie} /></div>)}
+  </div>
+  <div class="empty-results" data-catalog-empty hidden><span>⌕</span><h2>Chưa tìm thấy phim phù hợp</h2><p>Thử từ khóa khác hoặc chọn lại thể loại.</p></div>
+  <div class="catalog__footnote">Thông tin phim trong bản dựng hiện là dữ liệu giả lập để kiểm thử giao diện.</div>
+</section>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-catalog]').forEach((catalog) => {
+    const input = catalog.querySelector<HTMLInputElement>('[data-catalog-search]');
+    const genre = catalog.querySelector<HTMLSelectElement>('[data-catalog-genre]');
+    const cards = [...catalog.querySelectorAll<HTMLElement>('[data-catalog-card]')];
+    const count = catalog.querySelector<HTMLElement>('[data-catalog-count]');
+    const empty = catalog.querySelector<HTMLElement>('[data-catalog-empty]');
+    const params = new URLSearchParams(window.location.search);
+    if (input && params.get('q')) input.value = params.get('q') || '';
+    const update = () => {
+      const query = (input?.value || '').trim().toLocaleLowerCase('vi');
+      const selectedGenre = genre?.value || '';
+      let visible = 0;
+      cards.forEach((card) => {
+        const matches = (!query || (card.dataset.name || '').includes(query)) && (!selectedGenre || card.dataset.genre === selectedGenre);
+        card.hidden = !matches;
+        if (matches) visible++;
+      });
+      if (count) count.textContent = visible + ' phim minh họa';
+      if (empty) empty.hidden = visible !== 0;
+    };
+    input?.addEventListener('input', update);
+    genre?.addEventListener('change', update);
+    update();
+  });
+</script>
