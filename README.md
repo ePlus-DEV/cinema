@@ -55,23 +55,34 @@ This staging/deployment split is necessary because public GitHub Pages does not 
 
 **Default production URL (after successful deployment):**
 
-https://eplus-dev.github.io/cinema/
+https://cinema.eplus.dev/
 
 **Example preview URL (for PR #3, only after that PR is staged and published):**
 
-https://eplus-dev.github.io/cinema/previews/pr-3/
+https://cinema.eplus.dev/previews/pr-3/
 
 Each PR preview URL appears in the staging workflow run Summary. Automatic PR comments are intentionally not required because organization token policies may prevent issue comments. URLs are only live after the downstream `Publish GitHub Pages` workflow succeeds. Closing a PR removes its preview path.
 
-### Optional cinema.eplus.dev custom domain
+### Custom domain: cinema.eplus.dev
 
-1. Add the hostname in **Settings → Pages → Custom domain** and create the required DNS CNAME pointing to `eplus-dev.github.io`. Confirm domain verification and HTTPS.
-2. Add repository **Actions variables** in **Settings → Secrets and variables → Actions → Variables**:
-   - `PAGES_SITE_ORIGIN` = `https://cinema.eplus.dev`
-   - `PAGES_ROOT_PATH` = `/`
-3. Re-run **Build and stage GitHub Pages** on `main` to rebuild absolute asset paths. Open PRs should be synchronized/rebuilt so their preview links also use the new domain and base path.
+The domain `cinema.eplus.dev` is the default target for this repository. Production builds use the root path `/` and PR previews use `/previews/pr-N/`. **No Actions variables are required** for the normal deployment. Two optional overrides remain available:
 
-Under the custom domain, preview links become `https://cinema.eplus.dev/previews/pr-N/`. Do not set the custom domain until DNS and Pages ownership are ready.
+- `PAGES_SITE_ORIGIN`: defaults to `https://cinema.eplus.dev`.
+- `PAGES_ROOT_PATH`: defaults to `/`.
+
+For the first deployment:
+
+1. In **Settings → Pages → Custom domain**, confirm `cinema.eplus.dev` has been saved for **this** repository.
+2. In DNS, the `cinema` subdomain should have a CNAME pointing to `eplus-dev.github.io` (without `https://`, and **without** `/cinema/`). Allow DNS and HTTPS certificate propagation.
+3. Under **Settings → Pages**, choose **Source: GitHub Actions**. With a custom Actions deployment, a file called `CNAME` is not required.
+4. Merge the deployment PR and run the production staging workflow on `main`, then verify the trusted publish workflow succeeds.
+5. Enable **Enforce HTTPS** when GitHub offers the option. Validate production and PR routes on both desktop and mobile.
+
+**Production URL:** https://cinema.eplus.dev/
+
+**Preview URL format:** https://cinema.eplus.dev/previews/pr-N/
+
+Note: setting a domain in GitHub Pages does not confirm its DNS, certificate or successful publication. Check the Pages domain diagnostics and the Actions deployment before sharing the website.
 
 ### Notes and security
 
