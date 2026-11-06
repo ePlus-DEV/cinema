@@ -1,0 +1,42 @@
+name: Publish GitHub Pages
+
+# This trusted workflow always runs from the default branch.
+# PR workflows only stage static files; they cannot deploy Pages directly.
+on:
+  workflow_run:
+    workflows: ["Build and stage GitHub Pages"]
+    types: [completed]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: cinema-pages-publish
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout staged static website
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: publication
+          persist-credentials: false
+
+      - name: Upload complete Pages site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: publication
+
+      - name: Publish GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
