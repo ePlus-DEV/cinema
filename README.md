@@ -31,26 +31,26 @@ npm run preview
 
 Two workflows work together:
 
-1. **Build and stage GitHub Pages** (\`.github/workflows/pages-stage.yml\`):
-   - \`push\` to \`main\`: build production and publish its files to the root of the \`gh-pages\` branch, preserving other PR previews.
-   - \`pull_request\` opened/synchronized/reopened: build the PR branch and store it in \`gh-pages/previews/pr-N/\`. Works for **branches within this repository only**, not forks.
-   - \`pull_request\` closed/merged: remove \`previews/pr-N/\`.
-   - \`workflow_dispatch\`: manually rebuild production from \`main\`.
-   - Builds run with \`persist-credentials: false\`; the publish step receives the scoped \`GITHUB_TOKEN\` separately.
-2. **Publish GitHub Pages** (\`.github/workflows/pages-publish.yml\`):
+1. **Build and stage GitHub Pages** (`.github/workflows/pages-stage.yml`):
+   - `push` to `main`: build production and publish its files to the root of the `gh-pages` branch, preserving other PR previews.
+   - `pull_request` opened/synchronized/reopened: build the PR branch and store it in `gh-pages/previews/pr-N/`. Works for **branches within this repository only**, not forks.
+   - `pull_request` closed/merged: remove `previews/pr-N/`.
+   - `workflow_dispatch`: manually rebuild production from `main`.
+   - Builds run with `persist-credentials: false`; the publish step receives the scoped `GITHUB_TOKEN` separately.
+2. **Publish GitHub Pages** (`.github/workflows/pages-publish.yml`):
    - Runs from the repository's **default branch** after the staging workflow succeeds.
-   - Checks out the complete \`gh-pages\` branch, uploads one Pages artifact and deploys it with GitHub's official \`actions/deploy-pages\`.
+   - Checks out the complete `gh-pages` branch, uploads one Pages artifact and deploys it with GitHub's official `actions/deploy-pages`.
    - Does not execute PR source code and avoids deploying directly from a PR context.
 
-This staging/deployment split is necessary because public GitHub Pages does not offer native isolated PR preview deployments, and commits made by \`GITHUB_TOKEN\` alone do **not** reliably trigger a Pages publish. Our preview folders are part of the same complete GitHub Pages site.
+This staging/deployment split is necessary because public GitHub Pages does not offer native isolated PR preview deployments, and commits made by `GITHUB_TOKEN` alone do **not** reliably trigger a Pages publish. Our preview folders are part of the same complete GitHub Pages site.
 
 ### One-time GitHub setup (required)
 
-1. Merge the deployment PR so both workflow files are on \`main\`.
-2. Visit **Repository → Settings → Pages** and set **Build and deployment → Source → GitHub Actions**. Do **not** select \`Deploy from a branch\` for this configuration.
-3. In **Settings → Actions → General**, ensure workflows can use the repository-scoped \`GITHUB_TOKEN\` with the requested \`contents: write\` permission. If your organization restricts writable workflow tokens, an administrator must allow the necessary policy.
-4. Under **Settings → Environments → github-pages**, allow default-branch deployments. The trusted publishing workflow runs from \`main\`.
-5. Trigger **Actions → Build and stage GitHub Pages → Run workflow** on \`main\` for the first production release (or use the automatic \`main\` push).
+1. Merge the deployment PR so both workflow files are on `main`.
+2. Visit **Repository → Settings → Pages** and set **Build and deployment → Source → GitHub Actions**. Do **not** select `Deploy from a branch` for this configuration.
+3. In **Settings → Actions → General**, ensure workflows can use the repository-scoped `GITHUB_TOKEN` with the requested `contents: write` permission. If your organization restricts writable workflow tokens, an administrator must allow the necessary policy.
+4. Under **Settings → Environments → github-pages**, allow default-branch deployments. The trusted publishing workflow runs from `main`.
+5. Trigger **Actions → Build and stage GitHub Pages → Run workflow** on `main` for the first production release (or use the automatic `main` push).
 6. Check **Actions → Publish GitHub Pages** for successful deployment.
 
 **Default production URL (after successful deployment):**
@@ -61,23 +61,23 @@ https://eplus-dev.github.io/cinema/
 
 https://eplus-dev.github.io/cinema/previews/pr-3/
 
-Each PR preview also appears in the staging workflow run summary (and PR comment). URLs are only live after the downstream \`Publish GitHub Pages\` workflow succeeds. Closing a PR removes its preview path.
+Each PR preview also appears in the staging workflow run summary (and PR comment). URLs are only live after the downstream `Publish GitHub Pages` workflow succeeds. Closing a PR removes its preview path.
 
 ### Optional cinema.eplus.dev custom domain
 
-1. Add the hostname in **Settings → Pages → Custom domain** and create the required DNS CNAME pointing to \`eplus-dev.github.io\`. Confirm domain verification and HTTPS.
+1. Add the hostname in **Settings → Pages → Custom domain** and create the required DNS CNAME pointing to `eplus-dev.github.io`. Confirm domain verification and HTTPS.
 2. Add repository **Actions variables** in **Settings → Secrets and variables → Actions → Variables**:
-   - \`PAGES_SITE_ORIGIN\` = \`https://cinema.eplus.dev\`
-   - \`PAGES_ROOT_PATH\` = \`/\`
-3. Re-run **Build and stage GitHub Pages** on \`main\` to rebuild absolute asset paths. Open PRs should be synchronized/rebuilt so their preview links also use the new domain and base path.
+   - `PAGES_SITE_ORIGIN` = `https://cinema.eplus.dev`
+   - `PAGES_ROOT_PATH` = `/`
+3. Re-run **Build and stage GitHub Pages** on `main` to rebuild absolute asset paths. Open PRs should be synchronized/rebuilt so their preview links also use the new domain and base path.
 
-Under the custom domain, preview links become \`https://cinema.eplus.dev/previews/pr-N/\`. Do not set the custom domain until DNS and Pages ownership are ready.
+Under the custom domain, preview links become `https://cinema.eplus.dev/previews/pr-N/`. Do not set the custom domain until DNS and Pages ownership are ready.
 
 ### Notes and security
 
 - Preview pages are **publicly accessible**; a preview URL is not a security boundary. Never put secrets or private information in the generated site.
 - Fork PRs intentionally do not receive deploy permissions or previews.
-- All content stays \`noindex\` until legitimate, verified movie data is available.
+- All content stays `noindex` until legitimate, verified movie data is available.
 - Production and preview share a single Pages site; deploy serialization protects other PR previews.
 - No Cloudflare account, Pages API token, or third-party deployment service is required.
 
