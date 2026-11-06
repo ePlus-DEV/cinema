@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const baseSegment = (process.env.PAGES_BASE_PATH || '/cinema/').split('/').filter(Boolean).join('/');
+const baseSegment = (process.env.PAGES_BASE_PATH || '/').split('/').filter(Boolean).join('/');
 const base = baseSegment ? '/' + baseSegment + '/' : '/';
 
 const routes = [
