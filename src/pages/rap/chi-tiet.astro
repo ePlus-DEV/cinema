@@ -49,6 +49,7 @@ import ScheduleSkeleton from '../../components/ScheduleSkeleton.astro';
     const validKey = key && /^\d+:[a-zA-Z0-9_-]+$/.test(key);
 
     function showError(message) {
+      state.classList.remove('live-detail__loading--skeleton');
       state.setAttribute('aria-busy', 'false');
       if (scheduleLoading) scheduleLoading.hidden = true;
       state.textContent = message + ' ';
