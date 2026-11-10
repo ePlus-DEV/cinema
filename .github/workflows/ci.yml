@@ -35,6 +35,7 @@ jobs:
           node scripts/smoke-test.mjs
           node scripts/seat-color-test.mjs
           node scripts/seatmap-ui-test.mjs
+          node scripts/seat-center-zone-test.mjs
           node scripts/seo-audit.mjs
           node scripts/check-outbound-links.mjs
       - name: Verify explicitly indexable build
