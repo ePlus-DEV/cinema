@@ -7,6 +7,7 @@ import SeatMap from './SeatMap.astro';
 ---
 
 <div class="momo-live" data-momo-live>
+  <div class="momo-live__intro"><span class="momo-live__live-dot" aria-hidden="true"></span><strong>Lịch chiếu cập nhật theo ngày</strong><span>Tìm rạp → chọn suất → xem ghế</span></div>
   <div class="momo-live__toolbar">
     <input
       class="momo-live__search"
@@ -170,6 +171,9 @@ import SeatMap from './SeatMap.astro';
       cinemasEl.querySelectorAll('[data-cinema]').forEach((button) => {
         button.addEventListener('click', () => {
           state.selected = button.dataset.cinema;
+          const url = new URL(window.location.href);
+          url.searchParams.set("cinema", state.selected);
+          window.history.replaceState(null, "", url);
           renderCinemas();
           loadSession();
         });
@@ -239,7 +243,6 @@ import SeatMap from './SeatMap.astro';
         });
         if (token !== state.sessionToken) return; // a newer selection won
         for (const film of data.Films || []) {
-          film.url = `https://www.momo.vn${film.Link || ''}`;
           film.poster = film.GraphicUrl || film.ImageUrl || '';
         }
         renderSession(cinema, date, data.Films || []);
@@ -258,7 +261,9 @@ import SeatMap from './SeatMap.astro';
           status('MoMo không trả về rạp nào cho TP. Hồ Chí Minh.', init);
           return;
         }
-        state.selected = state.cinemas[0].key;
+        const requestedCinema = new URLSearchParams(window.location.search).get("cinema");
+        state.selected = state.cinemas.some((cinema) => cinema.key === requestedCinema)
+          ? requestedCinema : state.cinemas[0].key;
         renderChips();
         renderCinemas();
         loadSession();
