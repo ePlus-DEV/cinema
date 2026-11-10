@@ -319,12 +319,14 @@ const { cinemaOnly = false } = Astro.props;
         return `<article class="program">
           <div class="momo-live__program-head">
             ${film.poster ? `<img class="momo-live__poster" src="${esc(film.poster)}" alt="" loading="lazy" />` : ''}
-            <div class="program__movie">
-              <h3><a class="momo-live__film-link" href="${import.meta.env.BASE_URL}phim/chi-tiet/?id=${encodeURIComponent(film.Id)}">${esc(film.Title)}</a></h3>
-              <p>${esc(meta)}</p>
+            <div class="momo-live__program-body">
+              <div class="program__movie">
+                <h3><a class="momo-live__film-link" href="${import.meta.env.BASE_URL}phim/chi-tiet/?id=${encodeURIComponent(film.Id)}">${esc(film.Title)}</a></h3>
+                <p>${esc(meta)}</p>
+              </div>
+              ${groups}
             </div>
           </div>
-          ${groups}
         </article>`;
       }).join('');
       resultsEl.setAttribute('aria-busy', 'false');
