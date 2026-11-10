@@ -34,6 +34,7 @@ jobs:
           node scripts/rewrite-links.mjs
           node scripts/smoke-test.mjs
           node scripts/seat-color-test.mjs
+          node scripts/movie-extras-test.mjs
           node scripts/seo-audit.mjs
           node scripts/check-outbound-links.mjs
       - name: Verify explicitly indexable build
