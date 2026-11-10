@@ -60,6 +60,11 @@
   background: #19b3a8; border-color: #b7fff7; color: #061d25;
   box-shadow: 0 0 0 2px rgba(25,179,168,.23); transform: none;
 }
+/* Selected seat must stay teal even when hovered (hover specificity is higher). */
+.seatmap .seat--available[aria-pressed="true"]:hover:not(:disabled) {
+  background: #19b3a8; color: #061d25; border-color: #b7fff7;
+  filter: none; transform: none;
+}
 .seatmap .seat--gap { visibility: hidden; }
 .seatmap .seatmap__legend {
   max-width: 760px; margin: 24px auto 0; padding-top: 18px;
