@@ -22,6 +22,7 @@ const { limit = 8, searchable = false } = Astro.props;
 </div>
 <script>
   import { CHAINS, loadAllCinemas } from '../lib/momo-client.js';
+  import { createChainLogo } from '../lib/cinema-logos.js';
 
   const normalize = (value) => String(value || '').normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('vi').trim();
@@ -33,9 +34,7 @@ const { limit = 8, searchable = false } = Astro.props;
     card.href = import.meta.env.BASE_URL + 'rap/chi-tiet/?cinema=' + encodeURIComponent(cinema.key);
     card.setAttribute('aria-label', 'Xem chi tiết rạp ' + cinema.name);
     card.dataset.search = normalize(cinema.name + ' ' + chain + ' ' + cinema.address);
-    const symbol = document.createElement('span');
-    symbol.className = 'cinema-tile__symbol cinema-tile__symbol--' + (index % 4);
-    symbol.textContent = chain.slice(0, 1);
+    const symbol = createChainLogo(cinema.chainId, chain, 'chain-logo');
     const body = document.createElement('span');
     body.className = 'cinema-tile__body';
     const name = document.createElement('strong');
