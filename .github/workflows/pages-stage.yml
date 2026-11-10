@@ -25,6 +25,9 @@ jobs:
       PAGES_ROOT_PATH: '/'
       PAGES_SITE_ORIGIN: 'https://cinema.eplus.dev'
       PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+      # Off by default. Enable only after source/content rights and launch review.
+      # PR preview paths remain noindex even if this repository variable is true.
+      SEO_INDEXABLE: ${{ vars.CINEMA_SEO_INDEXABLE || 'false' }}
       # CORS proxy for the live MoMo showtimes page; override with the
       # PUBLIC_MOMO_CORS_PROXY repository variable if the proxy moves.
       PUBLIC_MOMO_CORS_PROXY: ${{ vars.PUBLIC_MOMO_CORS_PROXY || 'https://cors-eplus-bba6d8ad0ca6.herokuapp.com' }}
@@ -83,6 +86,7 @@ jobs:
           npm run build
           node scripts/rewrite-links.mjs
           node scripts/smoke-test.mjs
+          node scripts/seo-audit.mjs
 
       - name: Stage full site and preview into gh-pages
         env:

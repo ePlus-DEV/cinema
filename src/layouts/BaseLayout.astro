@@ -2,16 +2,23 @@
 import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import PageSkeleton from '../components/PageSkeleton.astro';
+import SeoHead from '../components/SeoHead.astro';
 
 interface Props {
   title?: string;
   description?: string;
   active?: string;
+  canonicalPath?: string | null;
+  seoIndexable?: boolean;
+  breadcrumbs?: { name: string; path: string }[];
 }
 const {
   title = 'ePlus Cinema — Tìm phim, chọn giờ chiếu',
   description = 'Giao diện thử nghiệm tra cứu phim và suất chiếu tại Việt Nam.',
-  active = ''
+  active = '',
+  canonicalPath,
+  seoIndexable = false,
+  breadcrumbs = []
 } = Astro.props;
 ---
 <!doctype html>
@@ -20,8 +27,7 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#101827" />
-    <meta name="description" content={description} />
-    <meta name="robots" content="noindex, nofollow" />
+    <SeoHead title={title} description={description} canonicalPath={canonicalPath} seoIndexable={seoIndexable} breadcrumbs={breadcrumbs} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

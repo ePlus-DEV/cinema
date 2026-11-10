@@ -29,4 +29,13 @@ jobs:
         run: |
           node scripts/rewrite-links.mjs
           node scripts/smoke-test.mjs
+          node scripts/seo-audit.mjs
           node scripts/check-outbound-links.mjs
+      - name: Verify explicitly indexable build
+        run: |
+          SEO_INDEXABLE=true npm run build
+          SEO_INDEXABLE=true node scripts/seo-audit.mjs
+      - name: Prevent indexing on PR preview even with launch switch
+        run: |
+          PAGES_BASE_PATH=/previews/pr-999/ SEO_INDEXABLE=true npm run build
+          PAGES_BASE_PATH=/previews/pr-999/ SEO_INDEXABLE=true node scripts/seo-audit.mjs
