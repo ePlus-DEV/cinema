@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "fetchedAt": null,
+  "cityId": 50,
+  "source": "MoMo Cinema public web API",
+  "movies": [],
+  "cinemas": []
+}
