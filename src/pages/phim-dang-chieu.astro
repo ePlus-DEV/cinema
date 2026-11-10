@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import LiveMovieGrid from '../components/LiveMovieGrid.astro';
+import TrailerModal from '../components/TrailerModal.astro';
 ---
 <BaseLayout title="Phim đang chiếu tại TP.HCM | ePlus Cinema" description="Xem danh sách phim đang chiếu, thông tin phim và tra cứu suất chiếu theo rạp tại TP. Hồ Chí Minh trên ePlus Cinema." active="now" canonicalPath="/phim-dang-chieu/" seoIndexable breadcrumbs={[{ name: 'Trang chủ', path: '/' }, { name: 'Phim đang chiếu', path: '/phim-dang-chieu/' }]} />
   <section class="page-hero"><div class="container">
@@ -13,4 +14,5 @@ import LiveMovieGrid from '../components/LiveMovieGrid.astro';
     <LiveMovieGrid status="now" limit={100} searchable />
     <p class="catalog__footnote">Dữ liệu phim tham khảo từ MoMo Cinema; ePlus không bán vé.</p>
   </section>
+  <TrailerModal />
 </BaseLayout>
