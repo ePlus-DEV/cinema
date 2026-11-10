@@ -125,6 +125,8 @@ for (const [items,status] of [[now,'now'],[soon,'soon']]) {
       genre:String(f.ApiGenreName || ''), duration:Number(f.Duration)||0,
       age:String(f.ApiRatingFormat || f.ApiRating || ''),
       posterUrl:String(f.GraphicUrl || f.ImageUrl || ''),
+      // Trailer URL is optional and must be validated before rendering.
+      trailerUrl:String(f.TrailerUrl || f.Trailer || f.YoutubeTrailerUrl || f.YoutubeUrl || f.VideoUrl || ''),
       synopsis:String(f.Synopsis || ''),
       openingDate:String(f.OpeningDate || f.ApiReleaseDate || '').slice(0,10),
       status
