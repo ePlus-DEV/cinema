@@ -1,0 +1,82 @@
+---
+import {
+  SEO_INDEXING_ENABLED, SEO_INDEXABLE_PATHS, SITE_ORIGIN, seoCanonical
+} from '../lib/seo.js';
+
+interface Crumb { name: string; path: string; }
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath?: string | null;
+  seoIndexable?: boolean;
+  breadcrumbs?: Crumb[];
+}
+const {
+  title,
+  description,
+  canonicalPath,
+  seoIndexable = false,
+  breadcrumbs = []
+} = Astro.props;
+
+const effectivePath = canonicalPath === undefined ? Astro.url.pathname : canonicalPath;
+const canonical = effectivePath === null ? null : seoCanonical(effectivePath);
+const eligible = seoIndexable && effectivePath !== null
+  && SEO_INDEXABLE_PATHS.includes(
+    '/' + effectivePath.replace(/^\/+|\/+$/g, '') + (effectivePath === '/' ? '' : '/')
+  );
+const robots = SEO_INDEXING_ENABLED && eligible
+  ? 'index, follow, max-image-preview:large'
+  : 'noindex, nofollow';
+
+const graph: Record<string, unknown>[] = [];
+if (canonical && eligible) {
+  const websiteId = SITE_ORIGIN + '/#website';
+  if (effectivePath === '/') {
+    graph.push({
+      '@type': 'WebSite',
+      '@id': websiteId,
+      url: SITE_ORIGIN + '/',
+      name: 'ePlus Cinema',
+      inLanguage: 'vi-VN',
+      description: 'Khám phá phim và tra cứu suất chiếu tại TP. Hồ Chí Minh.'
+    });
+  }
+  graph.push({
+    '@type': 'WebPage',
+    '@id': canonical + '#webpage',
+    url: canonical,
+    name: title,
+    description,
+    inLanguage: 'vi-VN',
+    isPartOf: { '@id': websiteId }
+  });
+  if (breadcrumbs.length > 1) {
+    graph.push({
+      '@type': 'BreadcrumbList',
+      '@id': canonical + '#breadcrumbs',
+      itemListElement: breadcrumbs.map((crumb, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: crumb.name,
+        item: seoCanonical(crumb.path)
+      }))
+    });
+  }
+}
+const jsonLd = graph.length ? JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })
+  .replace(/</g, '\\u003c') : null;
+---
+<meta name="description" content={description} />
+<meta name="robots" content={robots} />
+{canonical && <link rel="canonical" href={canonical} />}
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="ePlus Cinema" />
+<meta property="og:locale" content="vi_VN" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+{canonical && <meta property="og:url" content={canonical} />}
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
