@@ -4,9 +4,11 @@
 // see src/lib/momo-client.js). Nothing is rendered server-side. Clicking a
 // showtime opens the on-site seat map (SeatMap) — no link leaves ePlus.
 import SeatMap from './SeatMap.astro';
+interface Props { cinemaOnly?: boolean; }
+const { cinemaOnly = false } = Astro.props;
 ---
 
-<div class="momo-live" data-momo-live>
+<div class="momo-live" data-momo-live data-cinema-only={cinemaOnly ? "true" : "false"}>
   <div class="momo-live__intro"><span class="momo-live__live-dot" aria-hidden="true"></span><strong>Lịch chiếu cập nhật theo ngày</strong><span>Tìm rạp → chọn suất → xem ghế</span></div>
   <div class="momo-live__toolbar">
     <input
@@ -90,6 +92,11 @@ import SeatMap from './SeatMap.astro';
     const cinemasEl = root.querySelector('[data-momo-cinemas]');
     const resultsEl = root.querySelector('[data-momo-results]');
     const searchEl = root.querySelector('[data-momo-search]');
+    const params = new URLSearchParams(window.location.search);
+    const isCinemaOnly = root.dataset.cinemaOnly === 'true';
+    const isMovieDetail = window.location.pathname.includes('/phim/chi-tiet/');
+    const requestedFilm = params.get('movie') || (isMovieDetail ? params.get('id') : null);
+    const movieId = requestedFilm && /^[0-9]+$/.test(requestedFilm) ? requestedFilm : null;
 
     const state = {
       cinemas: [],
@@ -184,7 +191,8 @@ import SeatMap from './SeatMap.astro';
 
     function renderSession(cinema, date, films) {
       if (!films.length) {
-        status(`${cinema.name} chưa có suất chiếu trên MoMo ngày ${date.split('-').reverse().join('/')}.`);
+        currentShows = [];
+        status(movieId ? `Phim này chưa có suất chiếu tại ${cinema.name} ngày ${date.split('-').reverse().join('/')}. Hãy thử rạp hoặc ngày khác.` : `${cinema.name} chưa có suất chiếu ngày ${date.split('-').reverse().join('/')}.`);
         return;
       }
       currentShows = [];
@@ -211,7 +219,7 @@ import SeatMap from './SeatMap.astro';
           <div class="momo-live__program-head">
             ${film.poster ? `<img class="momo-live__poster" src="${esc(film.poster)}" alt="" loading="lazy" />` : ''}
             <div class="program__movie">
-              <h3>${esc(film.Title)}</h3>
+              <h3><a class="momo-live__film-link" href="${import.meta.env.BASE_URL}phim/chi-tiet/?id=${encodeURIComponent(film.Id)}">${esc(film.Title)}</a></h3>
               <p>${esc(meta)}</p>
             </div>
           </div>
@@ -221,7 +229,7 @@ import SeatMap from './SeatMap.astro';
       resultsEl.setAttribute('aria-busy', 'false');
       resultsEl.innerHTML = `<article class="theater-showtime">
         <header class="theater-showtime__header">
-          <div><p class="eyebrow">${esc(CHAINS[cinema.chainId] || '')}</p><h3>${esc(cinema.name)}</h3><p>${esc(cinema.address)}</p></div>
+          <div><p class="eyebrow">${esc(CHAINS[cinema.chainId] || '')}</p><h3>${esc(cinema.name)}</h3><p>${esc(cinema.address)}</p>${isCinemaOnly ? '' : `<a class="momo-live__cinema-link" href="${import.meta.env.BASE_URL}rap/chi-tiet/?cinema=${encodeURIComponent(cinema.key)}">Chi tiết rạp ↗</a>`}</div>
           <span class="date-label">${esc(date.split('-').reverse().join('/'))}</span>
         </header>
         <div class="program-list">${programs}</div>
@@ -245,7 +253,8 @@ import SeatMap from './SeatMap.astro';
         for (const film of data.Films || []) {
           film.poster = film.GraphicUrl || film.ImageUrl || '';
         }
-        renderSession(cinema, date, data.Films || []);
+        const films = movieId ? (data.Films || []).filter((film) => String(film.Id) === movieId) : (data.Films || []);
+        renderSession(cinema, date, films);
       } catch (error) {
         if (token !== state.sessionToken) return;
         status(`Không tải được suất chiếu từ MoMo (${error.message}).`, loadSession);
@@ -261,11 +270,18 @@ import SeatMap from './SeatMap.astro';
           status('MoMo không trả về rạp nào cho TP. Hồ Chí Minh.', init);
           return;
         }
-        const requestedCinema = new URLSearchParams(window.location.search).get("cinema");
-        state.selected = state.cinemas.some((cinema) => cinema.key === requestedCinema)
-          ? requestedCinema : state.cinemas[0].key;
-        renderChips();
-        renderCinemas();
+        const requestedCinema = params.get("cinema");
+        const foundCinema = state.cinemas.find((cinema) => cinema.key === requestedCinema);
+        if (isCinemaOnly && !foundCinema) {
+          cinemasEl.innerHTML = "";
+          status("Không tìm thấy cụm rạp này. Hãy quay lại danh sách rạp để chọn một cụm rạp khác.");
+          return;
+        }
+        state.selected = foundCinema ? foundCinema.key : state.cinemas[0].key;
+        if (!isCinemaOnly) {
+          renderChips();
+          renderCinemas();
+        }
         loadSession();
       } catch (error) {
         cinemasEl.innerHTML = '';
@@ -285,7 +301,7 @@ import SeatMap from './SeatMap.astro';
       renderCinemas();
     });
     window.addEventListener('cinema:day', (event) => {
-      state.dayOffset = Number(event.detail?.offset || 0);
+      state.dayOffset = Number(event.detail?.offset ?? event.detail ?? 0);
       loadSession();
     });
 
