@@ -1,0 +1,51 @@
+---
+/** Skeleton for a schedule section not yet unlocked by its detail API. */
+---
+<section class="section container detail-schedule-skeleton" aria-hidden="true">
+  <div class="detail-schedule-skeleton__heading">
+    <span class="detail-schedule-skeleton__bar skeleton" style="width:160px;height:11px"></span>
+    <span class="detail-schedule-skeleton__bar skeleton" style="width:min(340px,80%);height:30px"></span>
+    <span class="detail-schedule-skeleton__bar skeleton" style="width:min(510px,95%);height:12px"></span>
+  </div>
+  <div class="detail-schedule-skeleton__shell">
+    <div class="detail-schedule-skeleton__top"><span class="detail-schedule-skeleton__bar skeleton" style="width:45%;height:18px"></span></div>
+    <div class="detail-schedule-skeleton__dates">
+      {[0,1,2,3,4].map(() => <span class="detail-schedule-skeleton__bar detail-schedule-skeleton__day skeleton"></span>)}
+    </div>
+    <div class="detail-schedule-skeleton__content">
+      <div class="detail-schedule-skeleton__cinemas">
+        {[0,1,2,3].map(() => <span class="detail-schedule-skeleton__bar detail-schedule-skeleton__cinema skeleton"></span>)}
+      </div>
+      <div class="detail-schedule-skeleton__programs">
+        {[0,1].map(() => <div class="detail-schedule-skeleton__program">
+          <span class="detail-schedule-skeleton__bar skeleton" style="width:65%;height:17px"></span>
+          <span class="detail-schedule-skeleton__bar skeleton" style="width:85%;height:11px"></span>
+          <div class="detail-schedule-skeleton__times">{[0,1,2,3].map(() => <span class="detail-schedule-skeleton__bar detail-schedule-skeleton__time skeleton"></span>)}</div>
+        </div>)}
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+  .detail-schedule-skeleton__heading { display: grid; gap: 12px; margin-bottom: 28px; }
+  .detail-schedule-skeleton__bar { display: block; background: #e8edf4; border-radius: 10px; max-width: 100%; }
+  .detail-schedule-skeleton__shell { border: 1px solid #e8edf4; border-radius: 20px; overflow: hidden; }
+  .detail-schedule-skeleton__top { padding: 24px; border-bottom: 1px solid #eef0f4; }
+  .detail-schedule-skeleton__dates { padding: 18px 24px; display: flex; gap: 10px; overflow: hidden; border-bottom: 1px solid #eef0f4; }
+  .detail-schedule-skeleton__day { width: 100px; height: 75px; flex: none; }
+  .detail-schedule-skeleton__content { display: grid; grid-template-columns: 235px 1fr; gap: 18px; padding: 22px 24px; }
+  .detail-schedule-skeleton__cinemas { display: grid; gap: 10px; align-content: start; }
+  .detail-schedule-skeleton__cinema { width: 100%; height: 67px; }
+  .detail-schedule-skeleton__programs { display: grid; gap: 12px; }
+  .detail-schedule-skeleton__program { display: grid; gap: 12px; border: 1px solid #edf0f4; border-radius: 13px; padding: 16px; }
+  .detail-schedule-skeleton__times { display: flex; gap: 8px; flex-wrap: wrap; }
+  .detail-schedule-skeleton__time { width: 60px; height: 39px; }
+  @media (max-width: 760px) {
+    .detail-schedule-skeleton__content { grid-template-columns: 1fr; }
+    .detail-schedule-skeleton__cinemas { display: flex; overflow: hidden; }
+    .detail-schedule-skeleton__cinema { flex: 0 0 190px; }
+  }
+  @media (max-width: 600px) {
+    .detail-schedule-skeleton__top, .detail-schedule-skeleton__dates, .detail-schedule-skeleton__content { padding: 15px; }
+  }
+</style>
