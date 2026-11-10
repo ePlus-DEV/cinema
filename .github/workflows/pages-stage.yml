@@ -9,11 +9,16 @@ on:
 
 permissions:
   contents: write
+  pull-requests: read
+  actions: write
 
-# One writer at a time to keep production and all PR previews intact.
+# Serialize gh-pages writes; never interrupt a publishing write.
+# Queue all distinct PR-close and main events, then skip stale/duplicate runs
+# cheaply before installing dependencies.
 concurrency:
   group: cinema-pages-stage
   cancel-in-progress: false
+  queue: max
 
 jobs:
   stage:
@@ -70,33 +75,86 @@ jobs:
           echo "preview_url=${PAGES_SITE_ORIGIN}${BASE_PATH}" >> "$GITHUB_OUTPUT"
           echo "Deploy kind: $KIND | Base path: $BASE_PATH"
 
+      - name: Skip superseded and already-staged events
+        id: gate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_ACTION: ${{ github.event.action || '' }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || '' }}
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          should_run=true
+          reason="new content"
+          read_marker() {
+            gh api "repos/${GITHUB_REPOSITORY}/contents/$1?ref=gh-pages" --jq '.content' 2>/dev/null | base64 --decode 2>/dev/null || true
+          }
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            current_pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
+            state="$(jq -r '.state' <<< "$current_pr")"
+            actual_sha="$(jq -r '.head.sha' <<< "$current_pr")"
+            if [[ "$PR_ACTION" == "closed" ]]; then
+              if [[ "$state" == "open" ]]; then
+                should_run=false
+                reason="PR reopened after close event"
+              fi
+            elif [[ "$state" != "open" || "$actual_sha" != "$PR_HEAD_SHA" ]]; then
+              should_run=false
+              reason="PR closed or replaced by a newer commit"
+            elif [[ "$(read_marker "previews/pr-${PR_NUMBER}/.eplus-preview-sha")" == "$PR_HEAD_SHA" ]]; then
+              should_run=false
+              reason="same PR commit already staged"
+            fi
+          else
+            actual_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
+            if [[ "$actual_sha" != "$EXPECTED_SHA" ]]; then
+              should_run=false
+              reason="superseded main commit"
+            elif [[ "$EVENT_NAME" == "push" && "$(read_marker '.eplus-production-sha')" == "$EXPECTED_SHA" ]]; then
+              should_run=false
+              reason="same main commit already staged"
+            fi
+          fi
+          echo "run=$should_run" >> "$GITHUB_OUTPUT"
+          echo "Stage gate: $should_run ($reason)"
+          echo "Stage gate: $should_run ($reason)" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Setup Node
-        if: github.event.action != 'closed'
+        if: steps.gate.outputs.run == 'true' && github.event.action != 'closed'
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Install dependencies
-        if: github.event.action != 'closed'
+        if: steps.gate.outputs.run == 'true' && github.event.action != 'closed'
         run: npm install --no-audit --no-fund
 
       - name: Build Astro site
-        if: github.event.action != 'closed'
+        if: steps.gate.outputs.run == 'true' && github.event.action != 'closed'
         run: |
           npm run build
           node scripts/rewrite-links.mjs
           node scripts/smoke-test.mjs
           node scripts/seat-color-test.mjs
+          node scripts/seatmap-ui-test.mjs
+          node scripts/seat-center-zone-test.mjs
           node scripts/movie-extras-test.mjs
           node scripts/seo-audit.mjs
+          node scripts/check-outbound-links.mjs
+          node scripts/check-actions-dedup.mjs
 
       - name: Stage full site and preview into gh-pages
+        if: steps.gate.outputs.run == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || '' }}
         run: bash scripts/publish-pages.sh
 
       - name: Pages publishing summary
-        if: github.event_name == 'pull_request'
+        if: steps.gate.outputs.run == 'true' && github.event_name == 'pull_request'
         env:
           PREVIEW_URL: ${{ steps.config.outputs.preview_url }}
           PR_ACTION: ${{ github.event.action }}

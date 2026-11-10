@@ -6,6 +6,33 @@ set -euo pipefail
 : "${GITHUB_TOKEN:?A scoped Actions token is required}"
 : "${PAGES_DEPLOY_KIND:?Production, preview, or delete-preview must be selected}"
 
+# Check again after the build: a PR may close or main may advance mid-build.
+# A stale run must never restore an old preview or overwrite a new production.
+case "$PAGES_DEPLOY_KIND" in
+  production)
+    current_main="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
+    if [[ "$current_main" != "$GITHUB_SHA" ]]; then
+      echo "Skipped stale production build ($GITHUB_SHA -> $current_main)"
+      exit 0
+    fi
+    ;;
+  preview)
+    pr_json="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
+    if [[ "$(jq -r '.state' <<< "$pr_json")" != "open" ||
+          "$(jq -r '.head.sha' <<< "$pr_json")" != "${PR_HEAD_SHA:-}" ]]; then
+      echo "Skipped outdated or closed PR #$PR_NUMBER"
+      exit 0
+    fi
+    ;;
+  delete-preview)
+    pr_state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.state')"
+    if [[ "$pr_state" == "open" ]]; then
+      echo "Skipped deletion; PR #$PR_NUMBER reopened"
+      exit 0
+    fi
+    ;;
+esac
+
 repo_url="https://github.com/${GITHUB_REPOSITORY}.git"
 branch_dir="${RUNNER_TEMP:-/tmp}/eplus-cinema-gh-pages"
 site_dir=".site-publish"
@@ -31,8 +58,10 @@ case "$PAGES_DEPLOY_KIND" in
       --exclude='/previews/' \
       --exclude='/CNAME' \
       --exclude='/.nojekyll' \
+      --exclude='/.eplus-production-sha' \
       dist/ "$branch_dir/"
-    echo "Staged production site"
+    printf '%s\n' "$GITHUB_SHA" > "$branch_dir/.eplus-production-sha"
+    echo "Staged production site at commit $GITHUB_SHA"
     ;;
   preview|delete-preview)
     : "${PR_NUMBER:?PR number is required}"
@@ -42,7 +71,8 @@ case "$PAGES_DEPLOY_KIND" in
       test -f dist/index.html
       mkdir -p "$destination"
       rsync -a --delete dist/ "$destination/"
-      echo "Staged preview at previews/pr-${PR_NUMBER}"
+      printf '%s\n' "$PR_HEAD_SHA" > "$destination/.eplus-preview-sha"
+      echo "Staged preview at previews/pr-${PR_NUMBER} ($PR_HEAD_SHA)"
     else
       rm -rf -- "$destination"
       echo "Removed preview for closed PR #${PR_NUMBER}"
@@ -64,8 +94,19 @@ if ! git -C "$branch_dir" diff --cached --quiet; then
   git -C "$branch_dir" push \
     "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
     HEAD:refs/heads/gh-pages
+
+  # On main, the publisher is dispatched only for actual gh-pages mutations.
+  # Before this PR merges, the default branch still uses workflow_run; do not
+  # try to dispatch a trigger it does not yet expose.
+  publisher="$(gh api "repos/${GITHUB_REPOSITORY}/contents/.github/workflows/pages-publish.yml?ref=main" --jq '.content' | base64 --decode)"
+  if grep -Eq '^[[:space:]]*workflow_dispatch:' <<< "$publisher"; then
+    gh workflow run pages-publish.yml --ref main
+    echo "Dispatched exactly one Pages publish for this staged change"
+  else
+    echo "Legacy workflow_run publisher on main handles the PR preview until merge"
+  fi
 else
-  echo "No change in the Pages publication"
+  echo "No gh-pages changes; no Pages publish dispatched"
 fi
 
 # No .git metadata or token in the upload artifact.
