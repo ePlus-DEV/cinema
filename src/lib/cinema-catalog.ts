@@ -20,6 +20,7 @@ export const movies = uniqueBy((source.movies || []).map((row) => ({
   age: strings(row.age),
   synopsis: strings(row.synopsis),
   posterUrl: strings(row.posterUrl),
+  trailerUrl: strings(row.trailerUrl),
   openingDate: strings(row.openingDate),
   status: row.status === 'soon' ? 'soon' : 'now'
 })).filter(movie => movie.title && moviePath(movie.id)), row => row.id);
