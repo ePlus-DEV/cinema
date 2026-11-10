@@ -11,6 +11,7 @@ const routes = [
   '/phim-dang-chieu/',
   '/phim-sap-chieu/',
   '/lich-chieu/',
+  '/lich-chieu/momo/',
   '/rap/',
   '/phim/sau-anh-hoang-hon/',
   '/rap/cgv-vincom-dong-khoi/'
