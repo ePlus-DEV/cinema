@@ -55,7 +55,8 @@ const dates = Array.from({ length: 5 }, (_, i) => i);
       <div class="page-skeleton__schedule-cols">
         {!home && !filmDetail && <div class="page-skeleton__sidebar"><span class="ps-bar ps-bar--sidebox"></span><span class="ps-bar ps-bar--sidebox-sm"></span></div>}
         <div class="page-skeleton__shell">
-          <span class="ps-bar ps-bar--shell-title"></span>
+          <div class="page-skeleton__place"><span class="ps-bar ps-bar--shell-title"></span><span class="ps-bar ps-bar--location-filter"></span></div>
+          <div class="page-skeleton__chains">{[0,1,2,3,4,5,6,7].map(() => <span class="ps-bar ps-bar--chain"></span>)}</div>
           <div class="page-skeleton__dates">{dates.map(() => <span class="ps-bar ps-bar--date"></span>)}</div>
           <div class="page-skeleton__shell-body">
             <div class="page-skeleton__left">{[0,1,2,3,4].map(() => <span class="ps-bar ps-bar--cinema-row"></span>)}</div>
@@ -154,7 +155,13 @@ const dates = Array.from({ length: 5 }, (_, i) => i);
   .ps-bar--cinema-meta { width: 70%; height: 10px; margin-top: 10px; }
   .page-skeleton__schedule { padding: 56px 0 80px; background: #fff; }
   .page-skeleton__schedule--home { background: #f7f8fb; }
-  .page-skeleton__schedule-cols { display: grid; grid-template-columns: 260px minmax(0,1fr); gap: 30px; align-items: start; }
+  .page-skeleton__schedule-cols { display: grid; grid-template-columns: 1fr; gap: 30px; align-items: start; }
+  .page-skeleton__sidebar { display: none; }
+  .page-skeleton__place { display: flex; gap: 18px; align-items: center; justify-content: space-between; }
+  .ps-bar--location-filter { height: 42px; width: 205px; }
+  .page-skeleton__chains { display: flex; gap: 10px; overflow: hidden; margin-top: 22px; }
+  .ps-bar--chain { flex: 0 0 90px; height: 88px; border-radius: 12px; }
+  @media (max-width: 600px) { .ps-bar--location-filter { width: 125px; } .ps-bar--chain { flex-basis: 80px; height: 80px; } }
   .page-skeleton__schedule--home .page-skeleton__schedule-cols { grid-template-columns: 1fr; margin-top: 30px; }
   .page-skeleton__sidebar { display: grid; gap: 15px; }
   .ps-bar--sidebox { height: 210px; width: 100%; border-radius: 15px; }
