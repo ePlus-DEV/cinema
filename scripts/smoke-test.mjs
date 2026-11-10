@@ -26,6 +26,8 @@ for (const route of routes) {
   assert.match(html, /<html\s+lang="vi">/, 'Missing Vietnamese language declaration: ' + route);
   assert.match(html, /noindex,\s*nofollow/, 'Demo page must stay noindex: ' + route);
   assert.ok(html.includes('<title>'), 'Missing title: ' + route);
+  assert.ok(html.includes('data-page-skeleton'), 'Missing full-page skeleton: ' + route);
+  assert.ok(html.includes('page-skeleton-done'), 'Missing skeleton timeout safeguard: ' + route);
   console.log('PASS: ' + route);
 }
 const home = readFileSync('dist/index.html', 'utf8');
@@ -43,3 +45,14 @@ assert.ok(cinemaDetail.includes('data-cinema-content'), 'Cinema detail shell mis
 assert.ok(home.includes('section--featured'), 'Now-showing must be the first home section');
 assert.ok(!home.includes('class="hero"'), 'Redundant homepage hero must stay removed');
 console.log('PASS: real detail routes and movie-first homepage');
+
+const filmPage = readFileSync('dist/phim/chi-tiet/index.html', 'utf8');
+const cinemaPage = readFileSync('dist/rap/chi-tiet/index.html', 'utf8');
+for (const [route, html] of [['phim/chi-tiet', filmPage], ['rap/chi-tiet', cinemaPage]]) {
+  assert.ok(html.includes('data-page-priority'), 'Detail has no initial loading signal: ' + route);
+  assert.ok(html.includes('detail-skeleton'), 'Detail placeholders missing: ' + route);
+  assert.ok(html.includes('detail-schedule-skeleton'), 'Schedule placeholder missing: ' + route);
+}
+assert.ok(home.includes('skeleton__poster-badge'), 'Live film card skeletons missing');
+assert.ok(home.includes('momo-live__loading-program'), 'Live showtime card skeletons missing');
+console.log('PASS: full-page and per-section loading states');
