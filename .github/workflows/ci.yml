@@ -39,6 +39,7 @@ jobs:
           node scripts/seat-color-test.mjs
           node scripts/seo-audit.mjs
           node scripts/check-outbound-links.mjs
+          node scripts/check-actions-dedup.mjs
       - name: Verify explicitly indexable build
         run: |
           SEO_INDEXABLE=true npm run build
