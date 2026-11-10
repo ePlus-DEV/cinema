@@ -5,6 +5,12 @@ on:
   schedule:
     - cron: '10 18 * * *'
   workflow_dispatch:
+  # Bootstrap the first catalog immediately when this new workflow is merged.
+  # Future regular source pushes do NOT start a fetch.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/cinema-catalog-daily.yml'
 
 permissions:
   contents: write
