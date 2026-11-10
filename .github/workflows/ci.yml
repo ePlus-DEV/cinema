@@ -23,6 +23,15 @@ jobs:
           node-version: '22'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Probe live film/cinema API once for this PR (non-blocking)
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        timeout-minutes: 2
+        run: node scripts/sync-cinema-catalog.mjs --probe
+      - name: Validate catalog refresher syntax
+        run: |
+          node --check scripts/sync-cinema-catalog.mjs
+          npm run check:catalog
       - name: Build static website
         run: npm run build
       - name: Check generated routes, preview links and external navigation
