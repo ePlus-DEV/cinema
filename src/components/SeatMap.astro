@@ -116,6 +116,7 @@ import '../styles/seatmap-redesign.css';
 <script>
   import { loadSeats } from '../lib/momo-client.js';
   import { seatTypePalette, seatColorStyle } from '../lib/seat-colors.js';
+  import { estimateCenterZone } from '../lib/seat-center-zone.js';
 
   const root = document.querySelector('[data-seatmap]');
   if (root) {
@@ -209,41 +210,31 @@ import '../styles/seatmap-redesign.css';
 
     function drawCenterRegion() {
       const grid = bodyEl.querySelector('[data-seatmap-grid]');
-      if (!grid) return;
+      if (!grid) return false;
       grid.querySelector('[data-seatmap-center-zone]')?.remove();
-      const rows = [...grid.querySelectorAll('.seatmap__row')];
-      if (rows.length < 4) return;
-      // An approximate visual guide, not a provider-defined pricing category.
-      // Compute from the rendered seat geometry so the frame stays aligned
-      // across screen sizes, aisle gaps and any zoom level.
-      const all = rows.flatMap(row => [...row.querySelectorAll('.seat:not(.seat--gap)')]);
-      if (all.length < 12) return;
-      const minX = Math.min(...all.map(seat => seat.offsetLeft));
-      const maxX = Math.max(...all.map(seat => seat.offsetLeft + seat.offsetWidth));
-      const leftTarget = minX + (maxX - minX) * 0.24;
-      const rightTarget = minX + (maxX - minX) * 0.76;
-      const firstRow = Math.floor(rows.length * 0.30);
-      const lastRow = Math.min(rows.length - 1, Math.ceil(rows.length * 0.72));
-      const candidates = rows.slice(firstRow, lastRow + 1).flatMap(row =>
-        [...row.querySelectorAll('.seat:not(.seat--gap)')].filter(seat => {
-          const middleX = seat.offsetLeft + seat.offsetWidth / 2;
-          return middleX >= leftTarget && middleX <= rightTarget;
-        })
-      );
-      if (candidates.length < 6) return;
-      const x = Math.min(...candidates.map(seat => seat.offsetLeft));
-      const y = Math.min(...candidates.map(seat => seat.offsetTop));
-      const right = Math.max(...candidates.map(seat => seat.offsetLeft + seat.offsetWidth));
-      const bottom = Math.max(...candidates.map(seat => seat.offsetTop + seat.offsetHeight));
+      // Use the seat positions that are actually rendered, not raw row
+      // indices: detached banks after an aisle must not stretch the box.
+      const seatRows = [...grid.querySelectorAll('.seatmap__row')].map(row => ({
+        seats: [...row.querySelectorAll('.seat:not(.seat--gap)')].map(seat => ({
+          x: seat.offsetLeft,
+          y: seat.offsetTop,
+          width: seat.offsetWidth,
+          height: seat.offsetHeight
+        }))
+      }));
+      const zone = estimateCenterZone(seatRows);
+      if (!zone) return false;
       const frame = document.createElement('div');
       frame.className = 'seatmap__center-zone';
       frame.dataset.seatmapCenterZone = '';
       frame.setAttribute('aria-hidden', 'true');
+      frame.title = 'Ước lượng khu vực giữa dãy ghế chính, không bao gồm lối đi.';
       Object.assign(frame.style, {
-        left: (x - 5) + 'px', top: (y - 5) + 'px',
-        width: (right - x + 10) + 'px', height: (bottom - y + 10) + 'px'
+        left: zone.x + 'px', top: zone.y + 'px',
+        width: zone.width + 'px', height: zone.height + 'px'
       });
       grid.append(frame);
+      return true;
     }
 
     zoomOutBtn.addEventListener('click', () => applyZoom(zoom - ZOOM_STEP));
@@ -302,14 +293,16 @@ import '../styles/seatmap-redesign.css';
           ${unknownLegend}
           <span><i class="seatmap__swatch seatmap__swatch--taken"></i>Đã đặt</span>
           <span><i class="seatmap__swatch seatmap__swatch--selected"></i>Đang chọn</span>
-          <span><i class="seatmap__swatch seatmap__swatch--center"></i>Vùng trung tâm (tham khảo)</span>
+          <span data-seatmap-center-legend><i class="seatmap__swatch seatmap__swatch--center"></i>Giữa dãy ghế chính (ước lượng)</span>
         </div>`;
       zoom = 1;
       zoomControls.hidden = false;
       zoomValueEl.textContent = '100%';
       zoomOutBtn.disabled = false;
       zoomInBtn.disabled = false;
-      drawCenterRegion();
+      const hasCenterZone = drawCenterRegion();
+      const centerLegend = bodyEl.querySelector('[data-seatmap-center-legend]');
+      if (centerLegend) centerLegend.hidden = !hasCenterZone;
       const scroller = bodyEl.querySelector('[data-seatmap-scroll]');
       const stage = bodyEl.querySelector('[data-seatmap-stage]');
       naturalStageWidth = stage?.offsetWidth || 0;
