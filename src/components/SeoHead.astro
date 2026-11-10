@@ -19,7 +19,13 @@ const {
   breadcrumbs = []
 } = Astro.props;
 
-const effectivePath = canonicalPath === undefined ? Astro.url.pathname : canonicalPath;
+// Strip the GitHub Pages preview prefix from computed canonicals. Explicit
+// canonicalPath props still take precedence for the five stable routes.
+const buildBase = import.meta.env.BASE_URL || '/';
+const routePath = Astro.url.pathname.startsWith(buildBase)
+  ? '/' + Astro.url.pathname.slice(buildBase.length)
+  : Astro.url.pathname;
+const effectivePath = canonicalPath === undefined ? routePath : canonicalPath;
 const canonical = effectivePath === null ? null : seoCanonical(effectivePath);
 const eligible = seoIndexable && effectivePath !== null
   && SEO_INDEXABLE_PATHS.includes(
