@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
+import MovieExtras from '../../components/MovieExtras.astro';
 import { movies } from '../../lib/cinema-catalog';
 
 interface Props { movie: (typeof movies)[number]; }
@@ -46,6 +47,7 @@ const description = movie.synopsis
       </div>
     </div>
   </section>
+  <MovieExtras movie={movie} />
   {showNow ? <section class="section container" id="lich-chieu">
     <div class="section-heading">
       <div><span class="eyebrow">LỊCH CHIẾU TRỰC TIẾP</span><h2>Suất chiếu: {movie.title}</h2>
