@@ -40,6 +40,12 @@ assert.ok(catalog.includes('momoReviews: momoReviewsOf(row)'), 'Catalog must pas
 assert.ok(component.includes('data-momo-reviews'), 'Film details must render MoMo audience reviews');
 assert.ok(component.includes('data-trailer-clip'), 'MoMo trailer clip must be playable on-site');
 assert.ok(component.includes('momocdn'), 'MoMo clip URLs must be restricted to the MoMo CDN');
+const grid = readFileSync('src/components/LiveMovieGrid.astro', 'utf8');
+const trailerModal = readFileSync('src/components/TrailerModal.astro', 'utf8');
+assert.ok(grid.includes('data-play-trailer'), 'Movie posters must offer trailer playback');
+assert.ok(grid.includes('poster-trailer-btn'), 'Movie posters must show a trailer button');
+assert.ok(trailerModal.includes("addEventListener('click'"), 'Poster trailer clicks must be intercepted');
+assert.ok(trailerModal.includes('momocdn'), 'Poster trailer clips must be restricted to the MoMo CDN');
 assert.ok(component.includes('https://www.youtube-nocookie.com/embed/'), 'Privacy-enhanced trailer player required');
 assert.ok(component.includes("player.addEventListener('click'"), 'Video should only load after explicit click');
 assert.ok(component.includes('window.localStorage.setItem(storageKey()'), 'Personal reviews must save locally');
