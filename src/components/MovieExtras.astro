@@ -1,0 +1,288 @@
+---
+import { movieMedia, youtubeSearch } from '../lib/movie-media.js';
+import '../styles/movie-extras.css';
+interface Movie {
+  id: string;
+  title: string;
+  titleEn?: string;
+  trailerUrl?: string;
+  posterUrl?: string;
+}
+interface Props { movie?: Movie; }
+const { movie } = Astro.props;
+const media = movie ? movieMedia(movie) : null;
+const filmTitle = movie?.title || '';
+const trailerId = media?.videoId || '';
+const youtubeHref = trailerId
+  ? 'https://www.youtube.com/watch?v=' + trailerId
+  : youtubeSearch(filmTitle, movie?.titleEn);
+---
+<section class="section container movie-extras" data-movie-extras
+  data-film-id={movie?.id || ''}
+  data-film-title={filmTitle}
+  data-film-title-en={movie?.titleEn || ''}
+  data-film-poster={movie?.posterUrl || ''}
+  data-trailer-id={trailerId}
+  hidden={!movie}>
+  <div class="section-heading movie-extras__heading">
+    <div>
+      <span class="eyebrow">KHÁM PHÁ TRƯỚC KHI RA RẠP</span>
+      <h2>Trailer &amp; đánh giá phim</h2>
+      <p>Xem video chính thức khi có nguồn xác minh, đọc bài review và lưu cảm nhận của riêng bạn.</p>
+    </div>
+  </div>
+  <div class="movie-extras__grid">
+    <section class="movie-extras__panel movie-extras__trailer" aria-labelledby="movie-trailer-heading">
+      <div class="movie-extras__panel-heading">
+        <div>
+          <span class="movie-extras__label">VIDEO</span>
+          <h3 id="movie-trailer-heading">Trailer {filmTitle}</h3>
+        </div>
+        <span class="movie-extras__source" data-trailer-source>{media?.source || 'Chưa xác minh'}</span>
+      </div>
+      <div class="movie-extras__player" data-trailer-player>
+        {trailerId ? <button type="button" class="movie-extras__play" data-trailer-play
+          aria-label={'Phát trailer phim ' + filmTitle}>
+          {movie?.posterUrl && <img src={movie.posterUrl} alt="" loading="lazy" decoding="async" />}
+          <span class="movie-extras__play-ico" aria-hidden="true">▶</span>
+          <span class="movie-extras__play-caption">Phát trailer</span>
+        </button> : <div class="movie-extras__unavailable">
+          <span class="movie-extras__unavailable-symbol" aria-hidden="true">▷</span>
+          <strong>Chưa có trailer được xác minh</strong>
+          <p>Không tự chọn video khi chưa xác định đúng phim hoặc kênh phát hành.</p>
+        </div>}
+      </div>
+      <div class="movie-extras__below-player">
+        <small>Video chỉ được tải từ YouTube khi bạn bấm phát, không tự phát âm thanh.</small>
+        <a href={youtubeHref} target="_blank" rel="noopener noreferrer" data-trailer-link>
+          {trailerId ? 'Xem trên YouTube ↗' : 'Tìm trailer trên YouTube ↗'}
+        </a>
+      </div>
+    </section>
+    <section class="movie-extras__panel movie-extras__reviews" aria-labelledby="movie-reviews-heading">
+      <div class="movie-extras__panel-heading">
+        <div>
+          <span class="movie-extras__label">GÓC NHÌN</span>
+          <h3 id="movie-reviews-heading">Review &amp; cảm nhận</h3>
+        </div>
+      </div>
+      <div class="movie-extras__articles" data-movie-articles>
+        {media?.reviews.length ? media.reviews.map(item => <a class="movie-extras__article" href={item.url}
+          target="_blank" rel="noopener noreferrer">
+          <div><span class="movie-extras__article-publisher">{item.publisher}</span>
+          <strong>{item.title}</strong>{item.spoilers && <small>Có thể tiết lộ nội dung</small>}</div>
+          <span aria-hidden="true">↗</span>
+        </a>) : <p class="movie-extras__articles-empty" data-articles-empty>Chưa có bài review biên tập đã xác minh cho phim này.</p>}
+      </div>
+      <div class="movie-extras__self-review">
+        <h4>Đánh giá của bạn</h4>
+        <p>Riêng tư trên trình duyệt này, không phải bình luận công khai hay điểm cộng đồng.</p>
+        <form data-review-form>
+          <fieldset class="movie-extras__stars">
+            <legend>Chấm điểm phim (1–5 sao)</legend>
+            <div class="movie-extras__star-buttons" data-review-stars role="radiogroup" aria-label="Chọn số sao">
+              {[1,2,3,4,5].map(score => <label class="movie-extras__star-label">
+                <input type="radio" name="rating" value={score} required />
+                <span aria-hidden="true">★</span><span class="sr-only">{score} sao</span>
+              </label>)}
+            </div>
+          </fieldset>
+          <label class="movie-extras__review-label">Cảm nhận của bạn
+            <textarea data-review-text rows="3" maxlength="1200" placeholder="Điểm bạn thích, điểm cần cải thiện, cảm xúc sau khi xem phim…" aria-label="Viết cảm nhận cá nhân"></textarea>
+          </label>
+          <label class="movie-extras__spoiler"><input type="checkbox" data-review-spoiler />
+            Bài viết có tiết lộ nội dung phim
+          </label>
+          <div class="movie-extras__review-actions">
+            <button class="movie-extras__save" type="submit" data-review-save>Lưu đánh giá</button>
+            <button class="movie-extras__delete" type="button" data-review-delete hidden>Xóa đánh giá</button>
+          </div>
+          <p class="movie-extras__review-status" data-review-status role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </div>
+</section>
+<script>
+  import { youtubeVideoId, feedTrailerId, movieMedia, youtubeSearch } from '../lib/movie-media.js';
+  document.querySelectorAll<HTMLElement>('[data-movie-extras]').forEach(root => {
+    const titleEl = root.querySelector<HTMLElement>('#movie-trailer-heading');
+    const player = root.querySelector<HTMLElement>('[data-trailer-player]');
+    const trailerLink = root.querySelector<HTMLAnchorElement>('[data-trailer-link]');
+    const source = root.querySelector<HTMLElement>('[data-trailer-source]');
+    const articles = root.querySelector<HTMLElement>('[data-movie-articles]');
+    const form = root.querySelector<HTMLFormElement>('[data-review-form]');
+    const deleteButton = root.querySelector<HTMLButtonElement>('[data-review-delete]');
+    const status = root.querySelector<HTMLElement>('[data-review-status]');
+    const reviewText = root.querySelector<HTMLTextAreaElement>('[data-review-text]');
+    const reviewSpoiler = root.querySelector<HTMLInputElement>('[data-review-spoiler]');
+    if (!player || !trailerLink || !articles || !form || !status || !reviewText || !reviewSpoiler) return;
+
+    let filmId = root.dataset.filmId || '';
+    let filmTitle = root.dataset.filmTitle || '';
+    let trailerId = youtubeVideoId(root.dataset.trailerId || '');
+    const storageKey = () => 'eplus-cinema:private-review:v1:' + filmId;
+    const starInputs = [...form.querySelectorAll<HTMLInputElement>('input[name="rating"]')];
+
+    function updateStars() {
+      const selected = Number(starInputs.find(input => input.checked)?.value || 0);
+      starInputs.forEach(input => {
+        const label = input.closest<HTMLElement>('.movie-extras__star-label');
+        label?.classList.toggle('is-lit', Number(input.value) <= selected);
+      });
+    }
+    starInputs.forEach(input => input.addEventListener('change', updateStars));
+
+    function restoreReview() {
+      form.reset();
+      updateStars();
+      if (deleteButton) deleteButton.hidden = true;
+      status.textContent = '';
+      if (!filmId) return;
+      try {
+        const raw = window.localStorage.getItem(storageKey());
+        if (!raw) return;
+        const record = JSON.parse(raw);
+        if (!record || record.movieId !== filmId) return;
+        const checked = starInputs.find(item => Number(item.value) === Number(record.rating));
+        if (!checked) return;
+        checked.checked = true;
+        reviewText.value = String(record.text || '').slice(0,1200);
+        reviewSpoiler.checked = record.spoiler === true;
+        if (deleteButton) deleteButton.hidden = false;
+        updateStars();
+        status.textContent = 'Đã lưu trên thiết bị này · ' +
+          (record.updatedAt ? new Date(record.updatedAt).toLocaleDateString('vi-VN') : 'Của bạn');
+      } catch { status.textContent = 'Trình duyệt không thể đọc đánh giá đã lưu.'; }
+    }
+    function showTrailer(movie: {title:string;titleEn?:string;posterUrl?:string;trailerUrl?:string}) {
+      filmTitle = movie.title;
+      const media = movieMedia(movie);
+      trailerId = feedTrailerId(movie) || media.videoId;
+      if (titleEl) titleEl.textContent = 'Trailer ' + filmTitle;
+      if (source) source.textContent = trailerId ? (media.source || 'Nguồn trailer phim') : 'Chưa xác minh';
+      trailerLink.href = trailerId ? 'https://www.youtube.com/watch?v=' + trailerId
+        : youtubeSearch(movie.title, movie.titleEn);
+      trailerLink.textContent = trailerId ? 'Xem trên YouTube ↗' : 'Tìm trailer trên YouTube ↗';
+      player.replaceChildren();
+      if (!trailerId) {
+        const blank = document.createElement('div');
+        blank.className = 'movie-extras__unavailable';
+        const icon = document.createElement('span');
+        icon.className = 'movie-extras__unavailable-symbol';
+        icon.textContent = '▷';
+        const heading = document.createElement('strong');
+        heading.textContent = 'Chưa có trailer được xác minh';
+        const message = document.createElement('p');
+        message.textContent = 'Không tự chọn video khi chưa xác định đúng phim hoặc kênh phát hành.';
+        blank.append(icon,heading,message);
+        player.append(blank);
+      } else {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'movie-extras__play';
+        button.setAttribute('data-trailer-play','');
+        button.setAttribute('aria-label','Phát trailer phim '+filmTitle);
+        if (movie.posterUrl) {
+          const image = document.createElement('img');
+          image.src = movie.posterUrl;
+          image.alt = '';
+          image.loading = 'lazy';
+          button.append(image);
+        }
+        const icon = document.createElement('span');
+        icon.className = 'movie-extras__play-ico';
+        icon.setAttribute('aria-hidden','true');
+        icon.textContent = '▶';
+        const caption = document.createElement('span');
+        caption.className = 'movie-extras__play-caption';
+        caption.textContent = 'Phát trailer';
+        button.append(icon,caption);
+        player.append(button);
+      }
+      articles.replaceChildren();
+      if (media.reviews.length) {
+        for (const item of media.reviews) {
+          const link = document.createElement('a');
+          link.className = 'movie-extras__article';
+          link.href = item.url;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          const detail = document.createElement('div');
+          const publisher = document.createElement('span');
+          publisher.className = 'movie-extras__article-publisher';
+          publisher.textContent = item.publisher;
+          const heading = document.createElement('strong');
+          heading.textContent = item.title;
+          detail.append(publisher, heading);
+          if (item.spoilers) {
+            const warning = document.createElement('small');
+            warning.textContent = 'Có thể tiết lộ nội dung';
+            detail.append(warning);
+          }
+          const icon = document.createElement('span');
+          icon.textContent = '↗';
+          link.append(detail,icon);
+          articles.append(link);
+        }
+      } else {
+        const empty = document.createElement('p');
+        empty.className = 'movie-extras__articles-empty';
+        empty.textContent = 'Chưa có bài review biên tập đã xác minh cho phim này.';
+        articles.append(empty);
+      }
+    }
+    player.addEventListener('click', event => {
+      const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-trailer-play]');
+      if (!button || !trailerId) return;
+      const iframe = document.createElement('iframe');
+      iframe.title = 'Trailer ' + filmTitle + ' – YouTube';
+      iframe.src = 'https://www.youtube-nocookie.com/embed/' + trailerId + '?autoplay=1&rel=0';
+      iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      iframe.allowFullscreen = true;
+      iframe.loading = 'eager';
+      player.replaceChildren(iframe);
+    });
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const rating = Number(starInputs.find(input => input.checked)?.value || 0);
+      if (!filmId || !Number.isInteger(rating) || rating < 1 || rating > 5) {
+        status.textContent = 'Vui lòng chọn từ 1 đến 5 sao.';
+        return;
+      }
+      try {
+        window.localStorage.setItem(storageKey(), JSON.stringify({
+          movieId: filmId,
+          rating,
+          text: reviewText.value.trim().slice(0,1200),
+          spoiler: reviewSpoiler.checked,
+          updatedAt: new Date().toISOString()
+        }));
+        if (deleteButton) deleteButton.hidden = false;
+        status.textContent = 'Đã lưu đánh giá riêng trên trình duyệt này.';
+      } catch {
+        status.textContent = 'Không thể lưu. Vui lòng kiểm tra quyền lưu trữ của trình duyệt.';
+      }
+    });
+    deleteButton?.addEventListener('click', () => {
+      try {
+        window.localStorage.removeItem(storageKey());
+        restoreReview();
+        status.textContent = 'Đã xóa đánh giá trên trình duyệt này.';
+      } catch { status.textContent = 'Không thể xóa dữ liệu trình duyệt.'; }
+    });
+    if (filmId) restoreReview();
+
+    window.addEventListener('cinema:film-loaded', ((event: CustomEvent) => {
+      const film = event.detail;
+      if (!film || !/^[1-9][0-9]*$/.test(String(film.id || ''))) return;
+      filmId = String(film.id);
+      root.dataset.filmId = filmId;
+      showTrailer(film);
+      root.hidden = false;
+      restoreReview();
+    }) as EventListener);
+  });
+</script>
