@@ -248,3 +248,28 @@ The query parameters are identifiers; displayed fields are fetched from the sour
   The modal is **not** a checkout and does not hold/book seats.
 - No visitor-facing outbound links to MoMo were added. Live API/CDN
   dependencies remain third-party and may fail separately from the UI.
+
+## Trailers and movie reviews
+
+- Every pre-rendered movie detail page includes a responsive **Trailer & review**
+  area between its synopsis and its live showtime schedule. The legacy
+  `/phim/chi-tiet/?id=...` fallback populates the same section once film
+  metadata is received.
+- Trailer sources are taken from the daily film feed only if they are valid
+  YouTube video URLs/IDs. `src/data/movie-editorial.js` contains a small,
+  film-specific set of manually verified official uploads and published
+  editorial review **links**. Never assign an unrelated search result to a
+  movie or copy third-party articles/comments into the site.
+- YouTube's privacy-enhanced player (`youtube-nocookie.com`) is created only
+  after a user presses **Phát trailer**. No media player or audio autoplays on
+  initial page load. Missing/unverified trailers show a clearly labeled
+  YouTube **search** link, not an invented embedded video.
+- **Đánh giá của bạn** lets visitors choose 1–5 stars, write a short note,
+  mark spoilers, save/update, and delete their own entry. It is stored only
+  in that browser's `localStorage`, keyed by movie ID. There is no account,
+  public comment database, global average, shared review feed, or fake
+  community statistics. Clearing browser data removes the review.
+- No Movie `Review` or `AggregateRating` structured data is emitted until
+  public reviews are genuinely stored and available in rendered content.
+  Existing `noindex` and unlicensed-source restrictions remain unchanged.
+- To verify: `node scripts/movie-extras-test.mjs` after a build or in CI.
