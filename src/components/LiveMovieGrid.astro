@@ -14,9 +14,10 @@ const { status, limit = 12, searchable = false } = Astro.props;
   <div class="movie-grid" data-live-movies aria-busy="true">
     {Array.from({ length: Math.min(limit, 12) }).map(() => (
       <div class="movie-card skeleton" aria-hidden="true">
-        <div class="skeleton__poster"></div>
-        <div class="skeleton__line"></div>
+        <div class="skeleton__poster"><span class="skeleton__poster-badge"></span></div>
+        <div class="skeleton__line" style="width:88%"></div>
         <div class="skeleton__line skeleton__line--short"></div>
+        <div class="skeleton__line" style="width:45%;height:9px"></div>
       </div>
     ))}
   </div>
