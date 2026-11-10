@@ -1,13 +1,15 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const origin = (process.env.PAGES_SITE_ORIGIN || 'https://cinema.eplus.dev').replace(/\/+$/, '');
 const buildBase = (process.env.PAGES_BASE_PATH || '/').replace(/^\/+|\/+$/g, '');
 const indexable = process.env.SEO_INDEXABLE === 'true' && !buildBase;
 const stablePaths = ['/', '/phim-dang-chieu/', '/phim-sap-chieu/', '/lich-chieu/', '/rap/'];
-const extraPaths = ['/lich-chieu/momo/', '/phim/chi-tiet/', '/rap/chi-tiet/', '/phim/sau-anh-hoang-hon/', '/rap/cgv-vincom-dong-khoi/'];
+const staticMovies = readdirSync('dist/phim').filter(s => /^[1-9][0-9]*$/.test(s)).slice(0, 3).map(id => '/phim/' + id + '/');
+const staticCinemas = readdirSync('dist/rap').filter(s => /^[1-9][0-9]*-[a-zA-Z0-9_-]+$/.test(s)).slice(0, 3).map(id => '/rap/' + id + '/');
+const extraPaths = ['/lich-chieu/momo/', '/phim/chi-tiet/', '/rap/chi-tiet/', ...staticMovies, ...staticCinemas];
 const pathToUrl = (route) => origin + route;
 const htmlFor = (route) => readFileSync(join('dist', route.replace(/^\/+/, ''), 'index.html'), 'utf8');
 const matchAttribute = (html, pattern) => html.match(pattern)?.[1] ?? null;
