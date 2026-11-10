@@ -23,6 +23,7 @@ const {
 // Force the page slot into <main> synchronously instead of streaming it
 // after </html> (observed on generated GitHub Pages output).
 const pageHtml = await Astro.slots.render('default');
+console.info('CINEMA_SLOT_DIAGNOSTIC', Astro.slots.has('default'), pageHtml.length, Astro.url.pathname);
 const isPrPreview = /\/previews\/pr-\d+\//.test(import.meta.env.BASE_URL || '/');
 ---
 <!doctype html>
