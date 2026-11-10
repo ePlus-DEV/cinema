@@ -101,6 +101,33 @@ sections inside the empty `<main>` before the footer and normalizes preview
 links. This runs automatically after `npm run build`. The smoke tests
 verify that all primary pages have valid main/footer order.
 
+### GitHub Actions deduplication
+
+- **PR CI** runs only on pull requests. New commits cancel obsolete PR
+  checks through a per-PR concurrency group. Production `main` builds and
+  smoke checks are performed by Pages Staging, not duplicate CI jobs.
+- **Pages Staging** serializes writes to the shared `gh-pages` branch.
+  Separate PR-close/production events remain queued, but stale PR HEADs,
+  superseded `main` SHA values and already-staged commits are detected
+  before dependency installation. Each staged preview carries an
+  `.eplus-preview-sha` marker; production has `.eplus-production-sha`.
+  HEAD is verified again immediately before publishing.
+- **Pages Publishing** is dispatched only after a successful push that
+  actually changes `gh-pages`. A stage with no changes **does not**
+  dispatch another Pages deployment. The deployment workflow runs from
+  `main` with `workflow_dispatch`, not `workflow_run: completed`.
+- **Catalog refresh** still has one daily schedule at 01:10 Vietnam time.
+  If the snapshot was already fetched on that Vietnam calendar date, the
+  job skips loading and deployment. A manual workflow run with
+  `force=true` explicitly overrides the same-day check. Bot commits fetch
+  and rebase against the latest `main` before attempting a non-force push;
+  conflicts fail closed, preserving existing data.
+- GitHub Actions concurrency itself only prevents overlapping executions;
+  preserving independent preview deletions is why staging uses
+  `queue: max` with per-event freshness checks, not a blanket
+  `cancel-in-progress: true`. See `scripts/check-actions-dedup.mjs` for
+  CI-validated safety invariants.
+
 ## GitHub Pages deployment
 
 Two workflows work together:
