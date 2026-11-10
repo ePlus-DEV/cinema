@@ -54,4 +54,20 @@ assert.ok(rearZone.y>=200,'Choose main contiguous rear block, without crossing a
 assert.equal(estimateCenterZone([]),null);
 assert.equal(estimateCenterZone([createRow(0,[1]),createRow(35,[1])]),null);
 assert.equal(estimateCenterZone([{seats:[{x:NaN,y:1,width:1,height:1}]}]),null);
+
+// Tiny premium room (like CGV Gold Class: 4 rows x 8 paired recliners,
+// 32 seats): every seat is effectively central, so no frame at all.
+const goldClass = Array.from({length:4},(_,i)=>
+  createRow(i*35,[0,34,120,154,240,274,360,394]));
+assert.equal(estimateCenterZone(goldClass),null,
+  'A 4-row / 32-seat room must not get a center frame');
+
+// Asymmetric banks (like Cinestar Quốc Thanh: a 2-seat side bank beside the
+// main 8-seat bank) must not drag the center sideways: the frame centers on
+// the dominant bank, whose span starts at x=200.
+const asym = Array.from({length:8},(_,i)=>
+  createRow(i*35,[0,34,200,234,268,302,336,370,404,438]));
+const asymZone = estimateCenterZone(asym);
+assert.ok(asymZone, 'Asymmetric-bank room should still get a frame');
+assert.ok(asymZone.x >= 200 - 5, 'Frame must center on the dominant 8-seat bank, not the full span');
 console.log('PASS: center frame avoids the H-J aisle, uses the main bank, and ignores occupancy');
