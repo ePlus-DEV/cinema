@@ -3,7 +3,7 @@
 .movie-extras { padding-top: 58px; }
 .movie-extras__heading { margin-bottom: 25px; }
 .movie-extras__heading .eyebrow { letter-spacing: .12em; }
-.movie-extras__grid { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(320px, 1fr); gap: 20px; align-items: start; }
+.movie-extras__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: start; }
 .movie-extras__panel { min-width: 0; border: 1px solid #e6eaf0; border-radius: 19px; background: #fff; box-shadow: 0 14px 38px rgba(22,38,59,.035); overflow: hidden; }
 .movie-extras__panel-heading { display: flex; align-items: start; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 22px 23px 18px; }
 .movie-extras__label { display: block; font-size: 10px; font-weight: 900; color: #b1812f; letter-spacing: .14em; margin-bottom: 8px; }

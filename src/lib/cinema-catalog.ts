@@ -20,7 +20,7 @@ const momoReviewsOf = (row: unknown) => {
   return list.map((entry) => {
     const item = (entry ?? {}) as Record<string, unknown>;
     return {
-      name: strings(item.name) || 'Khán giả MoMo',
+      name: strings(item.name) || 'Khán giả',
       avatar: strings(item.avatar),
       point: typeof item.point === 'number' ? item.point : null,
       desc: strings(item.desc),
