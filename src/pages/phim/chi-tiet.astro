@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import DatePicker from '../../components/DatePicker.astro';
 import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
 import DetailSkeleton from '../../components/DetailSkeleton.astro';
 import ScheduleSkeleton from '../../components/ScheduleSkeleton.astro';
@@ -45,7 +44,6 @@ import ScheduleSkeleton from '../../components/ScheduleSkeleton.astro';
     </div>
     <div class="schedule-shell">
       <div class="schedule-shell__top"><div><strong data-film-schedule-name>Suất chiếu theo rạp</strong><span>Nguồn tham khảo MoMo Cinema · Không hỗ trợ đặt vé</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
-      <DatePicker />
       <MomoShowtimeList />
     </div>
   </section>
