@@ -20,6 +20,9 @@ const {
   seoIndexable = false,
   breadcrumbs = []
 } = Astro.props;
+// Force the page slot into <main> synchronously instead of streaming it
+// after </html> (observed on generated GitHub Pages output).
+const pageHtml = await Astro.slots.render('default');
 ---
 <!doctype html>
 <html lang="vi">
@@ -47,7 +50,7 @@ const {
     </div>
     <SiteHeader active={active} />
     <PageSkeleton active={active} />
-    <main id="main-content"><slot /></main>
+    <main id="main-content" set:html={pageHtml}></main>
     <footer class="footer">
       <div class="container footer__inner">
         <div>
