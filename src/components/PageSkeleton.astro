@@ -78,6 +78,26 @@ const dates = Array.from({ length: 5 }, (_, i) => i);
       </div>
     </div>
   </div>}
+  {home && <div class="page-skeleton__container page-skeleton__upcoming">
+    <span class="ps-bar ps-bar--eyebrow"></span><span class="ps-bar ps-bar--heading"></span><span class="ps-bar ps-bar--description"></span>
+    <div class="page-skeleton__movies">
+      {cards.slice(0, 6).map(() => <div class="page-skeleton__movie"><span class="ps-bar ps-bar--poster"></span><span class="ps-bar ps-bar--card-title"></span><span class="ps-bar ps-bar--card-meta"></span></div>)}
+    </div>
+  </div>}
+  {home && <div class="page-skeleton__theaters">
+    <div class="page-skeleton__container">
+      <span class="ps-bar ps-bar--eyebrow"></span><span class="ps-bar ps-bar--heading"></span><span class="ps-bar ps-bar--description"></span>
+      <div class="page-skeleton__cinemas">
+        {cinemas.map(() => <div class="page-skeleton__cinema"><span class="ps-bar ps-bar--cinema-icon"></span><div><span class="ps-bar ps-bar--cinema-title"></span><span class="ps-bar ps-bar--cinema-meta"></span></div></div>)}
+      </div>
+    </div>
+  </div>}
+  <div class="page-skeleton__footer">
+    <div class="page-skeleton__container page-skeleton__footer-inner">
+      <div><span class="ps-bar ps-bar--logo"></span><span class="ps-bar ps-bar--footer-line"></span><span class="ps-bar ps-bar--footer-line"></span></div>
+      <div class="page-skeleton__footer-links">{[0,1,2].map(() => <div><span class="ps-bar ps-bar--footer-heading"></span><span class="ps-bar ps-bar--footer-line"></span><span class="ps-bar ps-bar--footer-line"></span></div>)}</div>
+    </div>
+  </div>
 </div>
 <style is:global>
   .page-skeleton { display: none; position: fixed; inset: 0; z-index: 200; overflow: auto; background: #fff; pointer-events: auto; }
@@ -85,6 +105,21 @@ const dates = Array.from({ length: 5 }, (_, i) => i);
   .page-skeleton__detail { order: 1; }
   .page-skeleton__schedule { order: 2; }
   .page-skeleton__container { width: min(calc(100% - 64px), 1220px); margin-inline: auto; }
+  .page-skeleton__upcoming { order: 3; padding-block: 75px 80px; }
+  .page-skeleton__theaters { order: 4; background: #fafbfd; padding-block: 72px 80px; }
+  .page-skeleton__footer { order: 5; background: #111b2e; padding-block: 56px 74px; }
+  .page-skeleton__footer .ps-bar { opacity: .24; }
+  .page-skeleton__footer-inner { display: flex; justify-content: space-between; gap: 40px; }
+  .page-skeleton__footer-inner > div:first-child { width: 260px; }
+  .ps-bar--footer-line { width: 180px; max-width: 100%; height: 12px; margin-top: 16px; }
+  .ps-bar--footer-heading { width: 90px; height: 16px; }
+  .page-skeleton__footer-links { display: flex; gap: 50px; }
+  @media (max-width: 600px) {
+    .page-skeleton__upcoming, .page-skeleton__theaters { padding-block: 42px; }
+    .page-skeleton__footer-inner { flex-direction: column; gap: 32px; }
+    .page-skeleton__footer-links { gap: 20px; flex-wrap: wrap; }
+    .page-skeleton__footer { padding-block: 45px; }
+  }
   .page-skeleton__notice { height: 32px; background: #fff8e8; display: grid; place-items: center; }
   .page-skeleton__header { height: 82px; border-bottom: 1px solid #edf0f5; }
   .page-skeleton__nav { display: flex; align-items: center; gap: 35px; height: 100%; }
