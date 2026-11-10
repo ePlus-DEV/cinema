@@ -415,3 +415,114 @@ h1, h2, h3, p { margin-top: 0; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+
+/* 2026 UI refinement: readable discovery, coherent live-showtime experience. */
+.site-header { position: sticky; top: 0; z-index: 60; box-shadow: 0 4px 24px rgba(17, 27, 46, .035); }
+.main-nav__link { font-size: 13px; }
+.hero__description { font-size: 15px; line-height: 1.75; }
+.hero__notice { font-size: 11px; line-height: 1.6; }
+.section-heading p { font-size: 13px; }
+.section-link { font-size: 12px; }
+.section-link:focus-visible, .movie-card:focus-visible, .cinema-tile:focus-visible { border-radius: 10px; }
+.movie-card__head h3 { font-size: 13px; line-height: 1.45; }
+.movie-card__info p { font-size: 11px; }
+.movie-card__status { font-size: 10px; }
+.movie-card .live-poster { position: relative; border-radius: 16px; box-shadow: 0 12px 26px rgba(20, 28, 47, .10); }
+.live-poster img { transition: transform .28s ease; }
+.live-movie-card:hover .live-poster img, .live-movie-card:focus-visible .live-poster img { transform: scale(1.055); }
+.live-poster__badge { position: absolute; z-index: 1; top: 10px; left: 10px; padding: 6px 10px; border-radius: 8px; background: rgba(17, 27, 46, .88); color: #fff; font-size: 10px; font-weight: 700; box-shadow: 0 4px 12px #0003; }
+.cinema-tile__body strong { font-size: 13px; }
+.cinema-tile__body small { font-size: 11px; }
+.cinema-tile:focus-visible, .showtime:focus-visible { outline-offset: 4px; }
+.page-hero--schedule { background: radial-gradient(circle at 85% 15%, #ffedc9 0, transparent 29%), linear-gradient(112deg, #f4f7fc, #fffaf0); }
+.page-hero--schedule p { max-width: 790px; font-size: 14px; line-height: 1.8; }
+.schedule-shell { border-radius: 22px; box-shadow: 0 18px 48px rgba(21, 36, 63, .06); }
+.schedule-shell__top { background: #fbfcff; }
+.schedule-shell__top strong { font-size: 16px; }
+.schedule-shell__top span:not(.schedule-shell__city) { font-size: 12px; line-height: 1.6; }
+.date-picker__day { min-height: 78px; }
+.date-picker__day span { font-size: 11px; }
+.date-picker__day strong { font-size: 15px; }
+.schedule-aside__card, .schedule-aside__tip { border-radius: 18px; }
+.schedule-aside__card p, .schedule-aside__tip p { font-size: 12px; line-height: 1.8; }
+.schedule-aside__source { margin: 0; padding: 0 8px; color: #64748b; line-height: 1.7; font-size: 11px; }
+.schedule-aside__source::before { content: "ⓘ"; display: inline-block; margin-right: 6px; color: #ac7c22; }
+.momo-live { padding-bottom: 20px; }
+.momo-live__intro { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; padding: 19px 26px 5px; font-size: 12px; }
+.momo-live__intro strong { color: #223047; }
+.momo-live__intro > span:last-child { margin-left: auto; color: #708094; font-size: 11px; }
+.momo-live__live-dot { width: 9px; height: 9px; border-radius: 100%; background: #2eaf7d; box-shadow: 0 0 0 4px #e2f6ed; flex: none; }
+.momo-live .momo-live__toolbar { padding: 12px 26px 18px; margin: 0; gap: 10px; }
+.momo-live .momo-live__search { min-height: 45px; padding-inline: 16px; font-size: 13px; border-radius: 12px; background: #f9fafc; }
+.momo-live .momo-live__search:focus { background: white; outline: 2px solid #f1cb75; outline-offset: 1px; }
+.momo-live .momo-live__chips { gap: 6px; }
+.momo-live .momo-live__chip { padding: 10px 12px; font-size: 11px; font-weight: 700; border-radius: 10px; }
+.momo-live .momo-live__chip[aria-pressed="true"] { background: #182b49; border-color: #182b49; }
+.momo-live .momo-live__layout { grid-template-columns: minmax(210px, 255px) minmax(0, 1fr); gap: 18px; padding: 0 26px; }
+.momo-live .momo-live__cinemas { max-height: 670px; gap: 7px; scrollbar-color: #c9d1df transparent; padding: 2px 3px 3px 0; }
+.momo-live .momo-live__cinema { border-radius: 12px; padding: 13px; transition: background .18s, border-color .18s, box-shadow .18s; }
+.momo-live .momo-live__cinema strong { font-size: 12px; line-height: 1.5; }
+.momo-live .momo-live__cinema span { font-size: 11px; line-height: 1.55; }
+.momo-live .momo-live__cinema:hover { background: #f8fafc; border-color: #cdd6e2; }
+.momo-live .momo-live__cinema[aria-current="true"] { border-color: #d2a343; background: #fff8e7; box-shadow: inset 3px 0 #d2a343; }
+.momo-live .momo-live__results { min-width: 0; }
+.momo-live .momo-live__status { font-size: 12px; line-height: 1.7; }
+.momo-live .theater-showtime { padding: 0; border: 0; }
+.momo-live .theater-showtime__header { border-bottom: 1px solid #e9edf3; padding: 3px 0 18px; margin-bottom: 17px; }
+.momo-live .theater-showtime__header h3 { font-size: 17px; line-height: 1.4; }
+.momo-live .theater-showtime__header p { font-size: 12px; line-height: 1.55; }
+.momo-live .program-list { display: grid; gap: 12px; }
+.momo-live .program { border: 1px solid #e8ebf1; border-radius: 15px; padding: 16px; background: #fff; box-shadow: 0 6px 18px #16274408; }
+.momo-live .momo-live__poster { width: 68px; height: 96px; border-radius: 11px; }
+.momo-live .program__movie h3 { font-size: 14px; line-height: 1.5; margin: 0; }
+.momo-live .program__movie p { font-size: 11px; line-height: 1.6; margin: 5px 0 0; color: #738092; font-weight: 400; }
+.momo-live .program__format { gap: 8px; margin-top: 13px; }
+.momo-live .program__format-label { min-width: 70px; font-size: 11px; }
+.momo-live .showtime { min-height: 42px; min-width: 64px; border-radius: 10px; font-size: 12px; }
+.momo-live .showtime:hover { background: #fff1cf; border-color: #dfb760; }
+.momo-live .date-label { font-size: 11px; white-space: nowrap; }
+.skip-link { position: fixed; top: -100px; left: 15px; z-index: 100; padding: 12px 18px; border-radius: 10px; background: #182b49; color: #fff; font-weight: 700; }
+.skip-link:focus { top: 12px; }
+@media (max-width: 1020px) {
+  .momo-live .momo-live__layout { grid-template-columns: minmax(190px, 225px) minmax(0, 1fr); gap: 12px; padding-inline: 18px; }
+  .momo-live .momo-live__toolbar { padding-inline: 18px; }
+  .momo-live__intro { padding-inline: 18px; }
+}
+@media (max-width: 760px) {
+  .momo-live .momo-live__layout { grid-template-columns: 1fr; }
+  .momo-live .momo-live__cinemas { flex-direction: row; max-height: none; overflow-x: auto; overflow-y: hidden; gap: 10px; padding: 3px 2px 10px; scroll-snap-type: x proximity; }
+  .momo-live .momo-live__cinema { flex: 0 0 min(75vw, 245px); scroll-snap-align: start; }
+  .momo-live .momo-live__cinema[aria-current="true"] { box-shadow: inset 0 3px #d2a343; }
+  .momo-live__intro > span:last-child { margin-left: 0; }
+  .momo-live .momo-live__chips { max-width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+  .momo-live .momo-live__chip { flex: none; }
+}
+@media (max-width: 600px) {
+  .site-header__inner { gap: 7px; }
+  .brand { font-size: 16px; }
+  .header-action { font-size: 11px; padding: 10px 12px; border-radius: 10px; }
+  .header-action span { display: none; }
+  .menu-toggle { padding: 7px; }
+  .hero__description { font-size: 13px; }
+  .section-heading p { font-size: 12px; }
+  .section-link { font-size: 11px; }
+  .section-link span { width: 25px; height: 25px; }
+  .movie-card__head h3 { font-size: 12px; }
+  .movie-card__info p { font-size: 10px; }
+  .movie-card__status { font-size: 10px; }
+  .schedule-shell__top strong { font-size: 14px; }
+  .schedule-shell__top span:not(.schedule-shell__city) { font-size: 11px; }
+  .momo-live .momo-live__toolbar { padding: 8px 14px 13px; }
+  .momo-live .momo-live__layout { padding-inline: 14px; gap: 15px; }
+  .momo-live__intro { padding: 16px 14px 7px; }
+  .momo-live .momo-live__search { flex-basis: 100%; }
+  .momo-live .theater-showtime__header h3 { font-size: 15px; }
+  .momo-live .theater-showtime__header p { font-size: 11px; }
+  .momo-live .program { padding: 13px; }
+  .momo-live .momo-live__poster { width: 58px; height: 84px; }
+  .momo-live .program__movie h3 { font-size: 13px; }
+  .momo-live .program__format-label { padding-top: 0; min-width: 100%; }
+  .momo-live .showtime { min-height: 44px; }
+  .footer__links a { font-size: 11px; }
+}
