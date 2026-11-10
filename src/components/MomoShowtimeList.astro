@@ -295,6 +295,16 @@ const { cinemaOnly = false } = Astro.props;
     }
 
     async function init() {
+      cinemasEl.setAttribute('aria-busy', 'true');
+      if (!isCinemaOnly) {
+        cinemasEl.innerHTML = Array.from({ length: 5 }, () =>
+          '<div class="momo-live__cinema-placeholder skeleton" aria-hidden="true"><span class="skeleton__line" style="width:73%"></span><span class="skeleton__line skeleton__line--short"></span></div>'
+        ).join('');
+        chipsEl.innerHTML = Array.from({ length: 4 }, () =>
+          '<span class="momo-live__chip-placeholder skeleton" aria-hidden="true"></span>'
+        ).join('');
+      }
+      skeletonResults('Đang cập nhật danh sách rạp và suất chiếu…');
       try {
         state.cinemas = await loadAllCinemas();
         cinemasEl.setAttribute('aria-busy', 'false');
