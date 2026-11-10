@@ -39,7 +39,7 @@
   border: 2px solid #7cdaa4; border-radius: 11px;
   box-shadow: 0 0 0 1px rgba(10, 34, 20, .6), inset 0 0 0 1px rgba(14, 29, 18, .3);
 }
-.seatmap .seatmap__swatch--center {
+.seatmap .seatmap__legend .seatmap__swatch--center {
   background: transparent; border: 2px solid #7cdaa4; border-radius: 4px;
 }
 .seatmap .seatmap__header {
