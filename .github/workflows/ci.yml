@@ -39,6 +39,7 @@ jobs:
           node scripts/seat-color-test.mjs
           node scripts/seatmap-ui-test.mjs
           node scripts/seat-center-zone-test.mjs
+          node scripts/movie-extras-test.mjs
           node scripts/seo-audit.mjs
           node scripts/check-outbound-links.mjs
           node scripts/check-actions-dedup.mjs

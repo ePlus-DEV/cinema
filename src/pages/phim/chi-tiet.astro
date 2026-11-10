@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
+import MovieExtras from '../../components/MovieExtras.astro';
 import DetailSkeleton from '../../components/DetailSkeleton.astro';
 import ScheduleSkeleton from '../../components/ScheduleSkeleton.astro';
 import { movies } from '../../lib/cinema-catalog';
@@ -34,6 +35,7 @@ const knownMovieIds = movies.map(movie => movie.id).join(',');
       </div>
     </div>
   </section>
+  <MovieExtras />
   <div data-film-schedule-loading><ScheduleSkeleton /></div>
   <section class="section container" data-film-schedule id="lich-chieu" hidden>
     <div class="section-heading">
@@ -141,6 +143,11 @@ const knownMovieIds = movies.map(movie => movie.id).join(',');
         state.hidden = true;
         if (scheduleLoading) scheduleLoading.hidden = true;
         content.hidden = false;
+        window.dispatchEvent(new CustomEvent('cinema:film-loaded', { detail: {
+          id, title: name, titleEn: film.TitleEn || '',
+          trailerUrl: film.TrailerUrl || film.Trailer || film.YoutubeUrl || film.VideoUrl || '',
+          posterUrl: posterUrl || ''
+        }}));
       } catch (error) {
         showError('Không tải được thông tin phim (' + error.message + ').');
       }
