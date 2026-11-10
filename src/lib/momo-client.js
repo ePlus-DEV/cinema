@@ -178,6 +178,57 @@ async function momoFetch(method, path, bodyObject) {
 export const momoGet = (path) => momoFetch('get', path, null);
 export const momoPost = (path, bodyObject) => momoFetch('post', path, bodyObject);
 
+async function loadCinemasForChain(chainId) {
+  const items = [];
+  let lastIndex = 0;
+  for (;;) {
+    const path = `/cinema/ci-cinema/loadMore?t=${Date.now()}&lastIndex=${lastIndex}&count=20&sortType=5&sortDir=2&cineplex=${chainId}&apiCityId=${MOMO_CITY_ID}`;
+    const data = await momoGet(path);
+    const page = data.Items || [];
+    items.push(...page);
+    if (!page.length || items.length >= (data.TotalItems || 0)) break;
+    lastIndex = page[page.length - 1].Id;
+  }
+  return items;
+}
+
+let cinemasPromise = null;
+
+/**
+ * All cinemas in the configured city, deduplicated by chain + ApiCinemaId and
+ * sorted by name. Memoized so several components on one page share one load.
+ * Resolves to [{ key, chainId, apiCinemaId, name, address }].
+ */
+export function loadAllCinemas() {
+  if (!cinemasPromise) {
+    cinemasPromise = (async () => {
+      const perChain = await Promise.all(Object.keys(CHAINS).map(async (key) => {
+        try { return await loadCinemasForChain(Number(key)); } catch { return []; }
+      }));
+      const seen = new Set();
+      const cinemas = [];
+      for (const items of perChain) {
+        for (const item of items) {
+          const chainId = Number(item.Cineplex || 0);
+          const key = `${chainId}:${item.ApiCinemaId}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          cinemas.push({
+            key,
+            chainId,
+            apiCinemaId: String(item.ApiCinemaId),
+            name: item.Name || '',
+            address: item.Address || ''
+          });
+        }
+      }
+      cinemas.sort((a, b) => a.name.localeCompare(b.name, 'vi'));
+      return cinemas;
+    })();
+  }
+  return cinemasPromise;
+}
+
 /** Date string (YYYY-MM-DD) in Asia/Ho_Chi_Minh, `offset` days from today. */
 export function saigonDate(offset = 0) {
   const shifted = new Date(Date.now() + offset * 24 * 60 * 60 * 1000);
