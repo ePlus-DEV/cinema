@@ -271,7 +271,7 @@ const { cinemaOnly = false } = Astro.props;
       }
       cinemasEl.innerHTML = list.map((cinema) =>
         `<button type="button" class="momo-live__cinema" data-cinema="${esc(cinema.key)}" aria-current="${state.selected === cinema.key}">
-           <strong>${esc(cinema.name)}</strong><span>${esc(CHAINS[cinema.chainId] || '')} · ${esc(cinema.address)}</span>
+           <span class="momo-live__cinema-info"><strong>${esc(cinema.name)}</strong><small>${esc(CHAINS[cinema.chainId] || '')} · ${esc(cinema.address)}</small></span>
          </button>`
       ).join('');
       cinemasEl.querySelectorAll('[data-cinema]').forEach((button) => {
