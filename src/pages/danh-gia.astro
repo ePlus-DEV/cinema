@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ReviewHub from '../components/ReviewHub.astro';
+---
+<BaseLayout title="Đánh giá phim từ khán giả | ePlus Cinema" description="Điểm và cảm nhận của khán giả cho các phim đang chiếu, sắp xếp theo số lượt đánh giá. Bấm Xem thêm để tải tiếp." active="reviews" canonicalPath="/danh-gia/" breadcrumbs={[{ name: 'Trang chủ', path: '/' }, { name: 'Đánh giá', path: '/danh-gia/' }]}>
+  <section class="page-hero"><div class="container">
+    <div class="breadcrumbs"><a href="/">Trang chủ</a><span>/</span><span>Đánh giá</span></div>
+    <span class="eyebrow">KHÁN GIẢ NÓI GÌ</span><h1>Đánh giá phim<span class="title-spark"> ✦</span></h1>
+    <p>Các phim đang chiếu được nhiều khán giả chấm điểm nhất, kèm những cảm nhận nổi bật cho từng phim tại <span data-city-name>TP. Hồ Chí Minh</span>. Bấm “Xem thêm đánh giá” để tải tiếp.</p>
+  </div></section>
+  <section class="section container">
+    <ReviewHub />
+  </section>
+</BaseLayout>
