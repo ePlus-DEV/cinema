@@ -4,32 +4,45 @@
 // see src/lib/momo-client.js). Nothing is rendered server-side. Clicking a
 // showtime opens the on-site seat map (SeatMap) — no link leaves ePlus.
 import SeatMap from './SeatMap.astro';
+import DatePicker from './DatePicker.astro';
+import '../styles/cinema-explorer.css';
 interface Props { cinemaOnly?: boolean; }
 const { cinemaOnly = false } = Astro.props;
 ---
 
 <div class="momo-live" data-momo-live data-cinema-only={cinemaOnly ? "true" : "false"}>
-  <div class="momo-live__intro"><span class="momo-live__live-dot" aria-hidden="true"></span><strong>Lịch chiếu cập nhật theo ngày</strong><span>Tìm rạp → chọn suất → xem ghế</span></div>
+  <div class="momo-live__location">
+    <div class="momo-live__place"><span aria-hidden="true">⌖</span><div><small>Thành phố đang xem</small><strong>TP. Hồ Chí Minh</strong></div></div>
+    <label class="momo-live__district-label" for="cinema-district">Khu vực
+      <select id="cinema-district" data-momo-district aria-label="Lọc rạp theo quận hoặc khu vực">
+        <option value="">Tất cả khu vực</option>
+      </select>
+    </label>
+    <span class="momo-live__location-note">Chỉ hiển thị rạp tại TP. Hồ Chí Minh</span>
+  </div>
   <div class="momo-live__toolbar">
-    <input
-      class="momo-live__search"
-      type="search"
-      placeholder="Tìm rạp…"
-      aria-label="Tìm rạp"
-      data-momo-search
-    />
-    <div class="momo-live__chips" data-momo-chips role="group" aria-label="Hệ thống rạp">
+    <div class="momo-live__chips" data-momo-chips role="group" aria-label="Lọc hệ thống rạp">
       {[0,1,2,3].map(() => <span class="momo-live__chip-placeholder skeleton" aria-hidden="true"></span>)}
     </div>
   </div>
   <div class="momo-live__layout">
-    <div class="momo-live__cinemas" data-momo-cinemas aria-label="Danh sách rạp" aria-busy="true">
-      {Array.from({ length: 5 }).map(() => <div class="momo-live__cinema-placeholder skeleton" aria-hidden="true">
-        <span class="skeleton__line" style="width:73%"></span>
-        <span class="skeleton__line skeleton__line--short"></span>
-      </div>)}
-    </div>
-    <div class="momo-live__results" data-momo-results aria-live="polite" aria-busy="true">
+    <aside class="momo-live__cinema-pane">
+      <label class="momo-live__search-wrap">
+        <span class="sr-only">Tìm rạp theo tên hoặc địa chỉ</span>
+        <input class="momo-live__search" type="search" placeholder="Tìm tên rạp hoặc địa chỉ…" aria-label="Tìm rạp" data-momo-search />
+        <span aria-hidden="true">⌕</span>
+      </label>
+      <div class="momo-live__cinemas" data-momo-cinemas aria-label="Danh sách rạp" aria-busy="true">
+        {Array.from({ length: 5 }).map(() => <div class="momo-live__cinema-placeholder skeleton" aria-hidden="true">
+          <span class="skeleton__line" style="width:73%"></span>
+          <span class="skeleton__line skeleton__line--short"></span>
+        </div>)}
+      </div>
+    </aside>
+    <div class="momo-live__viewer">
+      <div class="momo-live__viewer-head"><span data-momo-selected-cinema>Chọn rạp để xem lịch chiếu</span><small data-momo-selected-address></small></div>
+      <div class="momo-live__datebar"><DatePicker /></div>
+      <div class="momo-live__results" data-momo-results aria-live="polite" aria-busy="true">
       <div class="momo-live__loading-head skeleton" aria-hidden="true"><span class="skeleton__line" style="width:54%"></span><span class="skeleton__line skeleton__line--short"></span></div>
       <div class="momo-live__loading-programs" aria-hidden="true">
         {[0,1].map(() => <div class="momo-live__loading-program skeleton">
@@ -41,7 +54,8 @@ const { cinemaOnly = false } = Astro.props;
           </div>
         </div>)}
       </div>
-      <p class="momo-live__status">Đang tải dữ liệu trực tiếp từ MoMo…</p>
+      <p class="momo-live__status">Đang tải dữ liệu suất chiếu…</p>
+      </div>
     </div>
   </div>
 </div>
@@ -108,6 +122,7 @@ const { cinemaOnly = false } = Astro.props;
 
 <script>
   import { CHAINS, formatLabel, loadAllCinemas, momoPost, saigonDate } from '../lib/momo-client.js';
+  import { createChainLogo } from '../lib/cinema-logos.js';
 
   const root = document.querySelector('[data-momo-live]');
   if (root) {
@@ -115,6 +130,9 @@ const { cinemaOnly = false } = Astro.props;
     const cinemasEl = root.querySelector('[data-momo-cinemas]');
     const resultsEl = root.querySelector('[data-momo-results]');
     const searchEl = root.querySelector('[data-momo-search]');
+    const districtEl = root.querySelector('[data-momo-district]');
+    const cinemaTitleEl = root.querySelector('[data-momo-selected-cinema]');
+    const cinemaAddressEl = root.querySelector('[data-momo-selected-address]');
     const params = new URLSearchParams(window.location.search);
     const isCinemaOnly = root.dataset.cinemaOnly === 'true';
     const isMovieDetail = window.location.pathname.includes('/phim/chi-tiet/');
@@ -124,6 +142,7 @@ const { cinemaOnly = false } = Astro.props;
     const state = {
       cinemas: [],
       chain: 0,
+      district: '',
       query: '',
       selected: null,
       dayOffset: 0,
@@ -182,6 +201,14 @@ const { cinemaOnly = false } = Astro.props;
         `<button type="button" class="momo-live__chip" data-chain="${id}" aria-pressed="${state.chain === id}">${esc(label)}</button>`
       ).join('');
       chipsEl.querySelectorAll('[data-chain]').forEach((button) => {
+        const id = Number(button.dataset.chain);
+        if (id) button.prepend(createChainLogo(id, CHAINS[id], 'momo-live__chain-logo'));
+        else {
+          const allMark = document.createElement('span');
+          allMark.className = 'momo-live__chain-all';
+          allMark.textContent = '✦';
+          button.prepend(allMark);
+        }
         button.addEventListener('click', () => {
           state.chain = Number(button.dataset.chain);
           renderChips();
@@ -190,10 +217,37 @@ const { cinemaOnly = false } = Astro.props;
       });
     }
 
+    function normalize(value) {
+      return String(value || '').normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    }
+    const districtPatterns = [
+      /(?:quận|quan|q\.)\s*([0-9]{1,2}|bình thạnh|tân bình|tân phú|bình tân|gò vấp|phú nhuận)/i,
+      /(?:huyện|huyen)\s*(bình chánh|hóc môn|củ chi|nhà bè|cần giờ)/i,
+      /(?:tp\.?|thành phố)\s*(thủ đức)/i
+    ];
+    function districtFor(cinema) {
+      const address = cinema.address || '';
+      for (const pattern of districtPatterns) {
+        const match = normalize(address).match(pattern);
+        if (match) {
+          const place = match[1].replace(/^./, (letter) => letter.toUpperCase());
+          return (/thủ đức/i.test(place) ? 'TP. ' : /quận|quan|q\./.test(pattern.source) ? 'Quận ' : 'Huyện ') + place;
+        }
+      }
+      return '';
+    }
+    function renderDistricts() {
+      if (!districtEl || isCinemaOnly) return;
+      const districts = [...new Set(state.cinemas.map(districtFor).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'vi', {numeric:true}));
+      districtEl.replaceChildren(new Option('Tất cả khu vực (' + state.cinemas.length + ')', ''), ...districts.map((name) => new Option(name, name)));
+      if (districts.includes(state.district)) districtEl.value = state.district;
+    }
     function visibleCinemas() {
       return state.cinemas.filter((cinema) =>
         (state.chain === 0 || cinema.chainId === state.chain) &&
-        cinema.name.toLowerCase().includes(state.query)
+        (!state.district || districtFor(cinema) === state.district) &&
+        normalize(cinema.name + ' ' + cinema.address).includes(state.query)
       );
     }
 
@@ -209,6 +263,8 @@ const { cinemaOnly = false } = Astro.props;
          </button>`
       ).join('');
       cinemasEl.querySelectorAll('[data-cinema]').forEach((button) => {
+        const cinema = state.cinemas.find((item) => item.key === button.dataset.cinema);
+        if (cinema) button.prepend(createChainLogo(cinema.chainId, CHAINS[cinema.chainId], 'momo-live__list-logo'));
         button.addEventListener('click', () => {
           state.selected = button.dataset.cinema;
           const url = new URL(window.location.href);
@@ -267,6 +323,8 @@ const { cinemaOnly = false } = Astro.props;
         </header>
         <div class="program-list">${programs}</div>
       </article>`;
+      const heading = resultsEl.querySelector('.theater-showtime__header');
+      if (heading) heading.prepend(createChainLogo(cinema.chainId, CHAINS[cinema.chainId], 'momo-live__head-logo'));
     }
 
     async function loadSession() {
@@ -274,6 +332,8 @@ const { cinemaOnly = false } = Astro.props;
       if (!cinema) return;
       const token = ++state.sessionToken;
       const date = saigonDate(state.dayOffset);
+      if (cinemaTitleEl) cinemaTitleEl.textContent = cinema.name;
+      if (cinemaAddressEl) cinemaAddressEl.textContent = cinema.address || 'TP. Hồ Chí Minh';
       skeletonResults(`Đang tải suất chiếu của ${cinema.name} ngày ${date.split('-').reverse().join('/')}…`);
       try {
         const data = await momoPost('/v2/cinema/session', {
@@ -323,6 +383,7 @@ const { cinemaOnly = false } = Astro.props;
         }
         state.selected = foundCinema ? foundCinema.key : state.cinemas[0].key;
         if (!isCinemaOnly) {
+          renderDistricts();
           renderChips();
           renderCinemas();
         }
@@ -343,7 +404,11 @@ const { cinemaOnly = false } = Astro.props;
       window.dispatchEvent(new CustomEvent('eplus:open-seats', { detail: entry }));
     });
     searchEl.addEventListener('input', () => {
-      state.query = searchEl.value.trim().toLowerCase();
+      state.query = normalize(searchEl.value);
+      renderCinemas();
+    });
+    districtEl?.addEventListener('change', () => {
+      state.district = districtEl.value;
       renderCinemas();
     });
     window.addEventListener('cinema:day', (event) => {
