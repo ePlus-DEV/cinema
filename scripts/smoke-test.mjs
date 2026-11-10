@@ -12,6 +12,8 @@ const routes = [
   '/phim-sap-chieu/',
   '/lich-chieu/',
   '/lich-chieu/momo/',
+  '/phim/chi-tiet/',
+  '/rap/chi-tiet/',
   '/rap/',
   '/phim/sau-anh-hoang-hon/',
   '/rap/cgv-vincom-dong-khoi/'
@@ -33,3 +35,11 @@ assert.ok(home.includes('href="' + base + 'favicon.svg'), 'Favicon not Pages-bas
 assert.ok(home.includes('href="' + base + '_astro/') || home.includes('src="' + base + '_astro/'), 'Astro assets not Pages-base-aware');
 assert.ok(existsSync('dist/_astro'), 'Astro assets directory missing');
 console.log('PASS: base ' + base + ' and assets; static-site smoke tests completed');
+
+const movieDetail = readFileSync('dist/phim/chi-tiet/index.html', 'utf8');
+const cinemaDetail = readFileSync('dist/rap/chi-tiet/index.html', 'utf8');
+assert.ok(movieDetail.includes('data-film-content'), 'Movie detail shell missing');
+assert.ok(cinemaDetail.includes('data-cinema-content'), 'Cinema detail shell missing');
+assert.ok(home.includes('section--featured'), 'Now-showing must be the first home section');
+assert.ok(!home.includes('class="hero"'), 'Redundant homepage hero must stay removed');
+console.log('PASS: real detail routes and movie-first homepage');
