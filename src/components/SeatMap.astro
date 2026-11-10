@@ -162,14 +162,14 @@ import '../styles/seatmap-redesign.css';
       const seats = [...selected.values()];
       if (!seats.length) {
         footerEl.innerHTML = '<span>Chưa chọn ghế nào — bấm vào ghế trống để chọn.</span>' +
-          '<span class="seatmap__note">Trạng thái ghế theo dữ liệu MoMo tại thời điểm tải. ePlus hiện chưa hỗ trợ giữ ghế và thanh toán trực tuyến.</span>';
+          '<span class="seatmap__note">Trạng thái ghế tại thời điểm tải. ePlus hiện chưa hỗ trợ giữ ghế và thanh toán trực tuyến.</span>';
         return;
       }
       const total = seats.reduce((sum, seat) => sum + (seat.price || 0), 0);
       const labels = seats.map((seat) => seat.label).join(', ');
       footerEl.innerHTML = `<span class="seatmap__total">Đã chọn <strong>${seats.length} ghế</strong>: ${esc(labels)}</span>` +
         `<span class="seatmap__total">Tổng: <strong>${vnd.format(total)}₫</strong></span>` +
-        '<span class="seatmap__note">Trạng thái ghế theo dữ liệu MoMo tại thời điểm tải. ePlus hiện chưa hỗ trợ giữ ghế và thanh toán trực tuyến.</span>';
+        '<span class="seatmap__note">Trạng thái ghế tại thời điểm tải. ePlus hiện chưa hỗ trợ giữ ghế và thanh toán trực tuyến.</span>';
     }
 
     function limitZoom(value) {

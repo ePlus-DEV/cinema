@@ -377,7 +377,7 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
         renderSession(cinema, date, films);
       } catch (error) {
         if (token !== state.sessionToken) return;
-        status(`Không tải được suất chiếu từ MoMo (${error.message}).`, loadSession);
+        status(`Không tải được suất chiếu (${error.message}).`, loadSession);
       }
     }
 
@@ -398,7 +398,7 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
         if (!state.cinemas.length) {
           cinemasEl.innerHTML = '';
           chipsEl.replaceChildren();
-          status('MoMo không trả về rạp nào cho TP. Hồ Chí Minh.', init);
+          status('Không có rạp nào cho TP. Hồ Chí Minh.', init);
           return;
         }
         const requestedCinema = root.dataset.cinemaKey || params.get("cinema");
@@ -419,7 +419,7 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
         cinemasEl.innerHTML = '';
         chipsEl.replaceChildren();
         cinemasEl.setAttribute('aria-busy', 'false');
-        status(`Không tải được danh sách rạp từ MoMo (${error.message}).`, init);
+        status(`Không tải được danh sách rạp (${error.message}).`, init);
       }
     }
 
