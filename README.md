@@ -146,3 +146,15 @@ npm run fetch:showtimes -- [--city=50] [--cineplex=6] [--days=3] [--date=YYYY-MM
 4. Add map integration, booking deep links, sitemap, monitoring, and regression tests.
 
 The demo does not claim affiliation with CGV, Galaxy Cinema, Lotte Cinema, Beta Cinemas or MoMo.
+
+## Live discovery and detail page routes
+
+The main UI is **film-first**: the homepage opens with "Phim đang chiếu" rather than a decorative hero. The movie directories and `/rap/` use live client-side MoMo data, **not** legacy fixture catalogs.
+
+GitHub Pages is static. To support newly listed movies and cinemas without rebuilding on every new item, details use internal query parameters:
+
+- `/phim/chi-tiet/?id=<film.Id>`: live poster, synopsis, genres, duration, age rating and screening dates (where supplied), plus a film-filtered showtime explorer for currently showing films.
+- `/rap/chi-tiet/?cinema=<chainId>:<apiCinemaId>`: cinema name, chain, address and a date-filtered schedule for that specific cinema.
+- `/lich-chieu/`: the complete live schedule; the legacy `/lich-chieu/momo/` route remains available.
+
+The query parameters are identifiers; displayed fields are fetched from the source. No MoMo booking redirects are used. All pages retain `noindex, nofollow` because this feed is not licensed. Legacy mock `/phim/[slug]/` and `/rap/[slug]/` routes remain for compatibility but are not linked by the real-data navigation.
