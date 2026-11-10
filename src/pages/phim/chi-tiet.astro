@@ -146,7 +146,18 @@ const knownMovieIds = movies.map(movie => movie.id).join(',');
         window.dispatchEvent(new CustomEvent('cinema:film-loaded', { detail: {
           id, title: name, titleEn: film.TitleEn || '',
           trailerUrl: film.TrailerUrl || film.Trailer || film.YoutubeUrl || film.VideoUrl || '',
-          posterUrl: posterUrl || ''
+          posterUrl: posterUrl || '',
+          autoplayTrailer: film.ApiAutoplayTrailer || '',
+          ratingPoint: typeof film.ApiRatingPoint === 'number' ? film.ApiRatingPoint : null,
+          ratingTotal: film.ApiRatingTotal || 0,
+          momoReviews: (Array.isArray(film.TopComments) ? film.TopComments : []).slice(0, 3).map((c) => ({
+            name: c.creatorName || 'Khán giả MoMo',
+            avatar: c.creatorAvatar || '',
+            point: typeof c.point === 'number' ? c.point : null,
+            desc: c.desc || '',
+            tags: (Array.isArray(c.tagsV2) ? c.tagsV2 : []).map((t) => t.keyword).filter(Boolean),
+            createdTime: c.createdTime || ''
+          }))
         }}));
       } catch (error) {
         showError('Không tải được thông tin phim (' + error.message + ').');
