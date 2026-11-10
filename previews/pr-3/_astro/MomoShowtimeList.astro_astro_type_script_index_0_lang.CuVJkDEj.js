@@ -1,0 +1,24 @@
+import{C as f,s as C,a as E,l as q,f as A}from"./momo-client.CsPGe-CE.js";const l=document.querySelector("[data-momo-live]");if(l){let d=function(e,s){r.setAttribute("aria-busy","false"),r.innerHTML="";const t=document.createElement("p");if(t.className="momo-live__status",t.textContent=e,s){const i=document.createElement("button");i.type="button",i.textContent="Thử lại",i.addEventListener("click",s),t.append(i)}r.append(t)},b=function(e){r.innerHTML=`<div class="skeleton__block skeleton" aria-hidden="true">
+          <div class="skeleton__line" style="width:45%"></div>
+          <div class="skeleton__line"></div>
+          <div class="skeleton__line"></div>
+          <div class="skeleton__line skeleton__line--short"></div>
+        </div>
+        <p class="momo-live__status">${a(e)}</p>`,r.setAttribute("aria-busy","true")},$=function(){const e=new Map;for(const t of n.cinemas)e.set(t.chainId,(e.get(t.chainId)||0)+1);const s=[[0,`Tất cả (${n.cinemas.length})`]];for(const[t,i]of[...e.entries()].sort((o,h)=>h[1]-o[1]))s.push([t,`${f[t]||"Rạp"} (${i})`]);_.innerHTML=s.map(([t,i])=>`<button type="button" class="momo-live__chip" data-chain="${t}" aria-pressed="${n.chain===t}">${a(i)}</button>`).join(""),_.querySelectorAll("[data-chain]").forEach(t=>{t.addEventListener("click",()=>{n.chain=Number(t.dataset.chain),$(),m()})})},M=function(){return n.cinemas.filter(e=>(n.chain===0||e.chainId===n.chain)&&e.name.toLowerCase().includes(n.query))},m=function(){const e=M();if(!e.length){c.innerHTML='<p class="momo-live__status">Không tìm thấy rạp phù hợp.</p>';return}c.innerHTML=e.map(s=>`<button type="button" class="momo-live__cinema" data-cinema="${a(s.key)}" aria-current="${n.selected===s.key}">
+           <strong>${a(s.name)}</strong><span>${a(f[s.chainId]||"")} · ${a(s.address)}</span>
+         </button>`).join(""),c.querySelectorAll("[data-cinema]").forEach(s=>{s.addEventListener("click",()=>{n.selected=s.dataset.cinema,m(),u()})})},T=function(e,s,t){if(!t.length){d(`${e.name} chưa có suất chiếu trên MoMo ngày ${s.split("-").reverse().join("/")}.`);return}const i=t.map(o=>{const h=(o.VersionsCaptions||[]).map(y=>{const L=(y.ShowTimes||[]).map(v=>{const k=String(v.ShowTime||"").slice(11,16),S=v.ScreenName?` · ${v.ScreenName}`:"";return`<a class="showtime" href="${a(o.url)}" target="_blank" rel="noopener noreferrer" title="${a(k+S)} — đặt vé trên MoMo">${a(k)}</a>`}).join("");return`<div class="program__format"><span class="program__format-label">${a(A(y))}</span><div class="showtime-row">${L}</div></div>`}).join(""),w=[o.ApiGenreName,o.Duration?`${o.Duration} phút`:"",o.ApiRatingFormat].filter(Boolean).join(" · ");return`<article class="program">
+          <div class="momo-live__program-head">
+            ${o.poster?`<img class="momo-live__poster" src="${a(o.poster)}" alt="" loading="lazy" />`:""}
+            <div class="program__movie">
+              <h3><a href="${a(o.url)}" target="_blank" rel="noopener noreferrer">${a(o.Title)}</a></h3>
+              <p>${a(w)}</p>
+            </div>
+          </div>
+          ${h}
+        </article>`}).join("");r.setAttribute("aria-busy","false"),r.innerHTML=`<article class="theater-showtime">
+        <header class="theater-showtime__header">
+          <div><p class="eyebrow">${a(f[e.chainId]||"")}</p><h3>${a(e.name)}</h3><p>${a(e.address)}</p></div>
+          <span class="date-label">${a(s.split("-").reverse().join("/"))}</span>
+        </header>
+        <div class="program-list">${i}</div>
+      </article>`};const _=l.querySelector("[data-momo-chips]"),c=l.querySelector("[data-momo-cinemas]"),r=l.querySelector("[data-momo-results]"),g=l.querySelector("[data-momo-search]"),n={cinemas:[],chain:0,query:"",selected:null,dayOffset:0,sessionToken:0},a=e=>String(e??"").replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[s]);async function u(){const e=n.cinemas.find(i=>i.key===n.selected);if(!e)return;const s=++n.sessionToken,t=C(n.dayOffset);b(`Đang tải suất chiếu của ${e.name} ngày ${t.split("-").reverse().join("/")}…`);try{const i=await E("/v2/cinema/session",{Cineplex:e.chainId,ApiCinemaId:e.apiCinemaId,Date:t,RecaptchaToken:""});if(s!==n.sessionToken)return;for(const o of i.Films||[])o.url=`https://www.momo.vn${o.Link||""}`,o.poster=o.GraphicUrl||o.ImageUrl||"";T(e,t,i.Films||[])}catch(i){if(s!==n.sessionToken)return;d(`Không tải được suất chiếu từ MoMo (${i.message}).`,u)}}async function p(){try{if(n.cinemas=await q(),c.setAttribute("aria-busy","false"),!n.cinemas.length){c.innerHTML="",d("MoMo không trả về rạp nào cho TP. Hồ Chí Minh.",p);return}n.selected=n.cinemas[0].key,$(),m(),u()}catch(e){c.innerHTML="",d(`Không tải được danh sách rạp từ MoMo (${e.message}).`,p)}}g.addEventListener("input",()=>{n.query=g.value.trim().toLowerCase(),m()}),window.addEventListener("cinema:day",e=>{n.dayOffset=Number(e.detail?.offset||0),u()}),p()}
