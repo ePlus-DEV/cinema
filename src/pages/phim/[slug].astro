@@ -40,6 +40,7 @@ const description = movie.synopsis
           <p class="live-detail__synopsis">{movie.synopsis || 'Nguồn dữ liệu chưa cung cấp nội dung giới thiệu phim.'}</p>
           <div class="live-detail__actions">
             {showNow && <a class="button button--gold" href="#lich-chieu">Xem lịch chiếu <span aria-hidden="true">↗</span></a>}
+            <a class="button button--glass" href="#trailer">Trailer &amp; review ↘</a>
             <a class="button button--glass" href={showNow ? '/phim-dang-chieu/' : '/phim-sap-chieu/'}>Khám phá phim khác</a>
           </div>
           <p class="live-detail__source">Thông tin phim từ bản cập nhật hằng ngày · Lịch chiếu và sơ đồ ghế chỉ mang tính tham khảo.</p>
