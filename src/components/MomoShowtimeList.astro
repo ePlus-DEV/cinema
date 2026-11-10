@@ -16,9 +16,17 @@
     <div class="momo-live__chips" data-momo-chips role="group" aria-label="Hệ thống rạp"></div>
   </div>
   <div class="momo-live__layout">
-    <div class="momo-live__cinemas" data-momo-cinemas aria-label="Danh sách rạp"></div>
-    <div class="momo-live__results" data-momo-results aria-live="polite">
-      <p class="momo-live__status">Đang tải danh sách rạp từ MoMo…</p>
+    <div class="momo-live__cinemas" data-momo-cinemas aria-label="Danh sách rạp" aria-busy="true">
+      {Array.from({ length: 6 }).map(() => <div class="skeleton__row skeleton" aria-hidden="true"></div>)}
+    </div>
+    <div class="momo-live__results" data-momo-results aria-live="polite" aria-busy="true">
+      <div class="skeleton__block skeleton" aria-hidden="true">
+        <div class="skeleton__line" style="width:45%"></div>
+        <div class="skeleton__line"></div>
+        <div class="skeleton__line"></div>
+        <div class="skeleton__line skeleton__line--short"></div>
+      </div>
+      <p class="momo-live__status">Đang tải dữ liệu trực tiếp từ MoMo…</p>
     </div>
   </div>
 </div>
@@ -55,7 +63,7 @@
 </style>
 
 <script>
-  import { CHAINS, MOMO_CITY_ID, formatLabel, momoGet, momoPost, saigonDate } from '../lib/momo-client.js';
+  import { CHAINS, formatLabel, loadAllCinemas, momoPost, saigonDate } from '../lib/momo-client.js';
 
   const root = document.querySelector('[data-momo-live]');
   if (root) {
@@ -78,6 +86,7 @@
     ));
 
     function status(message, retry) {
+      resultsEl.setAttribute('aria-busy', 'false');
       resultsEl.innerHTML = '';
       const p = document.createElement('p');
       p.className = 'momo-live__status';
@@ -92,18 +101,15 @@
       resultsEl.append(p);
     }
 
-    async function loadCinemasForChain(chainId) {
-      const items = [];
-      let lastIndex = 0;
-      for (;;) {
-        const path = `/cinema/ci-cinema/loadMore?t=${Date.now()}&lastIndex=${lastIndex}&count=20&sortType=5&sortDir=2&cineplex=${chainId}&apiCityId=${MOMO_CITY_ID}`;
-        const data = await momoGet(path);
-        const page = data.Items || [];
-        items.push(...page);
-        if (!page.length || items.length >= (data.TotalItems || 0)) break;
-        lastIndex = page[page.length - 1].Id;
-      }
-      return items;
+    function skeletonResults(message) {
+      resultsEl.innerHTML = `<div class="skeleton__block skeleton" aria-hidden="true">
+          <div class="skeleton__line" style="width:45%"></div>
+          <div class="skeleton__line"></div>
+          <div class="skeleton__line"></div>
+          <div class="skeleton__line skeleton__line--short"></div>
+        </div>
+        <p class="momo-live__status">${esc(message)}</p>`;
+      resultsEl.setAttribute('aria-busy', 'true');
     }
 
     function renderChips() {
@@ -178,6 +184,7 @@
           ${groups}
         </article>`;
       }).join('');
+      resultsEl.setAttribute('aria-busy', 'false');
       resultsEl.innerHTML = `<article class="theater-showtime">
         <header class="theater-showtime__header">
           <div><p class="eyebrow">${esc(CHAINS[cinema.chainId] || '')}</p><h3>${esc(cinema.name)}</h3><p>${esc(cinema.address)}</p></div>
@@ -192,7 +199,7 @@
       if (!cinema) return;
       const token = ++state.sessionToken;
       const date = saigonDate(state.dayOffset);
-      status(`Đang tải suất chiếu của ${cinema.name} ngày ${date.split('-').reverse().join('/')}…`);
+      skeletonResults(`Đang tải suất chiếu của ${cinema.name} ngày ${date.split('-').reverse().join('/')}…`);
       try {
         const data = await momoPost('/v2/cinema/session', {
           Cineplex: cinema.chainId,
@@ -214,28 +221,10 @@
 
     async function init() {
       try {
-        const perChain = await Promise.all(Object.keys(CHAINS).map(async (key) => {
-          const chainId = Number(key);
-          try { return await loadCinemasForChain(chainId); } catch { return []; }
-        }));
-        const seen = new Set();
-        for (const items of perChain) {
-          for (const item of items) {
-            const chainId = Number(item.Cineplex || 0);
-            const key = `${chainId}:${item.ApiCinemaId}`;
-            if (seen.has(key)) continue;
-            seen.add(key);
-            state.cinemas.push({
-              key,
-              chainId,
-              apiCinemaId: String(item.ApiCinemaId),
-              name: item.Name || '',
-              address: item.Address || ''
-            });
-          }
-        }
-        state.cinemas.sort((a, b) => a.name.localeCompare(b.name, 'vi'));
+        state.cinemas = await loadAllCinemas();
+        cinemasEl.setAttribute('aria-busy', 'false');
         if (!state.cinemas.length) {
+          cinemasEl.innerHTML = '';
           status('MoMo không trả về rạp nào cho TP. Hồ Chí Minh.', init);
           return;
         }
@@ -244,6 +233,7 @@
         renderCinemas();
         loadSession();
       } catch (error) {
+        cinemasEl.innerHTML = '';
         status(`Không tải được danh sách rạp từ MoMo (${error.message}).`, init);
       }
     }
