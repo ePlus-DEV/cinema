@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DatePicker from '../../components/DatePicker.astro';
+import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
+---
+<BaseLayout title="Chi tiết cụm rạp | ePlus Cinema" active="cinemas">
+  <section class="page-hero page-hero--cinema-detail" data-live-cinema-detail>
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Đường dẫn trang">
+        <a href="/">Trang chủ</a><span>/</span>
+        <a href="/rap">Rạp chiếu</a><span>/</span><span>Chi tiết rạp</span>
+      </nav>
+      <p class="live-detail__loading live-detail__loading--light" data-cinema-state role="status">Đang tải thông tin cụm rạp…</p>
+      <div data-cinema-content hidden>
+        <span class="eyebrow" data-cinema-chain></span>
+        <h1 data-cinema-title></h1>
+        <p class="cinema-detail__address"><span aria-hidden="true">⌖</span> <span data-cinema-address></span></p>
+        <div class="cinema-detail__actions">
+          <a class="button button--gold" href="#lich-chieu">Xem lịch chiếu tại rạp ↗</a>
+          <a class="button button--outline" href="/rap">Đổi rạp khác</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section container cinema-detail" data-cinema-schedule id="lich-chieu" hidden>
+    <div class="section-heading">
+      <div><span class="eyebrow">LỊCH CHIẾU TẠI CỤM RẠP</span><h2>Phim & suất chiếu hôm nay</h2><p>Đổi ngày để tra cứu và bấm giờ chiếu để xem sơ đồ ghế ngay trên ePlus.</p></div>
+      <a class="section-link" href="/lich-chieu">Tất cả rạp <span>↗</span></a>
+    </div>
+    <div class="schedule-shell">
+      <div class="schedule-shell__top"><div><strong data-cinema-schedule-name>Suất chiếu tại rạp</strong><span>Dữ liệu cập nhật từ MoMo Cinema · Không hỗ trợ đặt vé</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
+      <DatePicker />
+      <MomoShowtimeList cinemaOnly />
+    </div>
+  </section>
+</BaseLayout>
+<script>
+  import { CHAINS, loadAllCinemas } from '../../lib/momo-client.js';
+  const root = document.querySelector('[data-live-cinema-detail]');
+  if (root) {
+    const state = root.querySelector('[data-cinema-state]');
+    const content = root.querySelector('[data-cinema-content]');
+    const schedule = document.querySelector('[data-cinema-schedule]');
+    const key = new URLSearchParams(window.location.search).get('cinema');
+    const validKey = key && /^\d+:[a-zA-Z0-9_-]+$/.test(key);
+
+    function showError(message) {
+      state.textContent = message + ' ';
+      const back = document.createElement('a');
+      back.href = import.meta.env.BASE_URL + 'rap/';
+      back.className = 'live-detail__retry';
+      back.textContent = 'Quay về danh sách rạp';
+      state.append(back);
+    }
+
+    async function init() {
+      if (!validKey) { showError('Đường dẫn cụm rạp không hợp lệ.'); return; }
+      try {
+        const cinemas = await loadAllCinemas();
+        const cinema = cinemas.find((item) => item.key === key);
+        if (!cinema) { showError('Không tìm thấy cụm rạp trong danh sách cập nhật.'); return; }
+        const chain = CHAINS[cinema.chainId] || 'Hệ thống rạp';
+        root.querySelector('[data-cinema-chain]').textContent = chain + ' · TP. Hồ Chí Minh';
+        root.querySelector('[data-cinema-title]').textContent = cinema.name;
+        root.querySelector('[data-cinema-address]').textContent = cinema.address || 'Chưa có thông tin địa chỉ';
+        schedule.querySelector('[data-cinema-schedule-name]').textContent = 'Suất chiếu tại ' + cinema.name;
+        document.title = cinema.name + ' | ePlus Cinema';
+        state.hidden = true;
+        content.hidden = false;
+        schedule.hidden = false;
+      } catch (error) {
+        showError('Không tải được cụm rạp (' + error.message + ').');
+      }
+    }
+    init();
+  }
+</script>
