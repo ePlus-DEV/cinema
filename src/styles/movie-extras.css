@@ -1,0 +1,75 @@
+/* Movie trailer and personal review experience, mobile-first and consistent
+   with ePlus Cinema navy/gold. These are independent of live showtimes. */
+.movie-extras { padding-top: 58px; }
+.movie-extras__heading { margin-bottom: 25px; }
+.movie-extras__heading .eyebrow { letter-spacing: .12em; }
+.movie-extras__grid { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(320px, 1fr); gap: 20px; align-items: start; }
+.movie-extras__panel { min-width: 0; border: 1px solid #e6eaf0; border-radius: 19px; background: #fff; box-shadow: 0 14px 38px rgba(22,38,59,.035); overflow: hidden; }
+.movie-extras__panel-heading { display: flex; align-items: start; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 22px 23px 18px; }
+.movie-extras__label { display: block; font-size: 10px; font-weight: 900; color: #b1812f; letter-spacing: .14em; margin-bottom: 8px; }
+.movie-extras__panel h3 { margin: 0; color: #1c2b44; font-size: clamp(16px,1.6vw,21px); line-height: 1.4; font-weight: 800; }
+.movie-extras__source { display: inline-flex; font-size: 10px; color: #6a7b93; padding: 7px 9px; border-radius: 8px; background: #f5f7fa; }
+.movie-extras__player { aspect-ratio: 16 / 9; background: radial-gradient(circle at 50% 50%,#29364e,#111827 79%); overflow: hidden; position: relative; }
+.movie-extras__player iframe { width: 100%; height: 100%; display: block; border: 0; }
+.movie-extras__play { position: absolute; inset: 0; border: 0; width: 100%; background: transparent; color: #fff; padding: 0; cursor: pointer; display: grid; place-items: center; }
+.movie-extras__play::after { content: ''; background: linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.52)); position: absolute; inset: 0; }
+.movie-extras__play img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; filter: brightness(.72); }
+.movie-extras__play-ico { display: grid; position: relative; z-index: 1; width: 75px; height: 75px; place-items: center; border-radius: 50%; font-size: 26px; background: #e7ab42; color: #14263e; box-shadow: 0 12px 42px rgba(0,0,0,.32); transition: transform .18s,background .18s; }
+.movie-extras__play:hover .movie-extras__play-ico { transform: scale(1.07); background: #ffca6d; }
+.movie-extras__play-caption { position: absolute; z-index: 1; bottom: 24px; font-size: 12px; font-weight: 800; }
+.movie-extras__play:focus-visible { outline: 3px solid #f3be67; outline-offset: -5px; }
+.movie-extras__unavailable { color: #f6f8fa; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px; text-align: center; height: 100%; padding: 22px; }
+.movie-extras__unavailable-symbol { font-size: 44px; font-weight: 300; color: #e5b756; }
+.movie-extras__unavailable strong { font-size: 15px; }
+.movie-extras__unavailable p { color: #b8c4d7; font-size: 12px; line-height: 1.65; max-width: 36ch; margin: 0; }
+.movie-extras__below-player { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 15px 22px 19px; flex-wrap: wrap; }
+.movie-extras__below-player small { color: #77869a; font-size: 11px; line-height: 1.6; max-width: 42ch; }
+.movie-extras__below-player a { color: #a16d1e; font-size: 11px; font-weight: 800; text-decoration: none; }
+.movie-extras__below-player a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.movie-extras__articles { padding: 0 20px 16px; }
+.movie-extras__article { display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid #e9edf3; padding: 14px; border-radius: 12px; margin-bottom: 10px; text-decoration: none; color: #26344a; }
+.movie-extras__article:hover { border-color: #dcb16d; background: #fffdf7; }
+.movie-extras__article-publisher { display: block; text-transform: uppercase; letter-spacing: .12em; font-weight: 800; font-size: 9px; color: #bd8736; margin-bottom: 7px; }
+.movie-extras__article strong { font-size: 12px; line-height: 1.5; display: block; }
+.movie-extras__article small { display: block; font-size: 10px; color: #aa5b33; margin-top: 5px; }
+.movie-extras__article > span:last-child { color: #a3adbc; font-weight: 800; font-size: 17px; }
+.movie-extras__articles-empty { color: #7d8999; margin: 0; font-size: 12px; line-height: 1.65; background: #f7f9fb; padding: 16px; border-radius: 11px; }
+.movie-extras__self-review { border-top: 1px solid #e9edf2; padding: 22px 22px 24px; }
+.movie-extras__self-review h4 { color: #1a2a42; font-size: 16px; margin: 0 0 8px; font-weight: 800; }
+.movie-extras__self-review > p { color: #7a8696; font-size: 11px; line-height: 1.6; margin: 0 0 18px; }
+.movie-extras__stars { border: 0; padding: 0; margin: 0 0 20px; min-width: 0; }
+.movie-extras__stars legend { font-size: 11px; font-weight: 800; color: #465673; margin-bottom: 9px; padding: 0; }
+.movie-extras__star-buttons { display: flex; gap: 7px; }
+.movie-extras__star-label { width: 42px; height: 44px; display: grid; place-items: center; border-radius: 10px; cursor: pointer; position: relative; background: #f7f8fa; border: 1px solid #e6eaf0; transition: background .15s,border-color .15s; }
+.movie-extras__star-label input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; width: 100%; height: 100%; }
+.movie-extras__star-label span[aria-hidden] { color: #c5cedb; font-size: 25px; line-height: 1; pointer-events: none; }
+.movie-extras__star-label.is-lit { background: #fff7e4; border-color: #dfb05e; }
+.movie-extras__star-label.is-lit span[aria-hidden] { color: #d79b26; }
+.movie-extras__star-label:has(input:focus-visible) { outline: 2px solid #ca923f; outline-offset: 3px; }
+.movie-extras__review-label { color: #465673; font-size: 11px; font-weight: 800; display: grid; gap: 9px; }
+.movie-extras__review-label textarea { resize: vertical; min-height: 98px; max-height: 280px; width: 100%; font: inherit; font-weight: 400; line-height: 1.6; padding: 12px 13px; border: 1px solid #dfe5ed; border-radius: 11px; color: #1e2d45; background: #fff; font-size: 13px; }
+.movie-extras__review-label textarea:focus-visible { outline: 2px solid #dbad5e; outline-offset: 1px; }
+.movie-extras__spoiler { display: flex; align-items: flex-start; gap: 9px; font-size: 11px; color: #65758c; margin-top: 14px; }
+.movie-extras__spoiler input { margin-top: 1px; accent-color: #d2a24e; }
+.movie-extras__review-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 17px; }
+.movie-extras__save { border: 0; border-radius: 10px; background: #1b2c49; color: #fff; padding: 12px 17px; font-weight: 800; font-size: 12px; cursor: pointer; }
+.movie-extras__save:hover { background: #2c4266; }
+.movie-extras__delete { background: transparent; color: #946b62; border: 1px solid #e2ccca; border-radius: 10px; padding: 11px 15px; font-size: 12px; cursor: pointer; }
+.movie-extras__delete[hidden], .movie-extras[hidden] { display: none !important; }
+.movie-extras__review-status { font-size: 11px; color: #697c93; min-height: 1.5em; margin: 12px 0 0; }
+@media (max-width: 940px) { .movie-extras__grid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) {
+  .movie-extras { padding-top: 37px; padding-bottom: 44px; }
+  .movie-extras__heading { margin-bottom: 19px; }
+  .movie-extras__grid { gap: 15px; }
+  .movie-extras__panel { border-radius: 15px; }
+  .movie-extras__panel-heading { padding: 18px 17px 15px; }
+  .movie-extras__below-player { padding: 13px 17px 17px; }
+  .movie-extras__self-review { padding: 19px 17px 20px; }
+  .movie-extras__articles { padding: 0 15px 16px; }
+  .movie-extras__play-ico { width: 62px; height: 62px; font-size: 22px; }
+  .movie-extras__star-label { width: 40px; height: 43px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .movie-extras__play-ico,.movie-extras__star-label { transition: none; }
+}
