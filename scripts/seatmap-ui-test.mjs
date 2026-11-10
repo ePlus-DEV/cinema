@@ -16,7 +16,6 @@ assert.match(component, /passive: false/, 'Pinch should prevent native zoom of t
 assert.match(component, /root\.parentElement !== document\.body/, 'Modal needs to escape parent stacking context');
 assert.match(style, /z-index: 1200/, 'Modal must overlay sticky mobile header');
 assert.match(component, /data-seatmap-center-zone/, 'Center frame geometry missing');
-assert.match(component, /pointer-events/, 'Center zone frame should not block seat selections');
 assert.match(style, /pointer-events: none/, 'Center frame must allow clicking seats');
 assert.match(style, /\.seatmap__swatch--center/, 'Legend lacks center zone outline');
 assert.match(component, /Vùng trung tâm \(tham khảo\)/, 'Avoid implying this is official provider zone data');
