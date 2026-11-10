@@ -1,7 +1,12 @@
 ---
-/** Live card grid shared by home and both real movie catalog pages. */
+import { moviesNow, moviesSoon } from '../lib/cinema-catalog';
+import { moviePath } from '../lib/cinema-routes.js';
 interface Props { status: 'now' | 'soon'; limit?: number; searchable?: boolean; }
 const { status, limit = 12, searchable = false } = Astro.props;
+const films = (status === 'soon' ? moviesSoon : moviesNow).slice(0, limit);
+const normalize = (text: string) => text.normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const base = import.meta.env.BASE_URL;
 ---
 <div class="live-movie-catalog" data-live-movie-catalog data-status={status} data-limit={limit}>
   {searchable && <div class="live-catalog__tools">
@@ -9,125 +14,51 @@ const { status, limit = 12, searchable = false } = Astro.props;
       <span aria-hidden="true">⌕</span>
       <input type="search" aria-label="Tìm phim" placeholder="Tìm theo tên phim..." data-live-movie-search />
     </label>
-    <span class="live-catalog__count" data-live-movie-count aria-live="polite">Đang tải phim…</span>
+    <span class="live-catalog__count" data-live-movie-count aria-live="polite">{films.length} phim</span>
   </div>}
-  <div class="movie-grid" data-live-movies aria-busy="true">
-    {Array.from({ length: Math.min(limit, 12) }).map(() => (
-      <div class="movie-card skeleton" aria-hidden="true">
-        <div class="skeleton__poster"><span class="skeleton__poster-badge"></span></div>
-        <div class="skeleton__line" style="width:88%"></div>
-        <div class="skeleton__line skeleton__line--short"></div>
-        <div class="skeleton__line" style="width:45%;height:9px"></div>
+  <div class="movie-grid" data-live-movies aria-busy="false">
+    {films.map((film, index) => <a
+      class="movie-card live-movie-card"
+      href={moviePath(film.id, base)}
+      aria-label={'Xem chi tiết phim ' + film.title}
+      data-search={normalize(film.title + ' ' + film.titleEn)}
+    >
+      <div class="live-poster">
+        <span class="live-poster__badge">{status === 'now' ? 'Đang chiếu' : 'Sắp chiếu'}</span>
+        {film.posterUrl && <img src={film.posterUrl} alt={'Poster phim ' + film.title} loading={index < 2 ? 'eager' : 'lazy'} decoding="async" />}
       </div>
-    ))}
+      <div class="movie-card__info">
+        <div class="movie-card__head"><h3>{film.title}</h3>{film.age && <span class="age-badge">{film.age}</span>}</div>
+        <p>{[film.genre, film.duration ? film.duration + ' phút' : ''].filter(Boolean).join(' · ')}</p>
+        <span class="movie-card__status">{status === 'now' ? 'Chi tiết & lịch chiếu ↗' : 'Chi tiết phim ↗'}</span>
+      </div>
+    </a>)}
   </div>
   <p class="empty-results" data-live-movie-empty hidden>Không tìm thấy phim phù hợp. Hãy thử từ khóa khác.</p>
+  {films.length === 0 && <p class="live-status">Chưa có dữ liệu phim trong bản cập nhật gần nhất.</p>}
 </div>
 <script>
-  import { loadAllFilms } from '../lib/momo-client.js';
-
-  const normalize = (value) => String(value || '').normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('vi').trim();
-
-  function movieCard(film, status) {
-    const card = document.createElement('a');
-    card.className = 'movie-card live-movie-card';
-    card.href = import.meta.env.BASE_URL + 'phim/chi-tiet/?id=' + encodeURIComponent(film.Id);
-    card.setAttribute('aria-label', 'Xem chi tiết phim ' + (film.Title || ''));
-    card.dataset.search = normalize((film.Title || '') + ' ' + (film.TitleEn || ''));
-    const poster = document.createElement('div');
-    poster.className = 'live-poster';
-    const badge = document.createElement('span');
-    badge.className = 'live-poster__badge';
-    badge.textContent = status === 'now' ? 'Đang chiếu' : 'Sắp chiếu';
-    poster.append(badge);
-    const posterUrl = film.GraphicUrl || film.ImageUrl;
-    if (posterUrl) {
-      const img = document.createElement('img');
-      img.src = posterUrl;
-      img.alt = 'Poster phim ' + (film.Title || '');
-      img.loading = 'lazy';
-      poster.append(img);
-    }
-    const info = document.createElement('div');
-    info.className = 'movie-card__info';
-    const head = document.createElement('div');
-    head.className = 'movie-card__head';
-    const title = document.createElement('h3');
-    title.textContent = film.Title || 'Chưa có tên phim';
-    head.append(title);
-    if (film.ApiRatingFormat) {
-      const age = document.createElement('span');
-      age.className = 'age-badge';
-      age.textContent = film.ApiRatingFormat;
-      head.append(age);
-    }
-    const meta = document.createElement('p');
-    meta.textContent = [film.ApiGenreName, film.Duration ? film.Duration + ' phút' : ''].filter(Boolean).join(' · ');
-    const statusText = document.createElement('span');
-    statusText.className = 'movie-card__status';
-    statusText.textContent = status === 'now' ? 'Chi tiết & lịch chiếu ↗' :
-      'Chi tiết phim ↗';
-    info.append(head, meta, statusText);
-    card.append(poster, info);
-    return card;
-  }
-
-  document.querySelectorAll('[data-live-movie-catalog]').forEach(async (root) => {
-    const grid = root.querySelector('[data-live-movies]');
-    const search = root.querySelector('[data-live-movie-search]');
-    const count = root.querySelector('[data-live-movie-count]');
-    const empty = root.querySelector('[data-live-movie-empty]');
-    const status = root.dataset.status === 'soon' ? 'soon' : 'now';
-    const max = Math.max(1, Number(root.dataset.limit) || 12);
-    if (search) search.value = new URLSearchParams(location.search).get('q') || '';
-
-    function filterCards() {
-      const query = normalize(search?.value);
-      const cards = [...grid.querySelectorAll('.movie-card:not(.skeleton)')];
-      let visible = 0;
-      for (const card of cards) {
-        const matches = !query || (card.dataset.search || '').includes(query);
-        card.hidden = !matches;
-        if (matches) visible++;
-      }
-      if (count) count.textContent = visible + ' phim';
-      if (empty) empty.hidden = visible > 0;
-    }
-
-    async function load() {
-      grid.setAttribute('aria-busy', 'true');
-      if (!grid.querySelector('.skeleton')) {
-        grid.innerHTML = Array.from({ length: Math.min(max, 12) }, () =>
-          '<div class="movie-card skeleton" aria-hidden="true"><div class="skeleton__poster"><span class="skeleton__poster-badge"></span></div><div class="skeleton__line" style="width:88%"></div><div class="skeleton__line skeleton__line--short"></div></div>'
-        ).join('');
-      }
-      if (empty) empty.hidden = true;
-      if (count) count.textContent = 'Đang tải phim…';
-      try {
-        const films = (await loadAllFilms(status)).slice(0, max);
-        if (!films.length) throw new Error('Nguồn dữ liệu chưa có phim ở trạng thái này');
-        grid.replaceChildren(...films.map((film) => movieCard(film, status)));
-        filterCards();
-      } catch (error) {
-        grid.replaceChildren();
-        if (empty) empty.hidden = true;
-        const message = document.createElement('p');
-        message.className = 'live-status';
-        message.textContent = 'Không tải được danh sách phim (' + error.message + '). ';
-        const retry = document.createElement('button');
-        retry.type = 'button';
-        retry.textContent = 'Thử lại';
-        retry.addEventListener('click', load);
-        message.append(retry);
-        grid.append(message);
-        if (count) count.textContent = 'Chưa tải được phim';
-      } finally {
-        grid.setAttribute('aria-busy', 'false');
-      }
-    }
-
-    search?.addEventListener('input', filterCards);
-    load();
+  const normalize = (value: string) => String(value || '').normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  document.querySelectorAll<HTMLElement>('[data-live-movie-catalog]').forEach((root) => {
+    const grid = root.querySelector<HTMLElement>('[data-live-movies]');
+    const input = root.querySelector<HTMLInputElement>('[data-live-movie-search]');
+    const count = root.querySelector<HTMLElement>('[data-live-movie-count]');
+    const empty = root.querySelector<HTMLElement>('[data-live-movie-empty]');
+    if (!grid) return;
+    if (input) input.value = new URLSearchParams(location.search).get('q') || '';
+    const filter = () => {
+      const q = normalize(input?.value || '');
+      let matched = 0;
+      const cards = grid.querySelectorAll<HTMLElement>('.live-movie-card');
+      cards.forEach((card) => {
+        card.hidden = !!q && !(card.dataset.search || '').includes(q);
+        if (!card.hidden) matched++;
+      });
+      if (count) count.textContent = matched + ' phim';
+      if (empty) empty.hidden = matched !== 0 || cards.length === 0;
+    };
+    input?.addEventListener('input', filter);
+    filter();
   });
 </script>
