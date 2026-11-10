@@ -90,6 +90,10 @@
   .seatmap__footer:empty { display: none; }
   .seatmap__total strong { font-size: 1.02rem; }
   .seatmap__note { color: var(--muted); font-size: .78rem; flex-basis: 100%; }
+  .seatmap__seats-placeholder { display: grid; gap: 8px; padding: 14px 0 20px; }
+  .seatmap__seats-placeholder-screen { height: 12px; width: min(75%, 430px); margin: 0 auto 16px; border-radius: 100% 100% 4px 4px; background: #dce3ed; }
+  .seatmap__seats-placeholder-row { display: flex; gap: 7px; justify-content: center; overflow: hidden; }
+  .seatmap__seats-placeholder-seat { width: 25px; height: 25px; flex: none; border-radius: 7px 7px 3px 3px; background: #e4eaf2; }
   .seatmap__status { color: var(--muted); padding: 10px 0 16px; }
   .seatmap__status button {
     margin-left: 10px; border: 1px solid var(--border); background: #fff; border-radius: 999px;
@@ -205,10 +209,11 @@
       titleEl.textContent = detail.filmTitle || 'Chọn ghế';
       metaEl.textContent = [detail.cinemaName, detail.screenName, detail.dateLabel, detail.timeLabel, detail.format]
         .filter(Boolean).join(' · ');
-      bodyEl.innerHTML = `<div class="skeleton__block skeleton" aria-hidden="true">
-          <div class="skeleton__line" style="width:40%"></div>
-          <div class="skeleton__line"></div><div class="skeleton__line"></div>
-          <div class="skeleton__line skeleton__line--short"></div>
+      bodyEl.innerHTML = `<div class="seatmap__seats-placeholder" aria-hidden="true">
+          <div class="seatmap__seats-placeholder-screen skeleton"></div>
+          ${Array.from({ length: 7 }, () => `<div class="seatmap__seats-placeholder-row">
+            ${Array.from({ length: 12 }, () => '<span class="seatmap__seats-placeholder-seat skeleton"></span>').join('')}
+          </div>`).join('')}
         </div><p class="seatmap__status">Đang tải sơ đồ ghế…</p>`;
       root.hidden = false;
       document.body.style.overflow = 'hidden';
