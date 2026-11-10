@@ -13,7 +13,10 @@ const { limit = 8, searchable = false } = Astro.props;
   </div>}
   <div class="cinema-grid" data-live-cinemas aria-busy="true">
     {Array.from({ length: Math.min(limit, 8) }).map(() =>
-      <div class="skeleton__tile skeleton" aria-hidden="true"></div>)}
+      <div class="skeleton__tile skeleton skeleton__cinema-tile" aria-hidden="true">
+        <span class="skeleton__cinema-icon"></span>
+        <span class="skeleton__cinema-lines"><span class="skeleton__line" style="width:87%"></span><span class="skeleton__line skeleton__line--short"></span></span>
+      </div>)}
   </div>
   <p class="empty-results" data-live-cinema-empty hidden>Không tìm thấy rạp phù hợp.</p>
 </div>
@@ -75,7 +78,12 @@ const { limit = 8, searchable = false } = Astro.props;
       grid.replaceChildren();
       const message = document.createElement('p');
       message.className = 'live-status';
-      message.textContent = 'Không tải được danh sách rạp (' + error.message + ').';
+      message.textContent = 'Không tải được danh sách rạp (' + error.message + '). ';
+      const retry = document.createElement('button');
+      retry.type = 'button';
+      retry.textContent = 'Thử lại';
+      retry.addEventListener('click', () => window.location.reload());
+      message.append(retry);
       grid.append(message);
       if (count) count.textContent = 'Chưa tải được rạp';
     } finally {
