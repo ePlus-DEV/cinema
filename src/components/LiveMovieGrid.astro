@@ -43,8 +43,8 @@ const { status, limit = 12 } = Astro.props;
         const statusLine = status === 'now'
           ? 'Đang chiếu · Xem lịch & chọn ghế'
           : release ? `Khởi chiếu ${release}` : 'Sắp chiếu';
-        return `<a class="movie-card" href="/lich-chieu/momo/" aria-label="${esc('Xem lịch chiếu phim ' + film.Title)}">
-          <div class="live-poster">${poster ? `<img src="${esc(poster)}" alt="" loading="lazy" />` : ''}</div>
+        return `<a class="movie-card live-movie-card" href="${import.meta.env.BASE_URL}lich-chieu/momo/" aria-label="${esc('Xem lịch chiếu phim ' + film.Title)}">
+          <div class="live-poster"><span class="live-poster__badge">${status === "now" ? "Đang chiếu" : "Sắp chiếu"}</span>${poster ? `<img src="${esc(poster)}" alt="" loading="lazy" />` : ''}</div>
           <div class="movie-card__info">
             <div class="movie-card__head"><h3>${esc(film.Title)}</h3>${film.ApiRatingFormat ? `<span class="age-badge">${esc(film.ApiRatingFormat)}</span>` : ''}</div>
             <p>${esc(meta)}</p>
@@ -61,7 +61,7 @@ const { status, limit = 12 } = Astro.props;
       const button = document.createElement('button');
       button.type = 'button';
       button.textContent = 'Thử lại';
-      button.addEventListener('click', () => location.reload());
+      button.addEventListener('click', () => fillGrid(grid));
       p.append(button);
       grid.append(p);
       grid.setAttribute('aria-busy', 'false');
