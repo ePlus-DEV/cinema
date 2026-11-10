@@ -1,7 +1,9 @@
 ---
 // Live MoMo showtimes: all data is fetched in the visitor's browser from the
 // MoMo Cinema API (through the CORS proxy configured by PUBLIC_MOMO_CORS_PROXY,
-// see src/lib/momo-client.js). Nothing is rendered server-side.
+// see src/lib/momo-client.js). Nothing is rendered server-side. Clicking a
+// showtime opens the on-site seat map (SeatMap) — no link leaves ePlus.
+import SeatMap from './SeatMap.astro';
 ---
 
 <div class="momo-live" data-momo-live>
@@ -30,6 +32,7 @@
     </div>
   </div>
 </div>
+<SeatMap />
 
 <style>
   .momo-live__toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 16px; }
@@ -59,6 +62,19 @@
     padding: 6px 12px; font: inherit; cursor: pointer; color: var(--ink);
   }
   .momo-live__program-head { display: flex; gap: 14px; align-items: flex-start; }
+  .theater-showtime__header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 6px; }
+  .theater-showtime__header h3 { margin: 2px 0 4px; font-size: 1.05rem; }
+  .theater-showtime__header p { margin: 0; color: var(--muted); font-size: .85rem; }
+  .date-label { flex: none; background: var(--soft); border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px; font-size: .82rem; font-weight: 700; }
+  .program__format { display: flex; gap: 14px; align-items: flex-start; margin-top: 10px; flex-wrap: wrap; }
+  .program__format-label { flex: none; min-width: 92px; color: var(--muted); font-size: .82rem; font-weight: 700; padding-top: 8px; }
+  .showtime-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .showtime {
+    border: 1px solid #e2e5eb; background: #fff; border-radius: 8px; color: #343e51;
+    padding: 8px 12px; font: inherit; font-size: .85rem; font-weight: 800; cursor: pointer;
+    min-width: 58px; text-align: center; transition: background .2s, border-color .2s;
+  }
+  .showtime:hover { background: #fff3d5; border-color: #edca78; }
   .momo-live__poster { width: 54px; height: 76px; object-fit: cover; border-radius: 8px; flex: none; background: var(--soft); }
 </style>
 
@@ -158,17 +174,29 @@
       });
     }
 
+    let currentShows = [];
+
     function renderSession(cinema, date, films) {
       if (!films.length) {
         status(`${cinema.name} chưa có suất chiếu trên MoMo ngày ${date.split('-').reverse().join('/')}.`);
         return;
       }
+      currentShows = [];
+      const dateLabel = date.split('-').reverse().join('/');
       const programs = films.map((film) => {
         const groups = (film.VersionsCaptions || []).map((version) => {
           const times = (version.ShowTimes || []).map((show) => {
             const time = String(show.ShowTime || '').slice(11, 16);
-            const info = show.ScreenName ? ` · ${show.ScreenName}` : '';
-            return `<a class="showtime" href="${esc(film.url)}" target="_blank" rel="noopener noreferrer" title="${esc(time + info)} — đặt vé trên MoMo">${esc(time)}</a>`;
+            const idx = currentShows.push({
+              show,
+              filmTitle: film.Title,
+              format: formatLabel(version),
+              cinemaName: cinema.name,
+              dateLabel,
+              timeLabel: `${time}${show.ShowTimeDuration ? ` (${show.ShowTimeDuration})` : ''}`,
+              screenName: show.ScreenName || ''
+            }) - 1;
+            return `<button type="button" class="showtime" data-show-idx="${idx}" title="Xem sơ đồ ghế suất ${esc(time)}">${esc(time)}</button>`;
           }).join('');
           return `<div class="program__format"><span class="program__format-label">${esc(formatLabel(version))}</span><div class="showtime-row">${times}</div></div>`;
         }).join('');
@@ -177,7 +205,7 @@
           <div class="momo-live__program-head">
             ${film.poster ? `<img class="momo-live__poster" src="${esc(film.poster)}" alt="" loading="lazy" />` : ''}
             <div class="program__movie">
-              <h3><a href="${esc(film.url)}" target="_blank" rel="noopener noreferrer">${esc(film.Title)}</a></h3>
+              <h3>${esc(film.Title)}</h3>
               <p>${esc(meta)}</p>
             </div>
           </div>
@@ -238,6 +266,13 @@
       }
     }
 
+    resultsEl.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-show-idx]');
+      if (!button) return;
+      const entry = currentShows[Number(button.dataset.showIdx)];
+      if (!entry) return;
+      window.dispatchEvent(new CustomEvent('eplus:open-seats', { detail: entry }));
+    });
     searchEl.addEventListener('input', () => {
       state.query = searchEl.value.trim().toLowerCase();
       renderCinemas();

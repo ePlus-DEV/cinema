@@ -34,7 +34,6 @@ const { status, limit = 12 } = Astro.props;
       const films = (data.Items || []).slice(0, limit);
       if (!films.length) throw new Error('MoMo chưa có phim trong mục này');
       grid.innerHTML = films.map((film) => {
-        const url = `https://www.momo.vn${film.Link || ''}`;
         const poster = film.GraphicUrl || film.ImageUrl || '';
         const meta = [film.ApiGenreName, film.Duration ? `${film.Duration} phút` : ''].filter(Boolean).join(' · ');
         const release = film.ApiReleaseDate
@@ -42,9 +41,9 @@ const { status, limit = 12 } = Astro.props;
               .toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
           : '';
         const statusLine = status === 'now'
-          ? 'Đang chiếu · Xem trên MoMo'
-          : release ? `Khởi chiếu ${release}` : 'Sắp chiếu · Xem trên MoMo';
-        return `<a class="movie-card" href="${esc(url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc('Xem phim ' + film.Title + ' trên MoMo')}">
+          ? 'Đang chiếu · Xem lịch & chọn ghế'
+          : release ? `Khởi chiếu ${release}` : 'Sắp chiếu';
+        return `<a class="movie-card" href="/lich-chieu/momo/" aria-label="${esc('Xem lịch chiếu phim ' + film.Title)}">
           <div class="live-poster">${poster ? `<img src="${esc(poster)}" alt="" loading="lazy" />` : ''}</div>
           <div class="movie-card__info">
             <div class="movie-card__head"><h3>${esc(film.Title)}</h3>${film.ApiRatingFormat ? `<span class="age-badge">${esc(film.ApiRatingFormat)}</span>` : ''}</div>
