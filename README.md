@@ -158,3 +158,19 @@ GitHub Pages is static. To support newly listed movies and cinemas without rebui
 - `/lich-chieu/`: the complete live schedule; the legacy `/lich-chieu/momo/` route remains available.
 
 The query parameters are identifiers; displayed fields are fetched from the source. No MoMo booking redirects are used. All pages retain `noindex, nofollow` because this feed is not licensed. Legacy mock `/phim/[slug]/` and `/rap/[slug]/` routes remain for compatibility but are not linked by the real-data navigation.
+
+### Cinema schedule explorer (PR #4 UI refinement)
+
+- Location: the existing feed is configured for **TP. Hồ Chí Minh** only
+  (`apiCityId=50`). The location selector filters **districts actually
+  present in loaded cinema addresses**. It does not pretend to have verified
+  city IDs for other provinces. Do not present nationwide availability without
+  a verified source/city ID mapping.
+- Venue chain and cinema cards show external provider-hosted **chain logo
+  images**, with accessible typography fallbacks if an asset fails to load.
+  Brand images belong to their owners; the project does not claim ownership.
+- The main schedule has a single full-width viewer: city/district, chain rail,
+  theater list, date picker, film times, then an internal seat-map preview.
+  The modal is **not** a checkout and does not hold/book seats.
+- No visitor-facing outbound links to MoMo were added. Live API/CDN
+  dependencies remain third-party and may fail separately from the UI.
