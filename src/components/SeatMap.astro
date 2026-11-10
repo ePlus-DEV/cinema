@@ -249,7 +249,14 @@ import '../styles/seatmap-redesign.css';
       let unknownType = false;
       let free = 0;
       let taken = 0;
-      const rowsHtml = (info.Seats || []).map((row) => {
+      // MoMo's grid can contain fully-empty spacer rows (no seat cells at
+      // all — e.g. 10 blank rows between row H and the Sweetbox row S at
+      // CGV Aeon Bình Tân). MoMo's own seat page does not render them as
+      // seat rows, so skip any row without a single real seat; rendering
+      // them would open a phantom gap in the middle of the map.
+      const rowsHtml = (info.Seats || [])
+        .filter((row) => row.some((seat) => seat.id))
+        .map((row) => {
         const label = row.find((seat) => seat.nameRow)?.nameRow || '';
         const cells = row.map((seat) => {
           if (!seat.id) return '<span class="seat seat--gap" aria-hidden="true"></span>';
