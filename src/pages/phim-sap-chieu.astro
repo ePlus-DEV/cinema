@@ -1,5 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import MovieCatalog from '../components/MovieCatalog.astro';
+import LiveMovieGrid from '../components/LiveMovieGrid.astro';
 ---
-<BaseLayout title="Phim sắp chiếu | ePlus Cinema" active="soon"><MovieCatalog status="soon" /></BaseLayout>
+<BaseLayout title="Phim sắp chiếu | ePlus Cinema" active="soon">
+  <section class="page-hero"><div class="container">
+    <div class="breadcrumbs"><a href="/">Trang chủ</a><span>/</span><span>Phim sắp chiếu</span></div>
+    <span class="eyebrow">SẮP RA RẠP</span>
+    <h1>Phim sắp chiếu <span class="title-spark">✳</span></h1>
+    <p>Khám phá những bộ phim sắp công chiếu với thông tin từ nguồn trực tiếp.</p>
+  </div></section>
+  <section class="section container catalog">
+    <LiveMovieGrid status="soon" limit={100} searchable />
+    <p class="catalog__footnote">Ngày công chiếu và thông tin có thể thay đổi; ePlus không bán vé.</p>
+  </section>
+</BaseLayout>
