@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: cinema-catalog-daily
@@ -30,9 +31,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
       - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
       - name: Download film and cinema directory only
         run: node scripts/sync-cinema-catalog.mjs
       - name: Validate new snapshot and prerendered pages
@@ -45,6 +45,8 @@ jobs:
           node scripts/check-outbound-links.mjs
       - name: Commit new catalog to main for normal Pages deployment
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
@@ -57,4 +59,7 @@ jobs:
           git commit -m "data(cinema): refresh daily movie and theater snapshot"
           # Never force push, rewrite history, or hide branch protections.
           git push origin HEAD:main
-          echo "Snapshot committed. The existing Pages staging workflow will publish main."
+          # GITHUB_TOKEN pushes do NOT trigger regular on:push workflows.
+          # workflow_dispatch is specifically allowed, so explicitly build/deploy.
+          gh workflow run pages-stage.yml --ref main
+          echo "Snapshot committed and Pages deployment explicitly dispatched."
