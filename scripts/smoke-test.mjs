@@ -30,7 +30,7 @@ for (const route of routes) {
 }
 const home = readFileSync('dist/index.html', 'utf8');
 assert.ok(home.includes('href="' + base + 'phim-dang-chieu'), 'Movie navigation not Pages-base-aware');
-assert.ok(home.includes('action="' + base + 'phim-dang-chieu'), 'Search form not Pages-base-aware');
+assert.ok(home.includes('data-live-movie-catalog'), 'Live film discovery missing on homepage');
 assert.ok(home.includes('href="' + base + 'favicon.svg'), 'Favicon not Pages-base-aware');
 assert.ok(home.includes('href="' + base + '_astro/') || home.includes('src="' + base + '_astro/'), 'Astro assets not Pages-base-aware');
 assert.ok(existsSync('dist/_astro'), 'Astro assets directory missing');
