@@ -25,3 +25,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Build static website
         run: npm run build
+      - name: Check generated routes, preview links and external navigation
+        run: |
+          node scripts/rewrite-links.mjs
+          node scripts/smoke-test.mjs
+          node scripts/check-outbound-links.mjs
