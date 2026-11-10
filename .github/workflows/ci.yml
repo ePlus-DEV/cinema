@@ -1,13 +1,16 @@
 name: CI
 
+# Production pushes already run the same build/smoke tests in pages-stage.
+# Run CI for pull requests only; superseded commits never need finishing.
 on:
   pull_request:
-  push:
-    branches:
-      - main
 
 permissions:
   contents: read
+
+concurrency:
+  group: cinema-ci-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   build:
