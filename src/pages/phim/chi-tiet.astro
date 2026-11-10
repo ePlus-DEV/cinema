@@ -2,6 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import DatePicker from '../../components/DatePicker.astro';
 import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
+import DetailSkeleton from '../../components/DetailSkeleton.astro';
+import ScheduleSkeleton from '../../components/ScheduleSkeleton.astro';
 ---
 <BaseLayout title="Chi tiết phim | ePlus Cinema" active="now">
   <section class="live-detail live-film-detail">
@@ -10,7 +12,7 @@ import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
         <a href="/">Trang chủ</a><span>/</span>
         <a href="/phim-dang-chieu">Phim</a><span>/</span><span>Chi tiết phim</span>
       </nav>
-      <p class="live-detail__loading" data-film-state role="status">Đang tải thông tin phim…</p>
+      <div class="live-detail__loading live-detail__loading--skeleton" data-film-state data-page-priority aria-busy="true" role="status"><span class="sr-only">Đang tải thông tin phim…</span><DetailSkeleton kind="film" /></div>
       <div class="live-detail__grid" data-film-content hidden>
         <div class="live-detail__poster">
           <img data-film-poster alt="" />
@@ -31,6 +33,7 @@ import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
       </div>
     </div>
   </section>
+  <div data-film-schedule-loading><ScheduleSkeleton /></div>
   <section class="section container" data-film-schedule id="lich-chieu" hidden>
     <div class="section-heading">
       <div>
@@ -54,6 +57,7 @@ import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
     const state = root.querySelector('[data-film-state]');
     const content = root.querySelector('[data-film-content]');
     const schedule = document.querySelector('[data-film-schedule]');
+    const scheduleLoading = document.querySelector('[data-film-schedule-loading]');
     const id = new URLSearchParams(window.location.search).get('id');
 
     function setText(selector, text) {
@@ -62,6 +66,8 @@ import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
       return element;
     }
     function showError(message) {
+      state.setAttribute('aria-busy', 'false');
+      if (scheduleLoading) scheduleLoading.hidden = true;
       state.textContent = message + ' ';
       const back = document.createElement('a');
       back.href = import.meta.env.BASE_URL + 'phim-dang-chieu/';
@@ -124,7 +130,9 @@ import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
           action.textContent = 'Khám phá phim sắp chiếu ↗';
         }
         document.title = name + ' | ePlus Cinema';
+        state.setAttribute('aria-busy', 'false');
         state.hidden = true;
+        if (scheduleLoading) scheduleLoading.hidden = true;
         content.hidden = false;
       } catch (error) {
         showError('Không tải được thông tin phim (' + error.message + ').');
