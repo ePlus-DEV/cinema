@@ -194,3 +194,15 @@
   -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
 }
 .momo-live .momo-live__cinema::after { flex: none; }
+
+/* Movie rows keep poster, title, format and playable times together. */
+.momo-live .momo-live__program-body { min-width: 0; flex: 1; }
+.momo-live .program__movie { display: block; margin: 0; }
+.momo-live .momo-live__film-link { color: inherit; }
+.momo-live .momo-live__film-link:hover { color: #bd8429; text-decoration: underline; text-underline-offset: 3px; }
+.momo-live .program__format { align-items: flex-start; }
+@media (max-width: 600px) {
+  .momo-live .momo-live__program-body { min-width: 0; }
+  .momo-live .program__movie h3 { font-size: 13px; }
+  .momo-live .program__format { margin-top: 9px; }
+}
