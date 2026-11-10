@@ -1,58 +1,17 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import DatePicker from '../components/DatePicker.astro';
 import LiveMovieGrid from '../components/LiveMovieGrid.astro';
 import LiveCinemaGrid from '../components/LiveCinemaGrid.astro';
 import MomoShowtimeList from '../components/MomoShowtimeList.astro';
 ---
 <BaseLayout active="home">
-  <section class="hero">
-    <div class="container hero__grid">
-      <div class="hero__content">
-        <div class="eyebrow eyebrow--light"><span class="eyebrow__spark">✦</span> Khám phá thế giới điện ảnh</div>
-        <h1>Một bộ phim hay.<br /><em>Một buổi tối tuyệt.</em></h1>
-        <p class="hero__description">Tìm phim hợp gu, chọn rạp thuận tiện và khám phá lịch chiếu chỉ trong vài chạm.</p>
-        <form class="hero-search" action="/phim-dang-chieu" method="GET" role="search">
-          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m16 16 5 5"/></svg>
-          <label class="sr-only" for="hero-movie-search">Tìm phim</label>
-          <input id="hero-movie-search" name="q" type="search" placeholder="Bạn muốn xem phim gì?" autocomplete="off" />
-          <button type="submit">Tìm phim <span aria-hidden="true">↗</span></button>
-        </form>
-        <div class="hero__shortcuts"><span>Khám phá nhanh:</span><a href="/phim-dang-chieu">Đang chiếu</a><a href="/phim-sap-chieu">Sắp chiếu</a><a href="/rap">Tìm rạp</a></div>
-        <div class="hero__notice"><span>●</span> Lịch chiếu trực tiếp từ MoMo · Tải mới mỗi lần mở trang</div>
+  <section class="section section--featured container" id="phim-dang-chieu">
+    <div class="section-heading section-heading--featured">
+      <div>
+        <span class="eyebrow">CHỌN PHIM CHO BUỔI HẸN</span>
+        <h1>Phim đang chiếu <span class="title-spark">✳</span></h1>
+        <p>Khám phá phim mới nhất và mở trang chi tiết để tìm suất chiếu phù hợp.</p>
       </div>
-      <div class="hero__visual" aria-label="Minh họa thiết kế poster phim">
-        <div class="hero__halo"></div>
-        <div class="hero__poster hero__poster--back">
-          <div class="poster-art poster-art--saigon">
-            <span class="poster-art__grain"></span><span class="poster-art__scene"></span>
-            <span class="poster-art__edition">ePlus Cinema · Demo</span><span class="poster-art__title">Đêm Ở<br/>Sài Gòn</span>
-          </div>
-        </div>
-        <div class="hero__poster hero__poster--front">
-          <div class="poster-art poster-art--sunset">
-            <span class="poster-art__grain"></span><span class="poster-art__scene"></span>
-            <span class="poster-art__edition">ePlus Cinema · Demo</span><span class="poster-art__title">Sau Ánh<br/>Hoàng Hôn</span>
-            <span class="poster-art__subtitle">BEYOND THE SUNSET</span>
-          </div>
-        </div>
-        <div class="hero__float hero__float--top"><span class="hero__float-icon">✦</span><div><strong>Chọn phim thật dễ</strong><small>Giao diện trực quan</small></div></div>
-        <div class="hero__float hero__float--bottom"><span class="hero__float-clock">◷</span><div><strong>Tra cứu theo giờ</strong><small>Linh hoạt cho mọi lịch trình</small></div></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="features-band">
-    <div class="container features-band__grid">
-      <div><span class="feature-symbol">✦</span><div><strong>Khám phá phim mới</strong><p>Từ bom tấn đến phim yêu thích</p></div></div>
-      <div><span class="feature-symbol">◷</span><div><strong>Tra cứu theo giờ</strong><p>Chọn ngày và suất chiếu dễ dàng</p></div></div>
-      <div><span class="feature-symbol">⌖</span><div><strong>Tìm rạp thuận tiện</strong><p>Khám phá các cụm rạp trong khu vực</p></div></div>
-    </div>
-  </section>
-
-  <section class="section container">
-    <div class="section-heading">
-      <div><span class="eyebrow">ĐANG CÓ GÌ HAY?</span><h2>Phim đang chiếu <span class="title-spark">✳</span></h2><p>Những câu chuyện đáng để dành một buổi tối.</p></div>
       <a class="section-link" href="/phim-dang-chieu">Xem tất cả <span>↗</span></a>
     </div>
     <LiveMovieGrid status="now" limit={12} />
@@ -61,14 +20,13 @@ import MomoShowtimeList from '../components/MomoShowtimeList.astro';
   <section class="section section--tinted" id="lich-chieu">
     <div class="container">
       <div class="section-heading">
-        <div><span class="eyebrow">LÊN KẾ HOẠCH XEM PHIM</span><h2>Khung giờ dành cho bạn</h2><p>Chọn ngày và rạp để xem suất chiếu thật, tải trực tiếp từ MoMo.</p></div>
-        <a class="section-link" href="/lich-chieu/momo">Tra cứu đầy đủ <span>↗</span></a>
+        <div><span class="eyebrow">LÊN KẾ HOẠCH XEM PHIM</span><h2>Khung giờ dành cho bạn</h2><p>Chọn ngày, tìm rạp và xem các khung giờ đang được cung cấp.</p></div>
+        <a class="section-link" href="/lich-chieu">Tra cứu đầy đủ <span>↗</span></a>
       </div>
       <div class="schedule-shell">
-        <div class="schedule-shell__top"><div><strong>Lịch chiếu tại TP. Hồ Chí Minh</strong><span>Dữ liệu trực tiếp từ MoMo · Bấm giờ chiếu để chọn ghế</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
-        <DatePicker />
+        <div class="schedule-shell__top"><div><strong>Lịch chiếu tại TP. Hồ Chí Minh</strong><span>Dữ liệu tham khảo từ MoMo · Bấm giờ để xem sơ đồ ghế</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
         <MomoShowtimeList />
-        <div class="schedule-shell__footer"><a href="/lich-chieu/momo" class="button button--outline">Mở trang lịch chiếu MoMo <span>↗</span></a></div>
+        <div class="schedule-shell__footer"><a href="/lich-chieu" class="button button--outline">Tra cứu tất cả suất chiếu <span>↗</span></a></div>
       </div>
     </div>
   </section>
@@ -85,13 +43,11 @@ import MomoShowtimeList from '../components/MomoShowtimeList.astro';
     <div class="container">
       <div class="section-heading">
         <div><span class="eyebrow">THẾ GIỚI RẠP CHIẾU</span><h2>Khám phá cụm rạp</h2><p>Các cụm rạp tại TP. Hồ Chí Minh — dữ liệu trực tiếp từ MoMo.</p></div>
-        <a class="section-link" href="/lich-chieu/momo">Xem lịch theo rạp <span>↗</span></a>
+        <a class="section-link" href="/lich-chieu">Xem lịch theo rạp <span>↗</span></a>
       </div>
       <LiveCinemaGrid limit={8} />
     </div>
   </section>
 
-  <section class="container section">
-    <div class="closing-cta"><div><span class="eyebrow eyebrow--light">YOUR NEXT MOVIE NIGHT</span><h2>Tối nay, mình đi xem phim nhé?</h2><p>Khám phá bộ giao diện tra cứu lịch chiếu được thiết kế riêng cho ePlus.</p><a href="/lich-chieu/momo" class="button button--light">Khám phá lịch chiếu <span>↗</span></a></div><span class="closing-cta__art" aria-hidden="true">✳</span></div>
-  </section>
+
 </BaseLayout>

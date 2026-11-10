@@ -223,6 +223,9 @@ export function loadAllCinemas() {
         }
       }
       cinemas.sort((a, b) => a.name.localeCompare(b.name, 'vi'));
+      // A temporary proxy/provider outage can produce an empty snapshot.
+      // Do not memoize that forever: the "Thử lại" action must re-fetch.
+      if (!cinemas.length) cinemasPromise = null;
       return cinemas;
     })();
   }
@@ -260,4 +263,44 @@ export function saigonDate(offset = 0) {
     month: '2-digit',
     day: '2-digit'
   }).format(shifted);
+}
+
+
+/**
+ * Current/upcoming movie listings for client-rendered directory and detail pages.
+ * Memoize per status so multiple grids do not duplicate API calls on one page.
+ * Failed requests are evicted so manual retry works.
+ */
+const filmRequests = new Map();
+export function loadAllFilms(status = 'now') {
+  const apiStatus = status === 'soon' ? 2 : 3;
+  if (!filmRequests.has(apiStatus)) {
+    const request = (async () => {
+      let lastIndex = 0;
+      const seen = new Set();
+      const films = [];
+      for (let page = 0; page < 8; page++) {
+        const url = '/cinema/ci-film/loadMore?apiStatus=' + apiStatus +
+          '&lastIndex=' + encodeURIComponent(lastIndex) +
+          '&count=30&sortType=5&sortDir=1&apiCityId=' + MOMO_CITY_ID;
+        const data = await momoGet(url);
+        const items = data.Items || [];
+        for (const film of items) {
+          if (!film.Id || seen.has(String(film.Id))) continue;
+          seen.add(String(film.Id));
+          films.push(film);
+        }
+        if (!items.length || (data.TotalItems && films.length >= data.TotalItems)) break;
+        const nextIndex = data.LastIndex || items[items.length - 1]?.Id;
+        if (!nextIndex || String(nextIndex) === String(lastIndex)) break;
+        lastIndex = nextIndex;
+      }
+      return films;
+    })().catch((error) => {
+      filmRequests.delete(apiStatus);
+      throw error;
+    });
+    filmRequests.set(apiStatus, request);
+  }
+  return filmRequests.get(apiStatus);
 }

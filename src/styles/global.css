@@ -415,3 +415,221 @@ h1, h2, h3, p { margin-top: 0; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+
+/* 2026 UI refinement: readable discovery, coherent live-showtime experience. */
+.site-header { position: sticky; top: 0; z-index: 60; box-shadow: 0 4px 24px rgba(17, 27, 46, .035); }
+.main-nav__link { font-size: 13px; }
+.hero__description { font-size: 15px; line-height: 1.75; }
+.hero__notice { font-size: 11px; line-height: 1.6; }
+.section-heading p { font-size: 13px; }
+.section-link { font-size: 12px; }
+.section-link:focus-visible, .movie-card:focus-visible, .cinema-tile:focus-visible { border-radius: 10px; }
+.movie-card__head h3 { font-size: 13px; line-height: 1.45; }
+.movie-card__info p { font-size: 11px; }
+.movie-card__status { font-size: 10px; }
+.movie-card .live-poster { position: relative; border-radius: 16px; box-shadow: 0 12px 26px rgba(20, 28, 47, .10); }
+.live-poster img { transition: transform .28s ease; }
+.live-movie-card:hover .live-poster img, .live-movie-card:focus-visible .live-poster img { transform: scale(1.055); }
+.live-poster__badge { position: absolute; z-index: 1; top: 10px; left: 10px; padding: 6px 10px; border-radius: 8px; background: rgba(17, 27, 46, .88); color: #fff; font-size: 10px; font-weight: 700; box-shadow: 0 4px 12px #0003; }
+.cinema-tile__body strong { font-size: 13px; }
+.cinema-tile__body small { font-size: 11px; }
+.cinema-tile:focus-visible, .showtime:focus-visible { outline-offset: 4px; }
+.page-hero--schedule { background: radial-gradient(circle at 85% 15%, #ffedc9 0, transparent 29%), linear-gradient(112deg, #f4f7fc, #fffaf0); }
+.page-hero--schedule p { max-width: 790px; font-size: 14px; line-height: 1.8; }
+.schedule-shell { border-radius: 22px; box-shadow: 0 18px 48px rgba(21, 36, 63, .06); }
+.schedule-shell__top { background: #fbfcff; }
+.schedule-shell__top strong { font-size: 16px; }
+.schedule-shell__top span:not(.schedule-shell__city) { font-size: 12px; line-height: 1.6; }
+.date-picker__day { min-height: 78px; }
+.date-picker__day span { font-size: 11px; }
+.date-picker__day strong { font-size: 15px; }
+.schedule-aside__card, .schedule-aside__tip { border-radius: 18px; }
+.schedule-aside__card p, .schedule-aside__tip p { font-size: 12px; line-height: 1.8; }
+.schedule-aside__source { margin: 0; padding: 0 8px; color: #64748b; line-height: 1.7; font-size: 11px; }
+.schedule-aside__source::before { content: "ⓘ"; display: inline-block; margin-right: 6px; color: #ac7c22; }
+.momo-live { padding-bottom: 20px; }
+.momo-live__intro { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; padding: 19px 26px 5px; font-size: 12px; }
+.momo-live__intro strong { color: #223047; }
+.momo-live__intro > span:last-child { margin-left: auto; color: #708094; font-size: 11px; }
+.momo-live__live-dot { width: 9px; height: 9px; border-radius: 100%; background: #2eaf7d; box-shadow: 0 0 0 4px #e2f6ed; flex: none; }
+.momo-live .momo-live__toolbar { padding: 12px 26px 18px; margin: 0; gap: 10px; }
+.momo-live .momo-live__search { min-height: 45px; padding-inline: 16px; font-size: 13px; border-radius: 12px; background: #f9fafc; }
+.momo-live .momo-live__search:focus { background: white; outline: 2px solid #f1cb75; outline-offset: 1px; }
+.momo-live .momo-live__chips { gap: 6px; }
+.momo-live .momo-live__chip { padding: 10px 12px; font-size: 11px; font-weight: 700; border-radius: 10px; }
+.momo-live .momo-live__chip[aria-pressed="true"] { background: #182b49; border-color: #182b49; }
+.momo-live .momo-live__layout { grid-template-columns: minmax(210px, 255px) minmax(0, 1fr); gap: 18px; padding: 0 26px; }
+.momo-live .momo-live__cinemas { max-height: 670px; gap: 7px; scrollbar-color: #c9d1df transparent; padding: 2px 3px 3px 0; }
+.momo-live .momo-live__cinema { border-radius: 12px; padding: 13px; transition: background .18s, border-color .18s, box-shadow .18s; }
+.momo-live .momo-live__cinema strong { font-size: 12px; line-height: 1.5; }
+.momo-live .momo-live__cinema span { font-size: 11px; line-height: 1.55; }
+.momo-live .momo-live__cinema:hover { background: #f8fafc; border-color: #cdd6e2; }
+.momo-live .momo-live__cinema[aria-current="true"] { border-color: #d2a343; background: #fff8e7; box-shadow: inset 3px 0 #d2a343; }
+.momo-live .momo-live__results { min-width: 0; }
+.momo-live .momo-live__status { font-size: 12px; line-height: 1.7; }
+.momo-live .theater-showtime { padding: 0; border: 0; }
+.momo-live .theater-showtime__header { border-bottom: 1px solid #e9edf3; padding: 3px 0 18px; margin-bottom: 17px; }
+.momo-live .theater-showtime__header h3 { font-size: 17px; line-height: 1.4; }
+.momo-live .theater-showtime__header p { font-size: 12px; line-height: 1.55; }
+.momo-live .program-list { display: grid; gap: 12px; }
+.momo-live .program { border: 1px solid #e8ebf1; border-radius: 15px; padding: 16px; background: #fff; box-shadow: 0 6px 18px #16274408; }
+.momo-live .momo-live__poster { width: 68px; height: 96px; border-radius: 11px; }
+.momo-live .program__movie h3 { font-size: 14px; line-height: 1.5; margin: 0; }
+.momo-live .program__movie p { font-size: 11px; line-height: 1.6; margin: 5px 0 0; color: #738092; font-weight: 400; }
+.momo-live .program__format { gap: 8px; margin-top: 13px; }
+.momo-live .program__format-label { min-width: 70px; font-size: 11px; }
+.momo-live .showtime { min-height: 42px; min-width: 64px; border-radius: 10px; font-size: 12px; }
+.momo-live .showtime:hover { background: #fff1cf; border-color: #dfb760; }
+.momo-live .date-label { font-size: 11px; white-space: nowrap; }
+.skip-link { position: fixed; top: -100px; left: 15px; z-index: 100; padding: 12px 18px; border-radius: 10px; background: #182b49; color: #fff; font-weight: 700; }
+.skip-link:focus { top: 12px; }
+@media (max-width: 1020px) {
+  .momo-live .momo-live__layout { grid-template-columns: minmax(190px, 225px) minmax(0, 1fr); gap: 12px; padding-inline: 18px; }
+  .momo-live .momo-live__toolbar { padding-inline: 18px; }
+  .momo-live__intro { padding-inline: 18px; }
+}
+@media (max-width: 760px) {
+  .momo-live .momo-live__layout { grid-template-columns: 1fr; }
+  .momo-live .momo-live__cinemas { flex-direction: row; max-height: none; overflow-x: auto; overflow-y: hidden; gap: 10px; padding: 3px 2px 10px; scroll-snap-type: x proximity; }
+  .momo-live .momo-live__cinema { flex: 0 0 min(75vw, 245px); scroll-snap-align: start; }
+  .momo-live .momo-live__cinema[aria-current="true"] { box-shadow: inset 0 3px #d2a343; }
+  .momo-live__intro > span:last-child { margin-left: 0; }
+  .momo-live .momo-live__chips { max-width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+  .momo-live .momo-live__chip { flex: none; }
+}
+@media (max-width: 600px) {
+  .site-header__inner { gap: 7px; }
+  .brand { font-size: 16px; }
+  .header-action { font-size: 11px; padding: 10px 12px; border-radius: 10px; }
+  .header-action span { display: none; }
+  .menu-toggle { padding: 7px; }
+  .hero__description { font-size: 13px; }
+  .section-heading p { font-size: 12px; }
+  .section-link { font-size: 11px; }
+  .section-link span { width: 25px; height: 25px; }
+  .movie-card__head h3 { font-size: 12px; }
+  .movie-card__info p { font-size: 10px; }
+  .movie-card__status { font-size: 10px; }
+  .schedule-shell__top strong { font-size: 14px; }
+  .schedule-shell__top span:not(.schedule-shell__city) { font-size: 11px; }
+  .momo-live .momo-live__toolbar { padding: 8px 14px 13px; }
+  .momo-live .momo-live__layout { padding-inline: 14px; gap: 15px; }
+  .momo-live__intro { padding: 16px 14px 7px; }
+  .momo-live .momo-live__search { flex-basis: 100%; }
+  .momo-live .theater-showtime__header h3 { font-size: 15px; }
+  .momo-live .theater-showtime__header p { font-size: 11px; }
+  .momo-live .program { padding: 13px; }
+  .momo-live .momo-live__poster { width: 58px; height: 84px; }
+  .momo-live .program__movie h3 { font-size: 13px; }
+  .momo-live .program__format-label { padding-top: 0; min-width: 100%; }
+  .momo-live .showtime { min-height: 44px; }
+  .footer__links a { font-size: 11px; }
+}
+
+/* On smaller screens, show the actionable date/rating filters before tips. */
+@media (max-width: 860px) {
+  .schedule-main { order: -1; }
+  .schedule-aside { margin-top: 4px; }
+}
+
+
+/* Film-first homepage: discovery starts immediately after the site navigation. */
+.section--featured { padding-top: 38px; padding-bottom: 66px; }
+.section-heading--featured { margin-bottom: 25px; }
+.section-heading--featured h1 { margin: 0 0 9px; font-size: clamp(30px, 3.7vw, 47px); line-height: 1.15; color: #1a2638; font-weight: 800; letter-spacing: -.055em; }
+.section-heading--featured p { margin: 0; max-width: 690px; }
+.section--featured .movie-grid { row-gap: 28px; }
+.live-catalog__tools { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 27px; }
+.live-catalog__tools .catalog__search { max-width: 520px; margin: 0; min-height: 47px; }
+.live-catalog__count { font-size: 12px; font-weight: 700; color: #697589; margin-left: auto; }
+.live-cinema-catalog .cinema-grid { align-items: stretch; }
+.cinema-tile--live { min-height: 110px; }
+.cinema-tile--live .cinema-tile__body { overflow: hidden; }
+.cinema-tile--live .cinema-tile__body small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.cinema-tile--live:hover, .cinema-tile--live:focus-visible { border-color: #e1be7c; }
+.momo-live__film-link:hover, .momo-live__film-link:focus-visible,
+.momo-live__cinema-link:hover, .momo-live__cinema-link:focus-visible { color: #ad7d22; text-decoration: underline; text-underline-offset: 3px; }
+.momo-live__cinema-link { display: inline-block; margin-top: 9px; color: #967025; font-weight: 700; font-size: 12px; }
+.momo-live[data-cinema-only="true"] .momo-live__toolbar,
+.momo-live[data-cinema-only="true"] .momo-live__cinemas { display: none; }
+.momo-live[data-cinema-only="true"] .momo-live__layout { display: block; }
+.momo-live[data-cinema-only="true"] .momo-live__intro { padding-bottom: 16px; }
+.momo-live[data-cinema-only="true"] .momo-live__results { width: 100%; }
+
+/* Live film and cinema details are client-rendered; retain a useful shell before fetch. */
+.live-detail { padding: 34px 0 62px; color: #fff; background: radial-gradient(circle at 82% 15%, rgba(225, 168, 73, .17), transparent 33%), linear-gradient(120deg, #131e32, #223653); }
+.live-detail__loading { padding: 45px 20px; border: 1px dashed #69768c; border-radius: 16px; font-size: 14px; line-height: 1.8; color: #e7eaf0; }
+.live-detail__retry { display: inline-block; margin-left: 9px; color: #ffd16c; font-weight: 700; text-decoration: underline; }
+.live-detail__grid { display: grid; grid-template-columns: minmax(200px, 300px) minmax(0, 1fr); align-items: start; gap: clamp(28px, 5vw, 75px); }
+.live-detail__poster { position: relative; width: 100%; aspect-ratio: 2 / 3; overflow: hidden; border-radius: 21px; background: #263a51; border: 5px solid rgba(255, 255, 255, .12); box-shadow: 0 22px 45px #0004; display: grid; place-items: center; color: #cbd5e1; }
+.live-detail__poster img { width: 100%; height: 100%; object-fit: cover; }
+.live-detail__badge { display: inline-flex; align-items: center; padding: 7px 12px; border-radius: 99px; background: rgba(255, 209, 108, .14); border: 1px solid rgba(255, 209, 108, .40); color: #ffde9b; font-weight: 800; font-size: 12px; }
+.live-detail__info h1 { margin: 17px 0 7px; font-size: clamp(30px, 3.7vw, 52px); line-height: 1.2; letter-spacing: -.055em; font-weight: 800; }
+.live-detail__original { color: #c5d1e2; font-size: 13px; margin: 4px 0 14px; }
+.live-detail__tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 21px 0 26px; }
+.live-detail__tags span { border: 1px solid #718097; background: #ffffff10; padding: 7px 11px; border-radius: 9px; font-size: 12px; font-weight: 600; }
+.live-detail__info h2 { font-size: 15px; margin-bottom: 10px; color: #f2f5fb; }
+.live-detail__synopsis { font-size: 13px; line-height: 1.9; color: #cfdaea; max-width: 730px; white-space: pre-line; }
+.live-detail__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.live-detail__source { font-size: 11px; line-height: 1.7; color: #aab9cc; margin: 18px 0 0; }
+.page-hero--cinema-detail { background: radial-gradient(circle at 89% 4%, #ffebbb, transparent 37%), linear-gradient(120deg, #f6f9fc, #fff9ed); padding-bottom: 55px; }
+.page-hero--cinema-detail .eyebrow { margin-bottom: 8px; }
+.page-hero--cinema-detail h1 { max-width: 920px; line-height: 1.25; }
+.cinema-detail__address { max-width: 790px; font-size: 14px !important; line-height: 1.8 !important; color: #687489 !important; }
+.cinema-detail__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 25px; }
+.cinema-detail__actions .button--outline { border-color: #ced6e0; }
+.live-detail__loading--light { color: #4e5969; border-color: #d1d7e2; }
+.live-detail__loading--light .live-detail__retry { color: #9d731c; }
+@media (max-width: 860px) {
+  .live-detail__grid { grid-template-columns: minmax(160px, 235px) minmax(0, 1fr); gap: 28px; }
+  .section--featured { padding-top: 30px; }
+}
+@media (max-width: 600px) {
+  .section--featured { padding-top: 25px; padding-bottom: 40px; }
+  .section-heading--featured h1 { font-size: 29px; }
+  .live-detail { padding: 24px 0 42px; }
+  .live-detail__grid { grid-template-columns: 1fr; gap: 25px; }
+  .live-detail__poster { width: min(58vw, 225px); margin-inline: auto; }
+  .live-detail__info h1 { font-size: 29px; }
+  .live-detail__synopsis { font-size: 12px; }
+  .live-detail__actions .button { flex: 1 1 160px; }
+  .cinema-detail__actions .button { flex: 1 1 160px; }
+  .live-catalog__tools .catalog__search { flex: 1 1 100%; }
+  .live-catalog__count { margin-left: 0; }
+}
+
+
+/* Unified content skeletons: shapes follow their final layout; no layout jumps. */
+.skeleton__poster { position: relative; overflow: hidden; }
+.skeleton__poster-badge { position: absolute; top: 11px; left: 11px; display: block; width: 74px; height: 23px; border-radius: 8px; background: #d9e1ec; }
+.skeleton__cinema-tile { display: flex; align-items: center; gap: 12px; padding: 17px 15px; }
+.skeleton__cinema-icon { width: 46px; height: 46px; flex: none; border-radius: 12px; display: block; background: #dfe6ef; }
+.skeleton__cinema-lines { flex: 1; min-width: 0; display: grid; gap: 11px; }
+.skeleton__cinema-lines .skeleton__line { margin: 0; }
+.live-detail__loading--skeleton { border: 0; padding: 0; background: transparent; }
+@keyframes skeleton-shimmer {
+  to { background-position-x: -200%; }
+}
+.skeleton { animation: none; }
+.skeleton__poster, .skeleton__line, .skeleton__tile, .skeleton__row, .skeleton__block,
+.skeleton__poster-badge, .skeleton__cinema-icon,
+.momo-live__chip-placeholder, .momo-live__cinema-placeholder,
+.momo-live__loading-poster, .momo-live__loading-time,
+.detail-skeleton__line, .detail-skeleton__poster, .detail-schedule-skeleton__bar {
+  background-image: linear-gradient(100deg, #e3e9f1 15%, #f6f8fc 40%, #e3e9f1 68%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s linear infinite;
+}
+.detail-skeleton--film .detail-skeleton__line, .detail-skeleton--film .detail-skeleton__poster {
+  background-image: linear-gradient(100deg, #40516c 15%, #60728d 40%, #40516c 68%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton__poster, .skeleton__line, .skeleton__tile, .skeleton__row, .skeleton__block,
+  .skeleton__poster-badge, .skeleton__cinema-icon,
+  .momo-live__chip-placeholder, .momo-live__cinema-placeholder,
+  .momo-live__loading-poster, .momo-live__loading-time,
+  .detail-skeleton__line, .detail-skeleton__poster, .detail-schedule-skeleton__bar {
+    animation: none;
+  }
+}

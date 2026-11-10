@@ -1,0 +1,261 @@
+---
+/**
+ * Page-level first-paint skeleton. Content remains server-rendered beneath it;
+ * on slow APIs it yields to the individual section skeletons after 3.5 seconds.
+ */
+interface Props { active?: string; }
+const { active = '' } = Astro.props;
+const path = Astro.url.pathname;
+const filmDetail = /\/phim\/(?:chi-tiet|[^/]+)\/?$/.test(path);
+const cinemaDetail = /\/rap\/(?:chi-tiet|[^/]+)\/?$/.test(path);
+const schedule = active === 'schedule';
+const home = active === 'home';
+const cinemaList = active === 'cinemas' && !cinemaDetail;
+const listing = (active === 'now' || active === 'soon') && !filmDetail;
+const cards = Array.from({ length: 12 }, (_, i) => i);
+const cinemas = Array.from({ length: 8 }, (_, i) => i);
+const dates = Array.from({ length: 5 }, (_, i) => i);
+---
+<div class="page-skeleton" data-page-skeleton aria-hidden="true">
+  <div class="page-skeleton__notice"><span class="ps-bar ps-bar--notice"></span></div>
+  <div class="page-skeleton__header">
+    <div class="page-skeleton__container page-skeleton__nav">
+      <span class="ps-bar ps-bar--logo"></span>
+      <div class="page-skeleton__links">{[0,1,2,3].map(() => <span class="ps-bar ps-bar--nav"></span>)}</div>
+      <span class="ps-bar ps-bar--action"></span>
+    </div>
+  </div>
+  {home && <div class="page-skeleton__container page-skeleton__featured">
+    <span class="ps-bar ps-bar--eyebrow"></span><span class="ps-bar ps-bar--heading"></span><span class="ps-bar ps-bar--description"></span>
+    <div class="page-skeleton__movies">
+      {cards.map(() => <div class="page-skeleton__movie"><span class="ps-bar ps-bar--poster"></span><span class="ps-bar ps-bar--card-title"></span><span class="ps-bar ps-bar--card-meta"></span></div>)}
+    </div>
+  </div>}
+  {(listing || cinemaList) && <div class="page-skeleton__hero">
+    <div class="page-skeleton__container">
+      <span class="ps-bar ps-bar--breadcrumb"></span><span class="ps-bar ps-bar--eyebrow"></span><span class="ps-bar ps-bar--heading"></span><span class="ps-bar ps-bar--description"></span>
+    </div>
+  </div>}
+  {(listing || cinemaList) && <div class="page-skeleton__container page-skeleton__listing">
+    <div class="page-skeleton__toolbar"><span class="ps-bar ps-bar--search"></span><span class="ps-bar ps-bar--counter"></span></div>
+    {listing ? <div class="page-skeleton__movies">
+      {cards.map(() => <div class="page-skeleton__movie"><span class="ps-bar ps-bar--poster"></span><span class="ps-bar ps-bar--card-title"></span><span class="ps-bar ps-bar--card-meta"></span></div>)}
+    </div> : <div class="page-skeleton__cinemas">
+      {cinemas.map(() => <div class="page-skeleton__cinema"><span class="ps-bar ps-bar--cinema-icon"></span><div><span class="ps-bar ps-bar--cinema-title"></span><span class="ps-bar ps-bar--cinema-meta"></span></div></div>)}
+    </div>}
+  </div>}
+  {schedule && <div class="page-skeleton__hero">
+    <div class="page-skeleton__container">
+      <span class="ps-bar ps-bar--breadcrumb"></span><span class="ps-bar ps-bar--eyebrow"></span><span class="ps-bar ps-bar--heading"></span><span class="ps-bar ps-bar--description"></span>
+    </div>
+  </div>}
+  {(schedule || home || cinemaDetail || filmDetail) && <div class:list={['page-skeleton__schedule', { 'page-skeleton__schedule--home': home }]}>
+    <div class="page-skeleton__container">
+      {home && <><span class="ps-bar ps-bar--eyebrow"></span><span class="ps-bar ps-bar--heading"></span></>}
+      <div class="page-skeleton__schedule-cols">
+        {!home && !filmDetail && <div class="page-skeleton__sidebar"><span class="ps-bar ps-bar--sidebox"></span><span class="ps-bar ps-bar--sidebox-sm"></span></div>}
+        <div class="page-skeleton__shell">
+          <div class="page-skeleton__place"><span class="ps-bar ps-bar--shell-title"></span><span class="ps-bar ps-bar--location-filter"></span></div>
+          <div class="page-skeleton__chains">{[0,1,2,3,4,5,6,7].map(() => <span class="ps-bar ps-bar--chain"></span>)}</div>
+          <div class="page-skeleton__dates">{dates.map(() => <span class="ps-bar ps-bar--date"></span>)}</div>
+          <div class="page-skeleton__shell-body">
+            <div class="page-skeleton__left">{[0,1,2,3,4].map(() => <span class="ps-bar ps-bar--cinema-row"></span>)}</div>
+            <div class="page-skeleton__right">{[0,1,2].map(() => <div class="page-skeleton__show"><span class="ps-bar ps-bar--show-title"></span><span class="ps-bar ps-bar--show-line"></span><div>{[0,1,2,3].map(() => <span class="ps-bar ps-bar--time"></span>)}</div></div>)}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>}
+  {(filmDetail || cinemaDetail) && <div class:list={['page-skeleton__detail', { 'page-skeleton__detail--film': filmDetail }]}>
+    <div class="page-skeleton__container">
+      <span class="ps-bar ps-bar--breadcrumb"></span>
+      <div class="page-skeleton__detail-cols">
+        {filmDetail && <span class="ps-bar ps-bar--detail-poster"></span>}
+        <div class="page-skeleton__detail-info">
+          <span class="ps-bar ps-bar--eyebrow"></span><span class="ps-bar ps-bar--detail-title"></span><span class="ps-bar ps-bar--detail-short"></span>
+          <div class="page-skeleton__detail-tags">{[0,1,2].map(() => <span class="ps-bar ps-bar--tag"></span>)}</div>
+          <span class="ps-bar ps-bar--detail-long"></span><span class="ps-bar ps-bar--detail-long"></span><span class="ps-bar ps-bar--detail-short"></span><span class="ps-bar ps-bar--action"></span>
+        </div>
+      </div>
+    </div>
+  </div>}
+  {home && <div class="page-skeleton__container page-skeleton__upcoming">
+    <span class="ps-bar ps-bar--eyebrow"></span><span class="ps-bar ps-bar--heading"></span><span class="ps-bar ps-bar--description"></span>
+    <div class="page-skeleton__movies">
+      {cards.slice(0, 6).map(() => <div class="page-skeleton__movie"><span class="ps-bar ps-bar--poster"></span><span class="ps-bar ps-bar--card-title"></span><span class="ps-bar ps-bar--card-meta"></span></div>)}
+    </div>
+  </div>}
+  {home && <div class="page-skeleton__theaters">
+    <div class="page-skeleton__container">
+      <span class="ps-bar ps-bar--eyebrow"></span><span class="ps-bar ps-bar--heading"></span><span class="ps-bar ps-bar--description"></span>
+      <div class="page-skeleton__cinemas">
+        {cinemas.map(() => <div class="page-skeleton__cinema"><span class="ps-bar ps-bar--cinema-icon"></span><div><span class="ps-bar ps-bar--cinema-title"></span><span class="ps-bar ps-bar--cinema-meta"></span></div></div>)}
+      </div>
+    </div>
+  </div>}
+  <div class="page-skeleton__footer">
+    <div class="page-skeleton__container page-skeleton__footer-inner">
+      <div><span class="ps-bar ps-bar--logo"></span><span class="ps-bar ps-bar--footer-line"></span><span class="ps-bar ps-bar--footer-line"></span></div>
+      <div class="page-skeleton__footer-links">{[0,1,2].map(() => <div><span class="ps-bar ps-bar--footer-heading"></span><span class="ps-bar ps-bar--footer-line"></span><span class="ps-bar ps-bar--footer-line"></span></div>)}</div>
+    </div>
+  </div>
+</div>
+<style is:global>
+  .page-skeleton { display: none; position: fixed; inset: 0; z-index: 200; overflow: auto; background: #fff; pointer-events: auto; }
+  html.has-js:not(.page-skeleton-done) .page-skeleton { display: flex; flex-direction: column; }
+  .page-skeleton__detail { order: 1; }
+  .page-skeleton__schedule { order: 2; }
+  .page-skeleton__container { width: min(calc(100% - 64px), 1220px); margin-inline: auto; }
+  .page-skeleton__upcoming { order: 3; padding-block: 75px 80px; }
+  .page-skeleton__theaters { order: 4; background: #fafbfd; padding-block: 72px 80px; }
+  .page-skeleton__footer { order: 5; background: #111b2e; padding-block: 56px 74px; }
+  .page-skeleton__footer .ps-bar { opacity: .24; }
+  .page-skeleton__footer-inner { display: flex; justify-content: space-between; gap: 40px; }
+  .page-skeleton__footer-inner > div:first-child { width: 260px; }
+  .ps-bar--footer-line { width: 180px; max-width: 100%; height: 12px; margin-top: 16px; }
+  .ps-bar--footer-heading { width: 90px; height: 16px; }
+  .page-skeleton__footer-links { display: flex; gap: 50px; }
+  @media (max-width: 600px) {
+    .page-skeleton__upcoming, .page-skeleton__theaters { padding-block: 42px; }
+    .page-skeleton__footer-inner { flex-direction: column; gap: 32px; }
+    .page-skeleton__footer-links { gap: 20px; flex-wrap: wrap; }
+    .page-skeleton__footer { padding-block: 45px; }
+  }
+  .page-skeleton__notice { height: 32px; background: #fff8e8; display: grid; place-items: center; }
+  .page-skeleton__header { height: 82px; border-bottom: 1px solid #edf0f5; }
+  .page-skeleton__nav { display: flex; align-items: center; gap: 35px; height: 100%; }
+  .page-skeleton__links { display: flex; gap: 20px; margin-left: auto; }
+  .page-skeleton__nav > .ps-bar--action { margin-left: 20px; }
+  .ps-bar { display: block; flex: none; background: linear-gradient(100deg, #e8edf4 15%, #f6f8fb 40%, #e8edf4 68%); background-size: 200% 100%; animation: page-skeleton-shimmer 1.5s linear infinite; border-radius: 9px; }
+  @keyframes page-skeleton-shimmer { to { background-position-x: -200%; } }
+  .ps-bar--notice { width: min(480px, 70%); height: 9px; }
+  .ps-bar--logo { width: 158px; height: 35px; }
+  .ps-bar--nav { width: 92px; height: 12px; }
+  .ps-bar--action { width: 116px; height: 42px; }
+  .ps-bar--eyebrow { width: 160px; height: 10px; margin-bottom: 17px; }
+  .ps-bar--heading { width: min(360px, 75%); height: 38px; margin-bottom: 16px; }
+  .ps-bar--description { width: min(520px, 93%); height: 13px; }
+  .ps-bar--breadcrumb { width: 255px; height: 10px; margin-bottom: 28px; }
+  .page-skeleton__featured { padding-top: 75px; padding-bottom: 80px; }
+  .page-skeleton__movies { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 20px; margin-top: 30px; }
+  .page-skeleton__movie { min-width: 0; }
+  .ps-bar--poster { width: 100%; aspect-ratio: 2/3; border-radius: 15px; }
+  .ps-bar--card-title { width: 86%; height: 13px; margin-top: 16px; }
+  .ps-bar--card-meta { width: 65%; height: 10px; margin-top: 10px; }
+  .page-skeleton__hero { padding: 43px 0 46px; background: linear-gradient(110deg, #f8f8f3, #f5f8fd); }
+  .page-skeleton__listing { padding-block: 55px 80px; }
+  .page-skeleton__toolbar { display: flex; justify-content: space-between; gap: 20px; }
+  .ps-bar--search { width: min(365px, 65%); height: 45px; }
+  .ps-bar--counter { width: 112px; height: 13px; margin-block: auto; }
+  .page-skeleton__cinemas { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-top: 28px; }
+  .page-skeleton__cinema { padding: 18px 16px; border-radius: 15px; border: 1px solid #edf0f4; display: flex; gap: 12px; align-items: center; }
+  .ps-bar--cinema-icon { width: 46px; height: 46px; border-radius: 13px; }
+  .page-skeleton__cinema > div { min-width: 0; flex: 1; }
+  .ps-bar--cinema-title { width: 92%; height: 12px; }
+  .ps-bar--cinema-meta { width: 70%; height: 10px; margin-top: 10px; }
+  .page-skeleton__schedule { padding: 56px 0 80px; background: #fff; }
+  .page-skeleton__schedule--home { background: #f7f8fb; }
+  .page-skeleton__schedule-cols { display: grid; grid-template-columns: 1fr; gap: 30px; align-items: start; }
+  .page-skeleton__sidebar { display: none; }
+  .page-skeleton__place { display: flex; gap: 18px; align-items: center; justify-content: space-between; }
+  .ps-bar--location-filter { height: 42px; width: 205px; }
+  .page-skeleton__chains { display: flex; gap: 10px; overflow: hidden; margin-top: 22px; }
+  .ps-bar--chain { flex: 0 0 90px; height: 88px; border-radius: 12px; }
+  @media (max-width: 600px) { .ps-bar--location-filter { width: 125px; } .ps-bar--chain { flex-basis: 80px; height: 80px; } }
+  .page-skeleton__schedule--home .page-skeleton__schedule-cols { grid-template-columns: 1fr; margin-top: 30px; }
+  .page-skeleton__sidebar { display: grid; gap: 15px; }
+  .ps-bar--sidebox { height: 210px; width: 100%; border-radius: 15px; }
+  .ps-bar--sidebox-sm { height: 135px; width: 100%; border-radius: 15px; }
+  .page-skeleton__shell { min-width: 0; padding: 26px; border: 1px solid #e8edf4; border-radius: 20px; background: #fff; }
+  .ps-bar--shell-title { width: 240px; height: 18px; }
+  .page-skeleton__dates { display: flex; gap: 10px; overflow: hidden; margin: 23px 0; }
+  .ps-bar--date { width: 99px; height: 75px; border-radius: 11px; }
+  .page-skeleton__shell-body { display: grid; grid-template-columns: 225px 1fr; gap: 16px; }
+  .page-skeleton__left { display: grid; gap: 8px; align-content: start; }
+  .ps-bar--cinema-row { width: 100%; height: 68px; border-radius: 13px; }
+  .page-skeleton__right { display: grid; gap: 10px; }
+  .page-skeleton__show { border: 1px solid #edf0f5; border-radius: 14px; padding: 18px; }
+  .ps-bar--show-title { width: 58%; height: 16px; }
+  .ps-bar--show-line { width: 77%; height: 11px; margin-top: 12px; }
+  .page-skeleton__show > div { display: flex; gap: 8px; margin-top: 18px; }
+  .ps-bar--time { width: 58px; height: 39px; }
+  .page-skeleton__detail { padding: 35px 0 65px; background: #f6f8fb; }
+  .page-skeleton__detail--film { background: #172640; }
+  .page-skeleton__detail--film .ps-bar { opacity: .30; }
+  .page-skeleton__detail-cols { display: grid; grid-template-columns: minmax(200px, 300px) 1fr; gap: 65px; }
+  .page-skeleton__detail:not(.page-skeleton__detail--film) .page-skeleton__detail-cols { grid-template-columns: 1fr; }
+  .ps-bar--detail-poster { width: 100%; aspect-ratio: 2/3; border-radius: 20px; }
+  .page-skeleton__detail-info { min-width: 0; padding-top: 8px; }
+  .ps-bar--detail-title { width: min(510px, 89%); height: 45px; margin-bottom: 19px; }
+  .ps-bar--detail-short { width: 37%; height: 13px; margin-bottom: 16px; }
+  .page-skeleton__detail-tags { display: flex; gap: 9px; margin: 15px 0 25px; }
+  .ps-bar--tag { width: 90px; height: 30px; }
+  .ps-bar--detail-long { width: 88%; height: 12px; margin-bottom: 14px; }
+  @media (max-width: 1100px) {
+    .page-skeleton__movies { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .page-skeleton__cinemas { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .page-skeleton__links { gap: 12px; }
+    .ps-bar--nav { width: 65px; }
+  }
+  @media (max-width: 860px) {
+    .page-skeleton__container { width: min(calc(100% - 40px), 1220px); }
+    .page-skeleton__header { height: 69px; }
+    .page-skeleton__links { display: none; }
+    .page-skeleton__nav > .ps-bar--action { margin-left: auto; }
+    .page-skeleton__schedule-cols { grid-template-columns: 1fr; }
+    .page-skeleton__sidebar { display: none; }
+    .page-skeleton__movies { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .page-skeleton__detail-cols { gap: 28px; grid-template-columns: 220px 1fr; }
+  }
+  @media (max-width: 600px) {
+    .page-skeleton__container { width: calc(100% - 32px); }
+    .page-skeleton__header { height: 65px; }
+    .ps-bar--logo { width: 137px; }
+    .ps-bar--action { width: 95px; height: 40px; }
+    .page-skeleton__featured, .page-skeleton__listing { padding-block: 42px; }
+    .page-skeleton__hero { padding-block: 28px 35px; }
+    .ps-bar--heading { height: 27px; }
+    .page-skeleton__movies { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+    .page-skeleton__cinemas { grid-template-columns: 1fr; }
+    .page-skeleton__schedule { padding-block: 40px 55px; }
+    .page-skeleton__shell { padding: 16px; }
+    .page-skeleton__shell-body { grid-template-columns: 1fr; }
+    .page-skeleton__left { display: flex; overflow: hidden; }
+    .ps-bar--cinema-row { width: 170px; height: 72px; }
+    .page-skeleton__detail-cols { grid-template-columns: 1fr; }
+    .ps-bar--detail-poster { width: min(58vw, 225px); justify-self: center; }
+    .page-skeleton__detail-info { padding: 0; }
+    .ps-bar--detail-title { height: 30px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .ps-bar { animation: none; } }
+</style>
+<script>
+  // Never hold the interface hostage to an external data source. Once the
+  // first meaningful area settles (success or error), reveal the page.
+  const overlay = document.querySelector<HTMLElement>('[data-page-skeleton]');
+  if (overlay) {
+    let finished = false;
+    let observer: MutationObserver | undefined;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      observer?.disconnect();
+      if (timeout) clearTimeout(timeout);
+      document.documentElement.classList.add('page-skeleton-done');
+      overlay.remove();
+    };
+    const ready = () => {
+      const target = document.querySelector<HTMLElement>('[data-page-priority], [data-live-movies], [data-live-cinemas], [data-momo-results]');
+      if (!target || target.getAttribute('aria-busy') !== 'true') { finish(); return; }
+      observer = new MutationObserver(() => {
+        if (target.getAttribute('aria-busy') !== 'true') finish();
+      });
+      observer.observe(target, { attributes: true, attributeFilter: ['aria-busy'] });
+      timeout = setTimeout(finish, 3500);
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready, { once: true });
+    else ready();
+    window.addEventListener('pagehide', finish, { once: true });
+  }
+</script>

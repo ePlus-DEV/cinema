@@ -1,0 +1,47 @@
+---
+/** Placeholder shaped like the live film/cinema detail rather than a text box. */
+interface Props { kind?: 'film' | 'cinema'; }
+const { kind = 'film' } = Astro.props;
+---
+<div class:list={['detail-skeleton', { 'detail-skeleton--film': kind === 'film' }]} aria-hidden="true">
+  {kind === 'film' && <div class="detail-skeleton__poster skeleton"></div>}
+  <div class="detail-skeleton__info">
+    <span class="detail-skeleton__line detail-skeleton__line--badge skeleton"></span>
+    <span class="detail-skeleton__line detail-skeleton__line--title skeleton"></span>
+    <span class="detail-skeleton__line detail-skeleton__line--subtitle skeleton"></span>
+    <div class="detail-skeleton__tags">
+      {[0, 1, 2].map(() => <span class="detail-skeleton__line detail-skeleton__line--tag skeleton"></span>)}
+    </div>
+    {kind === 'film' && <div class="detail-skeleton__synopsis">
+      <span class="detail-skeleton__line skeleton"></span>
+      <span class="detail-skeleton__line skeleton"></span>
+      <span class="detail-skeleton__line detail-skeleton__line--short skeleton"></span>
+    </div>}
+    <span class="detail-skeleton__line detail-skeleton__line--button skeleton"></span>
+  </div>
+</div>
+<style>
+  .detail-skeleton { display: grid; grid-template-columns: minmax(200px, 300px) minmax(0, 1fr); gap: clamp(28px, 5vw, 75px); align-items: start; }
+  .detail-skeleton:not(.detail-skeleton--film) { grid-template-columns: 1fr; }
+  .detail-skeleton__poster { width: 100%; aspect-ratio: 2 / 3; border-radius: 19px; background: rgba(210, 222, 238, .25); }
+  .detail-skeleton__info { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; padding-top: 8px; }
+  .detail-skeleton__line { display: block; height: 12px; width: min(100%, 530px); border-radius: 9px; background: #e6ebf2; }
+  .detail-skeleton--film .detail-skeleton__line { background: #52647d; }
+  .detail-skeleton__line--badge { width: 104px; height: 28px; border-radius: 99px; }
+  .detail-skeleton__line--title { width: min(90%, 480px); height: 43px; margin-top: 21px; }
+  .detail-skeleton__line--subtitle { width: 45%; height: 14px; margin-top: 16px; }
+  .detail-skeleton__tags { display: flex; gap: 9px; margin: 23px 0; flex-wrap: wrap; }
+  .detail-skeleton__line--tag { width: 78px; height: 30px; }
+  .detail-skeleton__synopsis { display: grid; gap: 13px; width: min(100%, 610px); margin: 7px 0 21px; }
+  .detail-skeleton__synopsis .detail-skeleton__line { width: 100%; }
+  .detail-skeleton__synopsis .detail-skeleton__line--short { width: 64%; }
+  .detail-skeleton__line--button { width: 195px; height: 42px; border-radius: 10px; }
+  @media (max-width: 860px) {
+    .detail-skeleton { grid-template-columns: minmax(160px, 235px) minmax(0, 1fr); gap: 28px; }
+  }
+  @media (max-width: 600px) {
+    .detail-skeleton { grid-template-columns: 1fr; gap: 25px; }
+    .detail-skeleton__poster { width: min(58vw, 225px); justify-self: center; }
+    .detail-skeleton__line--title { height: 32px; }
+  }
+</style>

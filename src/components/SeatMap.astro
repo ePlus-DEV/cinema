@@ -1,4 +1,5 @@
 ---
+import '../styles/seatmap-redesign.css';
 // On-site seat map dialog. Opened by dispatching a window event:
 //   window.dispatchEvent(new CustomEvent('eplus:open-seats', { detail }))
 // where detail = { filmTitle, format, cinemaName, chainName, dateLabel,
@@ -12,6 +13,7 @@
   <div class="seatmap__panel">
     <header class="seatmap__header">
       <div>
+        <span class="seatmap__eyebrow">SƠ ĐỒ GHẾ · XEM TRƯỚC</span>
         <h3 data-seatmap-title>Chọn ghế</h3>
         <p data-seatmap-meta></p>
       </div>
@@ -45,12 +47,26 @@
     width: 34px; height: 34px; cursor: pointer; font: inherit; flex: none;
   }
   .seatmap__body { padding: 16px 22px; overflow: auto; }
-  .seatmap__screen {
-    text-align: center; color: var(--muted); font-size: .75rem; letter-spacing: .35em;
-    border-top: 4px solid var(--navy); border-radius: 50% 50% 0 0 / 12px 12px 0 0;
-    padding-top: 8px; margin: 0 auto 18px; max-width: 520px;
+  /* Keep the screen and all seat rows inside one intrinsic-width stage.
+     The stage is centered when it fits, and the entire map scrolls when it doesn't. */
+  .seatmap__map-scroll {
+    width: 100%; overflow-x: auto; overscroll-behavior-x: contain;
+    padding: 4px 0 10px; scrollbar-width: thin;
   }
-  .seatmap__grid { display: grid; gap: 6px; justify-content: start; overflow-x: auto; padding-bottom: 6px; }
+  .seatmap__stage { display: flex; flex-direction: column; width: max-content; margin-inline: auto; }
+  .seatmap__screen {
+    width: 100%; text-align: center; color: var(--muted); font-size: .75rem; letter-spacing: .35em;
+    border-top: 4px solid var(--navy); border-radius: 50% 50% 0 0 / 12px 12px 0 0;
+    padding-top: 8px; margin: 0 0 18px;
+  }
+  .seatmap__grid { display: grid; gap: 6px; width: max-content; padding-bottom: 6px; }
+  .seatmap__scroll-hint { margin: 0 0 10px; color: var(--muted); font-size: .76rem; text-align: center; }
+  @media (max-width: 600px) {
+    .seatmap__panel { max-height: calc(100dvh - 24px); }
+    .seatmap__body { padding: 12px 14px; }
+    .seatmap__header { padding: 15px 14px 12px; }
+    .seatmap__footer { padding: 12px 14px; }
+  }
   .seatmap__row { display: flex; gap: 5px; align-items: center; }
   .seatmap__row-label { width: 18px; flex: none; text-align: center; color: var(--muted); font-size: .72rem; font-weight: 700; }
   .seat {
@@ -63,7 +79,7 @@
   .seat--gap { visibility: hidden; }
   .seat:disabled { background: #e3e7ee; border-color: #d3d9e2; color: #9aa5b5; cursor: not-allowed; text-decoration: line-through; }
   .seat[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
-  .seatmap__legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; color: var(--muted); font-size: .8rem; }
+  .seatmap__legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 14px; margin-top: 14px; color: var(--muted); font-size: .8rem; }
   .seatmap__legend span { display: inline-flex; gap: 6px; align-items: center; }
   .seatmap__swatch { width: 16px; height: 16px; border-radius: 5px 5px 2px 2px; border: 1.5px solid #b9c2d0; background: #fff; display: inline-block; }
   .seatmap__swatch--taken { background: #e3e7ee; border-color: #d3d9e2; }
@@ -76,6 +92,10 @@
   .seatmap__footer:empty { display: none; }
   .seatmap__total strong { font-size: 1.02rem; }
   .seatmap__note { color: var(--muted); font-size: .78rem; flex-basis: 100%; }
+  .seatmap__seats-placeholder { display: grid; gap: 8px; padding: 14px 0 20px; }
+  .seatmap__seats-placeholder-screen { height: 12px; width: min(75%, 430px); margin: 0 auto 16px; border-radius: 100% 100% 4px 4px; background: #dce3ed; }
+  .seatmap__seats-placeholder-row { display: flex; gap: 7px; justify-content: center; overflow: hidden; }
+  .seatmap__seats-placeholder-seat { width: 25px; height: 25px; flex: none; border-radius: 7px 7px 3px 3px; background: #e4eaf2; }
   .seatmap__status { color: var(--muted); padding: 10px 0 16px; }
   .seatmap__status button {
     margin-left: 10px; border: 1px solid var(--border); background: #fff; border-radius: 999px;
@@ -138,23 +158,43 @@
             return `<button type="button" class="seat" disabled title="${esc(name)} — đã đặt">${esc(seat.momoId || '')}</button>`;
           }
           free++;
-          const style = color ? ` style="border-color:${esc(color)};color:${esc(color)}"` : '';
           const typeName = type?.Name ? ` · ${type.Name}` : '';
-          return `<button type="button" class="seat" data-seat="${esc(name)}" data-price="${seat.price || 0}" aria-pressed="false"${style} title="${esc(name + typeName)} — ${vnd.format(seat.price || 0)}₫">${esc(seat.momoId || '')}</button>`;
+          const normalized = String(type?.Name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+          const kind = /vip/.test(normalized) ? 'seat--vip'
+            : /(couple|sweet|doi|double|love)/.test(normalized) ? 'seat--couple'
+            : 'seat--standard';
+          return `<button type="button" class="seat seat--available ${kind}" data-seat="${esc(name)}" data-price="${seat.price || 0}" aria-pressed="false" title="${esc(name + typeName)} — ${vnd.format(seat.price || 0)}₫">${esc(seat.momoId || '')}</button>`;
         }).join('');
         return `<div class="seatmap__row"><span class="seatmap__row-label">${esc(label)}</span>${cells}<span class="seatmap__row-label">${esc(label)}</span></div>`;
       }).join('');
-      const legendTypes = (info.SeatTypes || []).map((type) =>
-        `<span><i class="seatmap__swatch" style="border-color:${esc(type.Color || '#b9c2d0')}"></i>${esc(type.Name)}</span>`
-      ).join('');
-      bodyEl.innerHTML = `<div class="seatmap__screen">MÀN HÌNH</div>
-        <div class="seatmap__grid">${rowsHtml}</div>
+      const legendTypes = (info.SeatTypes || []).map((type) => {
+        const normalized = String(type.Name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        const kind = /vip/.test(normalized) ? 'seatmap__swatch--vip'
+          : /(couple|sweet|doi|double|love)/.test(normalized) ? 'seatmap__swatch--couple'
+          : 'seatmap__swatch--standard';
+        return `<span><i class="seatmap__swatch ${kind}"></i>${esc(type.Name)}</span>`;
+      }).join('');
+      bodyEl.innerHTML = `<div class="seatmap__map-scroll" data-seatmap-scroll role="region" aria-label="Sơ đồ ghế — cuộn ngang để xem tất cả các ghế" tabindex="0">
+          <div class="seatmap__stage">
+            <div class="seatmap__screen">MÀN HÌNH</div>
+            <div class="seatmap__grid">${rowsHtml}</div>
+          </div>
+        </div>
+        <p class="seatmap__scroll-hint" data-seatmap-hint hidden>↔ Vuốt ngang để xem toàn bộ ghế</p>
         <div class="seatmap__legend">
-          <span><i class="seatmap__swatch"></i>Ghế trống (${free})</span>
+          <span><i class="seatmap__swatch seatmap__swatch--standard"></i>Ghế trống (${free})</span>
           <span><i class="seatmap__swatch seatmap__swatch--taken"></i>Đã đặt (${taken})</span>
           <span><i class="seatmap__swatch seatmap__swatch--selected"></i>Đang chọn</span>
           ${legendTypes}
         </div>`;
+      const scroller = bodyEl.querySelector('[data-seatmap-scroll]');
+      const hint = bodyEl.querySelector('[data-seatmap-hint]');
+      if (scroller) {
+        const horizontalOverflow = scroller.scrollWidth > scroller.clientWidth + 1;
+        if (hint) hint.hidden = !horizontalOverflow;
+        // Start at the middle on narrow screens without changing seat positions.
+        if (horizontalOverflow) scroller.scrollLeft = (scroller.scrollWidth - scroller.clientWidth) / 2;
+      }
       bodyEl.querySelectorAll('[data-seat]').forEach((button) => {
         button.addEventListener('click', () => {
           const name = button.dataset.seat;
@@ -178,10 +218,11 @@
       titleEl.textContent = detail.filmTitle || 'Chọn ghế';
       metaEl.textContent = [detail.cinemaName, detail.screenName, detail.dateLabel, detail.timeLabel, detail.format]
         .filter(Boolean).join(' · ');
-      bodyEl.innerHTML = `<div class="skeleton__block skeleton" aria-hidden="true">
-          <div class="skeleton__line" style="width:40%"></div>
-          <div class="skeleton__line"></div><div class="skeleton__line"></div>
-          <div class="skeleton__line skeleton__line--short"></div>
+      bodyEl.innerHTML = `<div class="seatmap__seats-placeholder" aria-hidden="true">
+          <div class="seatmap__seats-placeholder-screen skeleton"></div>
+          ${Array.from({ length: 7 }, () => `<div class="seatmap__seats-placeholder-row">
+            ${Array.from({ length: 12 }, () => '<span class="seatmap__seats-placeholder-seat skeleton"></span>').join('')}
+          </div>`).join('')}
         </div><p class="seatmap__status">Đang tải sơ đồ ghế…</p>`;
       root.hidden = false;
       document.body.style.overflow = 'hidden';

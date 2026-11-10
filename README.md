@@ -3,7 +3,7 @@
 Responsive, mobile-first concept for a Vietnamese cinema discovery and showtimes website.
 
 > [!IMPORTANT]
-> **UI preview only.** All movie titles, film descriptions, poster art, dates, and showtimes are sample fixtures, not live cinema schedules. This project does **not** sell tickets or connect to MoMo. All current pages have **noindex** until approved real data is integrated.
+> **UI preview only.** The homepage and live schedule use a third-party MoMo data feed for discovery, while movie detail/catalog and other pages still contain sample fixtures. ePlus Cinema does **not** sell tickets or redirect visitors to MoMo for booking. All pages remain **noindex** until authorized data is available.
 
 ## Features
 
@@ -110,7 +110,7 @@ scripts/
 
 ## Real showtime data from MoMo (experimental)
 
-The page `/lich-chieu/momo/` loads showtimes **live in the visitor's browser**
+The pages `/lich-chieu/` and `/lich-chieu/momo/` load showtimes **live in the visitor's browser**
 from the same API the public MoMo Cinema schedule page
 (<https://www.momo.vn/cinema/lich-chieu>) uses:
 
@@ -125,7 +125,7 @@ from the same API the public MoMo Cinema schedule page
   CORS proxy configured by the **`PUBLIC_MOMO_CORS_PROXY`** env variable
   (see `.env.example`; the Pages workflow sets it from the repository variable
   of the same name, defaulting to the ePlus cors-anywhere instance on Heroku).
-- The page is still `noindex`, sells no tickets, and showtime links go to MoMo.
+- Both pages stay `noindex` and sell no tickets. Showtime buttons open the **on-site seat-map preview**. Home cinema cards preserve the selected cinema in an internal query parameter; there are no visitor-facing MoMo booking links.
 
 An offline snapshot path also exists for development:
 `scripts/fetch-momo-showtimes.mjs` makes the same calls from Node and writes
@@ -146,3 +146,31 @@ npm run fetch:showtimes -- [--city=50] [--cineplex=6] [--days=3] [--date=YYYY-MM
 4. Add map integration, booking deep links, sitemap, monitoring, and regression tests.
 
 The demo does not claim affiliation with CGV, Galaxy Cinema, Lotte Cinema, Beta Cinemas or MoMo.
+
+## Live discovery and detail page routes
+
+The main UI is **film-first**: the homepage opens with "Phim đang chiếu" rather than a decorative hero. The movie directories and `/rap/` use live client-side MoMo data, **not** legacy fixture catalogs.
+
+GitHub Pages is static. To support newly listed movies and cinemas without rebuilding on every new item, details use internal query parameters:
+
+- `/phim/chi-tiet/?id=<film.Id>`: live poster, synopsis, genres, duration, age rating and screening dates (where supplied), plus a film-filtered showtime explorer for currently showing films.
+- `/rap/chi-tiet/?cinema=<chainId>:<apiCinemaId>`: cinema name, chain, address and a date-filtered schedule for that specific cinema.
+- `/lich-chieu/`: the complete live schedule; the legacy `/lich-chieu/momo/` route remains available.
+
+The query parameters are identifiers; displayed fields are fetched from the source. No MoMo booking redirects are used. All pages retain `noindex, nofollow` because this feed is not licensed. Legacy mock `/phim/[slug]/` and `/rap/[slug]/` routes remain for compatibility but are not linked by the real-data navigation.
+
+### Cinema schedule explorer (PR #4 UI refinement)
+
+- Location: the existing feed is configured for **TP. Hồ Chí Minh** only
+  (`apiCityId=50`). The location selector filters **districts actually
+  present in loaded cinema addresses**. It does not pretend to have verified
+  city IDs for other provinces. Do not present nationwide availability without
+  a verified source/city ID mapping.
+- Venue chain and cinema cards show external provider-hosted **chain logo
+  images**, with accessible typography fallbacks if an asset fails to load.
+  Brand images belong to their owners; the project does not claim ownership.
+- The main schedule has a single full-width viewer: city/district, chain rail,
+  theater list, date picker, film times, then an internal seat-map preview.
+  The modal is **not** a checkout and does not hold/book seats.
+- No visitor-facing outbound links to MoMo were added. Live API/CDN
+  dependencies remain third-party and may fail separately from the UI.

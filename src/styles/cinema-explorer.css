@@ -1,0 +1,208 @@
+/* Cinema explorer — ePlus visual language, independently structured to make
+   venue, date, film and seats obvious. Never presents a checkout action. */
+.momo-live { padding: 0 0 4px; }
+.momo-live .momo-live__location {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 14px;
+  padding: 18px 24px; background: #fcfdff; border-bottom: 1px solid #e8edf4;
+}
+.momo-live__place { display: flex; align-items: center; gap: 10px; }
+.momo-live__place > span { color: #b27b25; font-size: 25px; line-height: 1; }
+.momo-live__place small { display: block; font-size: 10px; color: #748296; margin-bottom: 4px; }
+.momo-live__place strong { display: block; font-size: 14px; color: #18273f; }
+.momo-live__district-label {
+  display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 700;
+  color: #546175; margin-left: 16px;
+}
+.momo-live__district-label select {
+  width: min(250px, 45vw); max-width: 100%; background: white; border: 1px solid #dfe5ec;
+  border-radius: 10px; color: #1b2b44; padding: 11px 13px; min-height: 44px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+}
+.momo-live__district-label select:focus-visible { outline: 2px solid #e4af53; outline-offset: 2px; }
+.momo-live__location-note { margin-left: auto; font-size: 11px; color: #8895a8; }
+.momo-live .momo-live__toolbar {
+  display: block; padding: 16px 22px 17px; margin: 0;
+  border-bottom: 1px solid #e8edf4; background: white;
+}
+.momo-live .momo-live__chips {
+  display: flex; align-items: stretch; flex-wrap: nowrap;
+  overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x proximity;
+  scrollbar-width: thin; padding: 2px 2px 9px; gap: 10px;
+}
+.momo-live .momo-live__chip {
+  display: flex; flex: 0 0 91px; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; padding: 9px 5px 10px; min-width: 0; min-height: 97px;
+  border: 1px solid #e7ebf1; background: #fff; border-radius: 13px; color: #536176;
+  box-shadow: none; font-size: 10px; line-height: 1.45; font-weight: 700;
+  white-space: normal; text-align: center; scroll-snap-align: start;
+}
+.momo-live .momo-live__chip:hover { background: #fff9ec; border-color: #e7c68d; }
+.momo-live .momo-live__chip[aria-pressed="true"] {
+  color: #17263d; background: #fff8e9; border-color: #c89439;
+  box-shadow: inset 0 -3px #e0a943;
+}
+.momo-live__chain-logo, .momo-live__chain-all, .momo-live__list-logo, .momo-live__head-logo,
+.chain-logo {
+  display: inline-flex; flex: none; align-items: center; justify-content: center;
+  overflow: hidden; border: 1px solid #e4e8f0; border-radius: 10px;
+  background: #fff; color: #20314e;
+}
+.momo-live__chain-logo, .momo-live__chain-all { width: 52px; height: 48px; }
+.momo-live__chain-all { background: #253a5b; color: #ffd477; font-size: 24px; border-color: transparent; }
+.momo-live__chain-logo img, .momo-live__list-logo img, .momo-live__head-logo img,
+.chain-logo img { width: 100%; height: 100%; object-fit: contain; padding: 5px; }
+.momo-live__chain-logo__fallback, .momo-live__list-logo__fallback, .momo-live__head-logo__fallback,
+.chain-logo__fallback { padding: 3px; font-weight: 900; font-size: 10px; letter-spacing: -.04em; text-align: center; line-height: 1.2; overflow-wrap: anywhere; }
+.momo-live__chain-logo img:not([hidden]) ~ .momo-live__chain-logo__fallback,
+.momo-live__list-logo img:not([hidden]) ~ .momo-live__list-logo__fallback,
+.momo-live__head-logo img:not([hidden]) ~ .momo-live__head-logo__fallback { display: none; }
+.momo-live .momo-live__layout {
+  padding: 0; gap: 0; grid-template-columns: minmax(255px, 32%) minmax(0, 1fr);
+  align-items: stretch; min-height: 560px;
+}
+.momo-live__cinema-pane {
+  min-width: 0; border-right: 1px solid #e5e9f0; background: #fff;
+}
+.momo-live__search-wrap {
+  display: flex; position: relative; align-items: center; margin: 14px 13px;
+}
+.momo-live .momo-live__search {
+  flex: 1 1 auto; min-width: 0; width: 100%; border-radius: 10px;
+  min-height: 44px; background: #f8fafc; border: 1px solid #e2e7ef;
+  padding: 10px 34px 10px 12px; font-size: 12px;
+}
+.momo-live__search-wrap > span:last-child { position: absolute; right: 11px; font-size: 20px; color: #8994a5; pointer-events: none; }
+.momo-live .momo-live__cinemas {
+  display: flex; flex-direction: column; max-height: 685px; gap: 0;
+  overflow: auto; scrollbar-width: thin; padding: 0;
+}
+.momo-live .momo-live__cinema {
+  position: relative; display: flex; align-items: center; gap: 11px;
+  width: 100%; text-align: left; padding: 13px 14px; min-height: 72px;
+  border: 0; border-bottom: 1px solid #f0f2f6; border-radius: 0; background: #fff;
+}
+.momo-live .momo-live__cinema::after { content: '›'; color: #a0aabc; font-size: 24px; margin-left: auto; }
+.momo-live .momo-live__cinema strong { font-size: 12px; color: #243249; line-height: 1.45; }
+.momo-live .momo-live__cinema span:not(.momo-live__list-logo):not(.momo-live__list-logo__fallback) {
+  display: block; color: #8794a6; font-size: 10px; line-height: 1.5; margin-top: 4px;
+}
+.momo-live .momo-live__cinema:hover { background: #f8fafc; }
+.momo-live .momo-live__cinema[aria-current="true"] { background: #fff8ea; box-shadow: inset 3px 0 #e8b451; }
+.momo-live__list-logo { width: 43px; height: 43px; }
+.momo-live .momo-live__viewer { min-width: 0; background: #fff; }
+.momo-live__viewer-head {
+  display: flex; flex-direction: column; justify-content: center; gap: 5px;
+  min-height: 75px; padding: 13px 20px; background: #fafcff; border-bottom: 1px solid #e9edf3;
+}
+.momo-live__viewer-head > span { font-size: 14px; font-weight: 800; color: #18283f; line-height: 1.5; }
+.momo-live__viewer-head > small { color: #738196; font-size: 11px; line-height: 1.5; }
+.momo-live .momo-live__datebar .date-picker {
+  padding: 13px 17px; gap: 8px; background: #fff; border-bottom: 1px solid #e8edf3;
+}
+.momo-live .momo-live__datebar .date-picker__day {
+  min-width: 78px; padding: 10px 9px; min-height: 69px; border-radius: 9px;
+  background: #f8fafc; border-color: #e5eaf1;
+}
+.momo-live .momo-live__datebar .date-picker__day.is-selected {
+  background: #fff2cf; border-color: #d6a44e; color: #714806;
+}
+.momo-live .momo-live__results { padding: 0 17px 17px; max-height: 580px; overflow-y: auto; scrollbar-width: thin; }
+.momo-live .theater-showtime__header { align-items: center; gap: 11px; padding: 17px 0; margin: 0; }
+.momo-live .theater-showtime__header > div { min-width: 0; flex: 1; }
+.momo-live .theater-showtime__header .eyebrow { display: none; }
+.momo-live .theater-showtime__header h3 { font-size: 14px; margin: 0 0 4px; }
+.momo-live .theater-showtime__header p { font-size: 11px; }
+.momo-live .momo-live__head-logo { width: 47px; height: 47px; }
+.momo-live .date-label { font-size: 10px; padding: 7px 9px; }
+.momo-live .program-list { gap: 0; }
+.momo-live .program {
+  border: 0; border-bottom: 1px solid #e9edf2; border-radius: 0;
+  padding: 18px 0 22px; box-shadow: none;
+}
+.momo-live .program:first-child { padding-top: 19px; }
+.momo-live .momo-live__program-head { gap: 17px; }
+.momo-live .momo-live__poster { width: 92px; height: 133px; border-radius: 9px; }
+.momo-live .program__movie h3 { font-size: 15px; font-weight: 800; color: #1e2d46; }
+.momo-live .program__movie p { font-size: 11px; line-height: 1.6; color: #8490a0; margin-top: 5px; }
+.momo-live .program__format { margin: 11px 0 0; gap: 10px; }
+.momo-live .program__format-label { color: #384c67; font-size: 11px; font-weight: 800; min-width: 0; }
+.momo-live .showtime-row { gap: 8px; }
+.momo-live .showtime {
+  min-width: 73px; min-height: 42px; font-size: 12px; border-radius: 9px;
+  border-color: #cadaed; color: #1c5c98; background: #f9fcff;
+}
+.momo-live .showtime:hover, .momo-live .showtime:focus-visible {
+  border-color: #d5a754; background: #fff7e5; color: #644713;
+}
+.momo-live .momo-live__status { padding: 17px 0; line-height: 1.7; }
+.momo-live__chip-placeholder { flex: 0 0 91px; height: 96px; border-radius: 12px; }
+.momo-live[data-cinema-only="true"] .momo-live__toolbar,
+.momo-live[data-cinema-only="true"] .momo-live__cinema-pane { display: none; }
+.momo-live[data-cinema-only="true"] .momo-live__layout { display: block; }
+.momo-live[data-cinema-only="true"] .momo-live__viewer { width: 100%; }
+@media (max-width: 1050px) {
+  .momo-live .momo-live__location { padding-inline: 16px; }
+  .momo-live .momo-live__location-note { width: 100%; margin: -4px 0 0; }
+  .momo-live .momo-live__layout { grid-template-columns: 285px minmax(0,1fr); }
+  .momo-live .momo-live__program-head { gap: 12px; }
+}
+@media (max-width: 760px) {
+  .momo-live .momo-live__layout { display: flex; flex-direction: column; min-height: 0; }
+  .momo-live .momo-live__cinema-pane { border-right: 0; border-bottom: 1px solid #e7ecf3; }
+  .momo-live .momo-live__cinemas { flex-direction: row; max-height: none; overflow-x: auto; overflow-y: hidden; padding: 0 9px 9px; gap: 8px; scroll-snap-type: x proximity; }
+  .momo-live .momo-live__cinema { flex: 0 0 min(74vw, 255px); border: 1px solid #e7ecf2; border-radius: 12px; scroll-snap-align: start; padding: 12px; }
+  .momo-live .momo-live__cinema[aria-current="true"] { box-shadow: inset 0 3px #e8b451; }
+  .momo-live .momo-live__search-wrap { margin: 12px 11px; }
+  .momo-live .momo-live__viewer-head { min-height: 66px; }
+  .momo-live .momo-live__results { max-height: none; overflow: visible; }
+}
+@media (max-width: 600px) {
+  .momo-live .momo-live__location { padding: 14px; gap: 12px; }
+  .momo-live__district-label { margin-left: 0; width: 100%; justify-content: space-between; }
+  .momo-live__district-label select { flex: 1; width: auto; max-width: 75%; }
+  .momo-live .momo-live__toolbar { padding: 10px 10px 12px; }
+  .momo-live .momo-live__chips { gap: 8px; }
+  .momo-live .momo-live__chip { flex-basis: 83px; min-height: 85px; }
+  .momo-live__chain-logo, .momo-live__chain-all { width: 48px; height: 42px; }
+  .momo-live .momo-live__datebar .date-picker { padding: 11px; }
+  .momo-live .momo-live__results { padding: 0 13px 13px; }
+  .momo-live .momo-live__program-head { gap: 10px; }
+  .momo-live .momo-live__poster { width: 73px; height: 107px; }
+  .momo-live .program__movie h3 { font-size: 13px; }
+  .momo-live .program__format { display: flex; flex-wrap: wrap; }
+  .momo-live .program__format-label { min-width: 100%; }
+  .momo-live .showtime { min-width: 68px; min-height: 44px; }
+  .momo-live .theater-showtime__header h3 { font-size: 13px; }
+}
+
+/* Standalone /lich-chieu uses the full content width after removing the
+   old informational sidebar. Without this it inherits a 260px grid column. */
+.schedule-page--explorer { display: block; }
+.schedule-page--explorer .schedule-main { width: 100%; min-width: 0; }
+.schedule-page--explorer .schedule-shell { width: 100%; }
+.momo-live[data-cinema-only="true"] .momo-live__district-label,
+.momo-live[data-cinema-only="true"] .momo-live__location-note { display: none; }
+.chain-logo { width: 48px; height: 48px; }
+@media (max-width: 760px) { .schedule-page--explorer { padding-top: 22px; } }
+
+/* Keep chain logo and the cinema name/address as two stable columns. */
+.momo-live .momo-live__cinema-info { display: block; flex: 1; min-width: 0; }
+.momo-live .momo-live__cinema-info strong { display: block; font-size: 12px; line-height: 1.45; }
+.momo-live .momo-live__cinema-info small {
+  display: -webkit-box; color: #8794a6; font-size: 10px; line-height: 1.5;
+  margin-top: 5px; max-height: 3em; overflow: hidden;
+  -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
+}
+.momo-live .momo-live__cinema::after { flex: none; }
+
+/* Movie rows keep poster, title, format and playable times together. */
+.momo-live .momo-live__program-body { min-width: 0; flex: 1; }
+.momo-live .program__movie { display: block; margin: 0; }
+.momo-live .momo-live__film-link { color: inherit; }
+.momo-live .momo-live__film-link:hover { color: #bd8429; text-decoration: underline; text-underline-offset: 3px; }
+.momo-live .program__format { align-items: flex-start; }
+@media (max-width: 600px) {
+  .momo-live .momo-live__program-body { min-width: 0; }
+  .momo-live .program__movie h3 { font-size: 13px; }
+  .momo-live .program__format { margin-top: 9px; }
+}

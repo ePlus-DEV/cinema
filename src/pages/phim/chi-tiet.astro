@@ -1,0 +1,142 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
+import DetailSkeleton from '../../components/DetailSkeleton.astro';
+import ScheduleSkeleton from '../../components/ScheduleSkeleton.astro';
+---
+<BaseLayout title="Chi tiết phim | ePlus Cinema" active="now">
+  <section class="live-detail live-film-detail">
+    <div class="container">
+      <nav class="breadcrumbs breadcrumbs--light" aria-label="Đường dẫn trang">
+        <a href="/">Trang chủ</a><span>/</span>
+        <a href="/phim-dang-chieu">Phim</a><span>/</span><span>Chi tiết phim</span>
+      </nav>
+      <div class="live-detail__loading live-detail__loading--skeleton" data-film-state data-page-priority aria-busy="true" role="status"><span class="sr-only">Đang tải thông tin phim…</span><DetailSkeleton kind="film" /></div>
+      <div class="live-detail__grid" data-film-content hidden>
+        <div class="live-detail__poster">
+          <img data-film-poster alt="" />
+        </div>
+        <div class="live-detail__info">
+          <span class="live-detail__badge" data-film-status></span>
+          <h1 data-film-title></h1>
+          <p class="live-detail__original" data-film-original hidden></p>
+          <div class="live-detail__tags" data-film-tags></div>
+          <h2>Giới thiệu phim</h2>
+          <p class="live-detail__synopsis" data-film-synopsis></p>
+          <div class="live-detail__actions">
+            <a class="button button--gold" data-film-action href="#lich-chieu">Xem lịch chiếu <span aria-hidden="true">↗</span></a>
+            <a class="button button--glass" href="/phim-dang-chieu">Các phim khác</a>
+          </div>
+          <p class="live-detail__source">Thông tin tham khảo từ MoMo Cinema · Không bán vé hoặc giữ ghế.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div data-film-schedule-loading><ScheduleSkeleton /></div>
+  <section class="section container" data-film-schedule id="lich-chieu" hidden>
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">LÊN KẾ HOẠCH XEM PHIM</span>
+        <h2>Lịch chiếu của phim</h2>
+        <p>Chọn ngày và rạp để xem khung giờ của bộ phim này và mở sơ đồ ghế ngay tại ePlus.</p>
+      </div>
+      <a class="section-link" href="/lich-chieu">Xem tất cả <span>↗</span></a>
+    </div>
+    <div class="schedule-shell">
+      <div class="schedule-shell__top"><div><strong data-film-schedule-name>Suất chiếu theo rạp</strong><span>Nguồn tham khảo MoMo Cinema · Không hỗ trợ đặt vé</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
+      <MomoShowtimeList />
+    </div>
+  </section>
+</BaseLayout>
+<script>
+  import { loadAllFilms } from '../../lib/momo-client.js';
+  const root = document.querySelector('.live-film-detail');
+  if (root) {
+    const state = root.querySelector('[data-film-state]');
+    const content = root.querySelector('[data-film-content]');
+    const schedule = document.querySelector('[data-film-schedule]');
+    const scheduleLoading = document.querySelector('[data-film-schedule-loading]');
+    const id = new URLSearchParams(window.location.search).get('id');
+
+    function setText(selector, text) {
+      const element = root.querySelector(selector);
+      if (element) element.textContent = text || '';
+      return element;
+    }
+    function showError(message) {
+      state.classList.remove('live-detail__loading--skeleton');
+      state.setAttribute('aria-busy', 'false');
+      if (scheduleLoading) scheduleLoading.hidden = true;
+      state.textContent = message + ' ';
+      const back = document.createElement('a');
+      back.href = import.meta.env.BASE_URL + 'phim-dang-chieu/';
+      back.textContent = 'Quay về danh sách phim';
+      back.className = 'live-detail__retry';
+      state.append(back);
+    }
+
+    async function init() {
+      if (!id || !/^[0-9]+$/.test(id)) {
+        showError('Đường dẫn phim không hợp lệ.');
+        return;
+      }
+      try {
+        const [nowResult, soonResult] = await Promise.allSettled([loadAllFilms('now'), loadAllFilms('soon')]);
+        const now = nowResult.status === 'fulfilled' ? nowResult.value : [];
+        const soon = soonResult.status === 'fulfilled' ? soonResult.value : [];
+        if (nowResult.status === 'rejected' && soonResult.status === 'rejected') throw nowResult.reason;
+        const film = now.concat(soon).find((item) => String(item.Id) === id);
+        if (!film) {
+          showError('Không tìm thấy phim trong danh sách cập nhật hiện tại.');
+          return;
+        }
+        const isNow = now.some((item) => String(item.Id) === id);
+        const name = film.Title || 'Phim chưa có tên';
+        setText('[data-film-title]', name);
+        const original = setText('[data-film-original]', film.TitleEn && film.TitleEn !== name ? film.TitleEn : '');
+        original.hidden = !original.textContent;
+        setText('[data-film-status]', isNow ? 'Đang chiếu' : 'Sắp chiếu');
+        setText('[data-film-synopsis]', film.Synopsis || 'Nguồn dữ liệu hiện chưa cung cấp nội dung giới thiệu của phim này.');
+        const poster = root.querySelector('[data-film-poster]');
+        const posterUrl = film.GraphicUrl || film.ImageUrl;
+        if (posterUrl) {
+          poster.src = posterUrl;
+          poster.alt = 'Poster phim ' + name;
+        } else {
+          poster.hidden = true;
+          poster.parentElement.textContent = 'Chưa có poster';
+        }
+        const tags = root.querySelector('[data-film-tags]');
+        const date = String(film.OpeningDate || film.ApiReleaseDate || '').slice(0, 10);
+        let releaseDate = '';
+        if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+          const parsed = new Date(date + 'T00:00:00+07:00');
+          if (!Number.isNaN(parsed.getTime())) releaseDate = 'Khởi chiếu ' + parsed.toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+        }
+        const labels = [film.ApiRatingFormat, film.ApiGenreName, film.Duration ? film.Duration + ' phút' : '', releaseDate].filter(Boolean);
+        tags.replaceChildren(...labels.map((label) => {
+          const span = document.createElement('span');
+          span.textContent = label;
+          return span;
+        }));
+        const action = root.querySelector('[data-film-action]');
+        if (isNow) {
+          schedule.hidden = false;
+          const scheduleName = schedule.querySelector('[data-film-schedule-name]');
+          if (scheduleName) scheduleName.textContent = 'Suất chiếu: ' + name;
+        } else {
+          action.href = import.meta.env.BASE_URL + 'phim-sap-chieu/';
+          action.textContent = 'Khám phá phim sắp chiếu ↗';
+        }
+        document.title = name + ' | ePlus Cinema';
+        state.setAttribute('aria-busy', 'false');
+        state.hidden = true;
+        if (scheduleLoading) scheduleLoading.hidden = true;
+        content.hidden = false;
+      } catch (error) {
+        showError('Không tải được thông tin phim (' + error.message + ').');
+      }
+    }
+    init();
+  }
+</script>

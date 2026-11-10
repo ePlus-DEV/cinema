@@ -1,39 +1,93 @@
 ---
-// Live cinema tiles for the homepage: cinema names/chains come from the MoMo
-// Cinema API in the browser (shared, memoized load in src/lib/momo-client.js).
-// Tiles link to the live showtime page where the visitor picks a cinema.
-interface Props { limit?: number }
-const { limit = 8 } = Astro.props;
+/** Real cinema directory shared by homepage and /rap/. */
+interface Props { limit?: number; searchable?: boolean; }
+const { limit = 8, searchable = false } = Astro.props;
 ---
-
-<div class="cinema-grid" data-live-cinemas data-limit={limit} aria-busy="true">
-  {Array.from({ length: limit }).map(() => <div class="skeleton__tile skeleton" aria-hidden="true"></div>)}
+<div class="live-cinema-catalog" data-live-cinema-catalog data-limit={limit}>
+  {searchable && <div class="live-catalog__tools">
+    <label class="catalog__search">
+      <span aria-hidden="true">⌕</span>
+      <input type="search" aria-label="Tìm rạp" placeholder="Tìm rạp, hệ thống hoặc địa chỉ..." data-live-cinema-search />
+    </label>
+    <span class="live-catalog__count" data-live-cinema-count aria-live="polite">Đang tải rạp…</span>
+  </div>}
+  <div class="cinema-grid" data-live-cinemas aria-busy="true">
+    {Array.from({ length: Math.min(limit, 8) }).map(() =>
+      <div class="skeleton__tile skeleton skeleton__cinema-tile" aria-hidden="true">
+        <span class="skeleton__cinema-icon"></span>
+        <span class="skeleton__cinema-lines"><span class="skeleton__line" style="width:87%"></span><span class="skeleton__line skeleton__line--short"></span></span>
+      </div>)}
+  </div>
+  <p class="empty-results" data-live-cinema-empty hidden>Không tìm thấy rạp phù hợp.</p>
 </div>
-
 <script>
   import { CHAINS, loadAllCinemas } from '../lib/momo-client.js';
+  import { createChainLogo } from '../lib/cinema-logos.js';
 
-  const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => (
-    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]
-  ));
+  const normalize = (value) => String(value || '').normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('vi').trim();
 
-  document.querySelectorAll('[data-live-cinemas]').forEach(async (grid) => {
-    const limit = Number(grid.dataset.limit || 8);
+  function cinemaCard(cinema, index) {
+    const chain = CHAINS[cinema.chainId] || 'Rạp';
+    const card = document.createElement('a');
+    card.className = 'cinema-tile cinema-tile--live';
+    card.href = import.meta.env.BASE_URL + 'rap/chi-tiet/?cinema=' + encodeURIComponent(cinema.key);
+    card.setAttribute('aria-label', 'Xem chi tiết rạp ' + cinema.name);
+    card.dataset.search = normalize(cinema.name + ' ' + chain + ' ' + cinema.address);
+    const symbol = createChainLogo(cinema.chainId, chain, 'chain-logo');
+    const body = document.createElement('span');
+    body.className = 'cinema-tile__body';
+    const name = document.createElement('strong');
+    name.textContent = cinema.name;
+    const meta = document.createElement('small');
+    meta.textContent = chain + ' · ' + (cinema.address || 'TP. Hồ Chí Minh');
+    const action = document.createElement('span');
+    action.className = 'cinema-tile__arrow';
+    action.textContent = '↗';
+    body.append(name, meta);
+    card.append(symbol, body, action);
+    return card;
+  }
+
+  document.querySelectorAll('[data-live-cinema-catalog]').forEach(async (root) => {
+    const grid = root.querySelector('[data-live-cinemas]');
+    const search = root.querySelector('[data-live-cinema-search]');
+    const count = root.querySelector('[data-live-cinema-count]');
+    const empty = root.querySelector('[data-live-cinema-empty]');
+    const max = Math.max(1, Number(root.dataset.limit) || 8);
+
+    function filterCards() {
+      const query = normalize(search?.value);
+      let visible = 0;
+      grid.querySelectorAll('.cinema-tile--live').forEach((card) => {
+        const matches = !query || (card.dataset.search || '').includes(query);
+        card.hidden = !matches;
+        if (matches) visible++;
+      });
+      if (count) count.textContent = visible + ' cụm rạp';
+      if (empty) empty.hidden = visible > 0;
+    }
+
     try {
-      const cinemas = await loadAllCinemas();
-      if (!cinemas.length) throw new Error('MoMo không trả về rạp nào');
-      grid.innerHTML = cinemas.slice(0, limit).map((cinema, index) => {
-        const chain = CHAINS[cinema.chainId] || 'Rạp';
-        return `<a class="cinema-tile" href="/lich-chieu/momo/">
-          <span class="cinema-tile__symbol cinema-tile__symbol--${index % 4}">${esc(chain.slice(0, 1))}</span>
-          <span class="cinema-tile__body"><strong>${esc(cinema.name)}</strong><small>${esc(chain)} · TP. Hồ Chí Minh</small></span>
-          <span class="cinema-tile__arrow">↗</span>
-        </a>`;
-      }).join('');
-      grid.setAttribute('aria-busy', 'false');
+      const cinemas = (await loadAllCinemas()).slice(0, max);
+      if (!cinemas.length) throw new Error('Nguồn dữ liệu chưa trả về rạp');
+      grid.replaceChildren(...cinemas.map(cinemaCard));
+      filterCards();
     } catch (error) {
-      grid.innerHTML = `<p class="live-status">Không tải được danh sách rạp từ MoMo (${esc(error.message)}).</p>`;
+      grid.replaceChildren();
+      const message = document.createElement('p');
+      message.className = 'live-status';
+      message.textContent = 'Không tải được danh sách rạp (' + error.message + '). ';
+      const retry = document.createElement('button');
+      retry.type = 'button';
+      retry.textContent = 'Thử lại';
+      retry.addEventListener('click', () => window.location.reload());
+      message.append(retry);
+      grid.append(message);
+      if (count) count.textContent = 'Chưa tải được rạp';
+    } finally {
       grid.setAttribute('aria-busy', 'false');
     }
+    search?.addEventListener('input', filterCards);
   });
 </script>
