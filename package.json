@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/rewrite-links.mjs",
     "preview": "astro preview",
-    "fetch:showtimes": "node scripts/fetch-momo-showtimes.mjs"
+    "fetch:showtimes": "node scripts/fetch-momo-showtimes.mjs",
+    "refresh:catalog": "node scripts/sync-cinema-catalog.mjs",
+    "check:catalog": "node scripts/sync-cinema-catalog.mjs --check"
   },
   "dependencies": {
     "astro": "^5.0.0",

@@ -35,15 +35,14 @@
 Responsive, mobile-first concept for a Vietnamese cinema discovery and showtimes website.
 
 > [!IMPORTANT]
-> **UI preview only.** The homepage and live schedule use a third-party MoMo data feed for discovery, while movie detail/catalog and other pages still contain sample fixtures. ePlus Cinema does **not** sell tickets or redirect visitors to MoMo for booking. All pages remain **noindex** until authorized data is available.
+> **Cinema discovery preview.** Movie and theater directories and their detail pages are pre-rendered from a daily catalog snapshot. Showtime and seat data are fetched live. The feed is an undocumented third-party API, not a licensed partner source; ePlus Cinema does **not** sell tickets or redirect visitors to MoMo for booking. Indexing remains gated until content rights are verified.
 
 ## Features
 
 - Responsive landing page, current/upcoming movies and movie details.
-- Search and genre filtering.
-- Sample date switching and showtime cards.
-- Theater directory and individual theater pages.
-- Original illustrated posters without copying movie provider artwork.
+- Search movie and cinema directories without waiting for an API response.
+- Live date/venue filtering, showtime and seat-map preview.
+- Pre-generated HTML for individual film and cinema detail URLs, with provider poster images and source attribution.
 - GitHub Pages automated production deployment **and per-PR preview links**.
 
 ## Local development
@@ -54,10 +53,53 @@ Requires Node.js 22 or newer.
 npm install
 npm run dev
 npm run build
-node scripts/rewrite-links.mjs
 node scripts/smoke-test.mjs
+node scripts/seo-audit.mjs
 npm run preview
 ```
+
+
+## Daily film and cinema catalog
+
+- Workflow: `.github/workflows/cinema-catalog-daily.yml`, one scheduled run
+  each day at **01:10 Asia/Ho_Chi_Minh (18:10 UTC)**, plus an optional manual
+  `workflow_dispatch`. A one-time `push` bootstrap also runs automatically
+  when the workflow is first merged to `main` (or when that workflow file
+  itself changes). Normal source commits do not re-fetch the catalog.
+- Downloads **only film and cinema directory data** for TP. Hồ Chí Minh
+  (`apiCityId=50`) using the same unsigned/public-web API access pattern
+  already in this repository. It does **not** download ticket availability,
+  showtime sessions or seat maps.
+- The output `src/data/cinema-snapshot.json` is validated before being
+  committed. Empty/partial/errors do not replace a previously good snapshot.
+  Until the initial success, the existing `momo-showtimes.json` inventory
+  seeds actual pre-rendered pages; its old showtime entries are not served.
+- Pages and directories render from the catalog at **build time**, not from
+  a client-side request. URLs are `/phim/<id>/` and
+  `/rap/<chainId>-<apiCinemaId>/`. Legacy query detail URLs redirect to
+  static routes when the ID already exists in the snapshot. If a new film
+  appears before the next refresh, its legacy query detail remains the fallback.
+- Live showtime and seat components **still call the API from the browser**.
+  Source changes or outages cannot be masked as confirmed seat availability.
+- Uses the built-in `GITHUB_TOKEN`, not a PAT. The bot commits to `main` and
+  explicitly dispatches the existing `pages-stage.yml` workflow because
+  normal push events created by `GITHUB_TOKEN` do not launch other workflows.
+  Branch-protection rejection will fail the job; no force push or bypass.
+- After merge, verify the first automatic run under **Actions → Refresh cinema catalog daily**.
+  Manual rerun is available through **Run workflow**. Review the resulting
+  commit and downstream Pages deployment. To validate an existing
+  local snapshot without network access: `npm run check:catalog`.
+- **Rights:** the upstream API is not a licensed feed. Do not enable search
+  indexing/booking or expand geographic coverage without validation.
+
+### Generated HTML order safeguard
+
+Astro has emitted the page slot **after** `</html>` in the current build
+configuration, causing the real footer to display before the homepage on
+mobile Safari. `scripts/rewrite-links.mjs` now restores any trailing page
+sections inside the empty `<main>` before the footer and normalizes preview
+links. This runs automatically after `npm run build`. The smoke tests
+verify that all primary pages have valid main/footer order.
 
 ## GitHub Pages deployment
 

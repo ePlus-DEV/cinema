@@ -1,93 +1,70 @@
 ---
-/** Real cinema directory shared by homepage and /rap/. */
+import { cinemas, routeForCinema } from '../lib/cinema-catalog';
+import { CHAIN_LOGOS, CHAIN_SHORT_LABELS } from '../lib/cinema-logos.js';
 interface Props { limit?: number; searchable?: boolean; }
 const { limit = 8, searchable = false } = Astro.props;
+const rows = cinemas.slice(0, limit);
+const base = import.meta.env.BASE_URL;
+const normalize = (text: string) => text.normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '').toLowerCase();
 ---
-<div class="live-cinema-catalog" data-live-cinema-catalog data-limit={limit}>
+<div class="live-cinema-catalog" data-live-cinema-catalog>
   {searchable && <div class="live-catalog__tools">
     <label class="catalog__search">
       <span aria-hidden="true">⌕</span>
       <input type="search" aria-label="Tìm rạp" placeholder="Tìm rạp, hệ thống hoặc địa chỉ..." data-live-cinema-search />
     </label>
-    <span class="live-catalog__count" data-live-cinema-count aria-live="polite">Đang tải rạp…</span>
+    <span class="live-catalog__count" data-live-cinema-count aria-live="polite">{rows.length} cụm rạp</span>
   </div>}
-  <div class="cinema-grid" data-live-cinemas aria-busy="true">
-    {Array.from({ length: Math.min(limit, 8) }).map(() =>
-      <div class="skeleton__tile skeleton skeleton__cinema-tile" aria-hidden="true">
-        <span class="skeleton__cinema-icon"></span>
-        <span class="skeleton__cinema-lines"><span class="skeleton__line" style="width:87%"></span><span class="skeleton__line skeleton__line--short"></span></span>
-      </div>)}
+  <div class="cinema-grid" data-live-cinemas aria-busy="false">
+    {rows.map((cinema) => <a
+      class="cinema-tile cinema-tile--live"
+      href={routeForCinema(cinema, base)}
+      aria-label={'Xem chi tiết rạp ' + cinema.name}
+      data-search={normalize(cinema.name + ' ' + cinema.chain + ' ' + cinema.address)}
+    >
+      <span class="chain-logo">
+        {CHAIN_LOGOS[cinema.chainId] && <img src={CHAIN_LOGOS[cinema.chainId]} alt="" loading="lazy" decoding="async" />}
+        <span class="chain-logo__fallback">{CHAIN_SHORT_LABELS[cinema.chainId] || cinema.chain || 'RẠP'}</span>
+      </span>
+      <span class="cinema-tile__body">
+        <strong>{cinema.name}</strong>
+        <small>{cinema.chain} · {cinema.address || 'TP. Hồ Chí Minh'}</small>
+      </span>
+      <span class="cinema-tile__arrow" aria-hidden="true">↗</span>
+    </a>)}
   </div>
   <p class="empty-results" data-live-cinema-empty hidden>Không tìm thấy rạp phù hợp.</p>
+  {rows.length === 0 && <p class="live-status">Chưa có dữ liệu cụm rạp trong bản cập nhật gần nhất.</p>}
 </div>
 <script>
-  import { CHAINS, loadAllCinemas } from '../lib/momo-client.js';
-  import { createChainLogo } from '../lib/cinema-logos.js';
-
-  const normalize = (value) => String(value || '').normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('vi').trim();
-
-  function cinemaCard(cinema, index) {
-    const chain = CHAINS[cinema.chainId] || 'Rạp';
-    const card = document.createElement('a');
-    card.className = 'cinema-tile cinema-tile--live';
-    card.href = import.meta.env.BASE_URL + 'rap/chi-tiet/?cinema=' + encodeURIComponent(cinema.key);
-    card.setAttribute('aria-label', 'Xem chi tiết rạp ' + cinema.name);
-    card.dataset.search = normalize(cinema.name + ' ' + chain + ' ' + cinema.address);
-    const symbol = createChainLogo(cinema.chainId, chain, 'chain-logo');
-    const body = document.createElement('span');
-    body.className = 'cinema-tile__body';
-    const name = document.createElement('strong');
-    name.textContent = cinema.name;
-    const meta = document.createElement('small');
-    meta.textContent = chain + ' · ' + (cinema.address || 'TP. Hồ Chí Minh');
-    const action = document.createElement('span');
-    action.className = 'cinema-tile__arrow';
-    action.textContent = '↗';
-    body.append(name, meta);
-    card.append(symbol, body, action);
-    return card;
-  }
-
-  document.querySelectorAll('[data-live-cinema-catalog]').forEach(async (root) => {
-    const grid = root.querySelector('[data-live-cinemas]');
-    const search = root.querySelector('[data-live-cinema-search]');
-    const count = root.querySelector('[data-live-cinema-count]');
-    const empty = root.querySelector('[data-live-cinema-empty]');
-    const max = Math.max(1, Number(root.dataset.limit) || 8);
-
-    function filterCards() {
-      const query = normalize(search?.value);
+  const normalize = (value: string) => String(value || '').normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  document.querySelectorAll<HTMLElement>('[data-live-cinema-catalog]').forEach((root) => {
+    const grid = root.querySelector<HTMLElement>('[data-live-cinemas]');
+    const search = root.querySelector<HTMLInputElement>('[data-live-cinema-search]');
+    const count = root.querySelector<HTMLElement>('[data-live-cinema-count]');
+    const empty = root.querySelector<HTMLElement>('[data-live-cinema-empty]');
+    if (!grid) return;
+    // The wordmark is readable when CDN assets fail.
+    grid.querySelectorAll<HTMLImageElement>('.chain-logo img').forEach((image) => {
+      const fallback = image.nextElementSibling as HTMLElement | null;
+      image.addEventListener('load', () => { if (fallback) fallback.hidden = true; });
+      image.addEventListener('error', () => image.remove());
+      if (image.complete && image.naturalWidth) { if (fallback) fallback.hidden = true; }
+    });
+    const filter = () => {
+      const q = normalize(search?.value || '');
       let visible = 0;
-      grid.querySelectorAll('.cinema-tile--live').forEach((card) => {
-        const matches = !query || (card.dataset.search || '').includes(query);
-        card.hidden = !matches;
-        if (matches) visible++;
+      const cards = grid.querySelectorAll<HTMLElement>('.cinema-tile--live');
+      cards.forEach((card) => {
+        card.hidden = !!q && !(card.dataset.search || '').includes(q);
+        if (!card.hidden) visible++;
       });
       if (count) count.textContent = visible + ' cụm rạp';
-      if (empty) empty.hidden = visible > 0;
-    }
-
-    try {
-      const cinemas = (await loadAllCinemas()).slice(0, max);
-      if (!cinemas.length) throw new Error('Nguồn dữ liệu chưa trả về rạp');
-      grid.replaceChildren(...cinemas.map(cinemaCard));
-      filterCards();
-    } catch (error) {
-      grid.replaceChildren();
-      const message = document.createElement('p');
-      message.className = 'live-status';
-      message.textContent = 'Không tải được danh sách rạp (' + error.message + '). ';
-      const retry = document.createElement('button');
-      retry.type = 'button';
-      retry.textContent = 'Thử lại';
-      retry.addEventListener('click', () => window.location.reload());
-      message.append(retry);
-      grid.append(message);
-      if (count) count.textContent = 'Chưa tải được rạp';
-    } finally {
-      grid.setAttribute('aria-busy', 'false');
-    }
-    search?.addEventListener('input', filterCards);
+      if (empty) empty.hidden = visible > 0 || cards.length === 0;
+    };
+    search?.addEventListener('input', filter);
+    filter();
   });
 </script>

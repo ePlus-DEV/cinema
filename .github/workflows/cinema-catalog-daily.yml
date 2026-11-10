@@ -1,0 +1,71 @@
+name: Refresh cinema catalog daily
+
+on:
+  # 01:10 Vietnam time (UTC+07) every day.
+  schedule:
+    - cron: '10 18 * * *'
+  workflow_dispatch:
+  # Bootstrap the first catalog immediately when this new workflow is merged.
+  # Future regular source pushes do NOT start a fetch.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/cinema-catalog-daily.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: cinema-catalog-daily
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TZ: Asia/Ho_Chi_Minh
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Download film and cinema directory only
+        run: node scripts/sync-cinema-catalog.mjs
+      - name: Validate new snapshot and prerendered pages
+        run: |
+          node scripts/sync-cinema-catalog.mjs --check
+          npm run build
+          node scripts/rewrite-links.mjs
+          node scripts/smoke-test.mjs
+          node scripts/seo-audit.mjs
+          node scripts/check-outbound-links.mjs
+      - name: Commit new catalog to main for normal Pages deployment
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/cinema-snapshot.json
+          if git diff --cached --quiet; then
+            echo "No catalog changes."
+            exit 0
+          fi
+          git commit -m "data(cinema): refresh daily movie and theater snapshot"
+          # Never force push, rewrite history, or hide branch protections.
+          git push origin HEAD:main
+          # GITHUB_TOKEN pushes do NOT trigger regular on:push workflows.
+          # workflow_dispatch is specifically allowed, so explicitly build/deploy.
+          gh workflow run pages-stage.yml --ref main
+          echo "Snapshot committed and Pages deployment explicitly dispatched."

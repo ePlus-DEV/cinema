@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const baseSegment = (process.env.PAGES_BASE_PATH || '/').split('/').filter(Boolean).join('/');
@@ -15,8 +15,7 @@ const routes = [
   '/phim/chi-tiet/',
   '/rap/chi-tiet/',
   '/rap/',
-  '/phim/sau-anh-hoang-hon/',
-  '/rap/cgv-vincom-dong-khoi/'
+  // Real movie and theater paths are checked from their generated IDs below.
 ];
 
 for (const route of routes) {
@@ -53,7 +52,7 @@ for (const [route, html] of [['phim/chi-tiet', filmPage], ['rap/chi-tiet', cinem
   assert.ok(html.includes('detail-skeleton'), 'Detail placeholders missing: ' + route);
   assert.ok(html.includes('detail-schedule-skeleton'), 'Schedule placeholder missing: ' + route);
 }
-assert.ok(home.includes('skeleton__poster-badge'), 'Live film card skeletons missing');
+assert.ok(home.includes('live-poster__badge'), 'Pre-rendered movie cards missing');
 assert.ok(home.includes('momo-live__loading-program'), 'Live showtime card skeletons missing');
 console.log('PASS: full-page and per-section loading states');
 
@@ -70,3 +69,32 @@ const logos = readFileSync('src/lib/cinema-logos.js', 'utf8');
 assert.ok(logos.includes('CHAIN_LOGOS'), 'Logo mapping missing');
 assert.ok(logos.includes('createChainLogo'), 'Logo fallback helper missing');
 console.log('PASS: location selector, theater logos, internal date rail and seat-map preview');
+
+const mainStart = home.indexOf('<main id="main-content"');
+const mainEnd = home.indexOf('</main>', mainStart);
+const featured = home.indexOf('class="section section--featured', mainStart);
+const footer = home.indexOf('<footer class="footer"');
+console.log('DOM order diagnostics:', JSON.stringify({mainStart,mainEnd,featured,footer,mainTag:home.slice(mainStart,mainStart+260),featuredTag:home.slice(featured,featured+170)}));
+assert.ok(mainStart >= 0 && mainStart < featured && featured < mainEnd && mainEnd < footer,
+  'Home content must be INSIDE <main> and BEFORE the footer, not appended after </html>');
+assert.ok(home.indexOf('</html>') > footer, 'HTML document closes before footer');
+assert.ok(!home.includes('Đây là bản xem trước giao diện.'), 'Preview-only warning leaked to production');
+assert.match(home, /data-live-movies[^>]*aria-busy="false"/, 'Movie cards should be prerendered, not API-blocked');
+
+const filmIds = readdirSync('dist/phim').filter(name => /^[1-9][0-9]*$/.test(name));
+const theaterIds = readdirSync('dist/rap').filter(name => /^[1-9][0-9]*-[a-zA-Z0-9_-]+$/.test(name));
+assert.ok(filmIds.length > 0, 'No real static film detail routes were generated');
+assert.ok(theaterIds.length > 0, 'No real static cinema detail routes were generated');
+for (const [directory,id] of [['phim',filmIds[0]], ['rap',theaterIds[0]]]) {
+  const detail = readFileSync('dist/' + directory + '/' + id + '/index.html', 'utf8');
+  assert.match(detail, /<h1[^>]*>[^<]+<\/h1>/, 'Missing SSR detail title: '+directory);
+  assert.ok(detail.includes('data-page-priority') && detail.includes('aria-busy="false"'),
+    'SSR details cannot be blocked on the live API');
+  assert.ok(detail.includes('data-momo-live') || directory === 'phim',
+    'Live schedule module missing from cinema detail');
+  const main = detail.indexOf('<main id="main-content"');
+  const close = detail.indexOf('</main>', main);
+  const footer = detail.indexOf('<footer class="footer"');
+  assert.ok(main >= 0 && close > main && footer > close, 'Incorrect detail DOM layout');
+}
+console.log('PASS: real prerendered routes and document ordering (' + filmIds.length + ' films, ' + theaterIds.length + ' cinemas)');

@@ -3,9 +3,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
 import DetailSkeleton from '../../components/DetailSkeleton.astro';
 import ScheduleSkeleton from '../../components/ScheduleSkeleton.astro';
+import { cinemas } from '../../lib/cinema-catalog';
+const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiCinemaId).join(',');
 ---
 <BaseLayout title="Chi tiết cụm rạp | ePlus Cinema" active="cinemas" canonicalPath={null}>
-  <section class="page-hero page-hero--cinema-detail" data-live-cinema-detail>
+  <section class="page-hero page-hero--cinema-detail" data-live-cinema-detail data-known-cinema-keys={knownCinemaKeys}>
     <div class="container">
       <nav class="breadcrumbs" aria-label="Đường dẫn trang">
         <a href="/">Trang chủ</a><span>/</span>
@@ -59,6 +61,11 @@ import ScheduleSkeleton from '../../components/ScheduleSkeleton.astro';
     }
 
     async function init() {
+      if (validKey && (root.dataset.knownCinemaKeys || '').split(',').includes(key)) {
+        const [chainId, apiCinemaId] = key.split(':');
+        window.location.replace(import.meta.env.BASE_URL + 'rap/' + chainId + '-' + apiCinemaId + '/');
+        return;
+      }
       if (!validKey) { showError('Đường dẫn cụm rạp không hợp lệ.'); return; }
       try {
         const cinemas = await loadAllCinemas();

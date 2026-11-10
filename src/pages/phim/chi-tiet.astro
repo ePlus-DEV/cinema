@@ -3,9 +3,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
 import DetailSkeleton from '../../components/DetailSkeleton.astro';
 import ScheduleSkeleton from '../../components/ScheduleSkeleton.astro';
+import { movies } from '../../lib/cinema-catalog';
+const knownMovieIds = movies.map(movie => movie.id).join(',');
 ---
 <BaseLayout title="Chi tiết phim | ePlus Cinema" active="now" canonicalPath={null}>
-  <section class="live-detail live-film-detail">
+  <section class="live-detail live-film-detail" data-known-movie-ids={knownMovieIds}>
     <div class="container">
       <nav class="breadcrumbs breadcrumbs--light" aria-label="Đường dẫn trang">
         <a href="/">Trang chủ</a><span>/</span>
@@ -76,6 +78,12 @@ import ScheduleSkeleton from '../../components/ScheduleSkeleton.astro';
     }
 
     async function init() {
+      // Existing query URLs remain supported, but known daily-snapshot films
+      // open their prebuilt static page immediately without an API wait.
+      if (id && (root.dataset.knownMovieIds || '').split(',').includes(id)) {
+        window.location.replace(import.meta.env.BASE_URL + 'phim/' + id + '/');
+        return;
+      }
       if (!id || !/^[0-9]+$/.test(id)) {
         showError('Đường dẫn phim không hợp lệ.');
         return;

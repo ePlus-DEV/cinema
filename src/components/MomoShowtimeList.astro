@@ -6,11 +6,14 @@
 import SeatMap from './SeatMap.astro';
 import DatePicker from './DatePicker.astro';
 import '../styles/cinema-explorer.css';
-interface Props { cinemaOnly?: boolean; }
-const { cinemaOnly = false } = Astro.props;
+import { movies, cinemas } from '../lib/cinema-catalog';
+interface Props { cinemaOnly?: boolean; movieId?: string; cinemaKey?: string; }
+const { cinemaOnly = false, movieId = '', cinemaKey = '' } = Astro.props;
+const knownMovieIds = movies.map(movie => movie.id).join(',');
+const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiCinemaId).join(',');
 ---
 
-<div class="momo-live" data-momo-live data-cinema-only={cinemaOnly ? "true" : "false"}>
+<div class="momo-live" data-momo-live data-cinema-only={cinemaOnly ? "true" : "false"} data-movie-id={movieId} data-cinema-key={cinemaKey} data-known-movies={knownMovieIds} data-known-cinemas={knownCinemaKeys}>
   <div class="momo-live__location">
     <div class="momo-live__place"><span aria-hidden="true">⌖</span><div><small>Thành phố đang xem</small><strong>TP. Hồ Chí Minh</strong></div></div>
     <label class="momo-live__district-label" for="cinema-district">Khu vực
@@ -124,6 +127,7 @@ const { cinemaOnly = false } = Astro.props;
   import { CHAINS, formatLabel, loadAllCinemas, momoPost, saigonDate } from '../lib/momo-client.js';
   import { createChainLogo } from '../lib/cinema-logos.js';
 
+  import { moviePath, cinemaPath } from '../lib/cinema-routes.js';
   const root = document.querySelector('[data-momo-live]');
   if (root) {
     const chipsEl = root.querySelector('[data-momo-chips]');
@@ -136,8 +140,17 @@ const { cinemaOnly = false } = Astro.props;
     const params = new URLSearchParams(window.location.search);
     const isCinemaOnly = root.dataset.cinemaOnly === 'true';
     const isMovieDetail = window.location.pathname.includes('/phim/chi-tiet/');
-    const requestedFilm = params.get('movie') || (isMovieDetail ? params.get('id') : null);
+    const requestedFilm = root.dataset.movieId || params.get('movie') || (isMovieDetail ? params.get('id') : null);
     const movieId = requestedFilm && /^[0-9]+$/.test(requestedFilm) ? requestedFilm : null;
+    const knownMovies = new Set((root.dataset.knownMovies || '').split(','));
+    const knownCinemas = new Set((root.dataset.knownCinemas || '').split(','));
+    const base = import.meta.env.BASE_URL;
+    const filmHref = (id) => knownMovies.has(String(id))
+      ? moviePath(id, base)
+      : base + 'phim/chi-tiet/?id=' + encodeURIComponent(id);
+    const cinemaHref = (cinema) => knownCinemas.has(cinema.key)
+      ? cinemaPath(cinema.chainId, cinema.apiCinemaId, base)
+      : base + 'rap/chi-tiet/?cinema=' + encodeURIComponent(cinema.key);
 
     const state = {
       cinemas: [],
@@ -321,7 +334,7 @@ const { cinemaOnly = false } = Astro.props;
             ${film.poster ? `<img class="momo-live__poster" src="${esc(film.poster)}" alt="" loading="lazy" />` : ''}
             <div class="momo-live__program-body">
               <div class="program__movie">
-                <h3><a class="momo-live__film-link" href="${import.meta.env.BASE_URL}phim/chi-tiet/?id=${encodeURIComponent(film.Id)}">${esc(film.Title)}</a></h3>
+                <h3><a class="momo-live__film-link" href="${filmHref(film.Id)}">${esc(film.Title)}</a></h3>
                 <p>${esc(meta)}</p>
               </div>
               ${groups}
@@ -332,7 +345,7 @@ const { cinemaOnly = false } = Astro.props;
       resultsEl.setAttribute('aria-busy', 'false');
       resultsEl.innerHTML = `<article class="theater-showtime">
         <header class="theater-showtime__header">
-          <div><p class="eyebrow">${esc(CHAINS[cinema.chainId] || '')}</p><h3>${esc(cinema.name)}</h3><p>${esc(cinema.address)}</p>${isCinemaOnly ? '' : `<a class="momo-live__cinema-link" href="${import.meta.env.BASE_URL}rap/chi-tiet/?cinema=${encodeURIComponent(cinema.key)}">Chi tiết rạp ↗</a>`}</div>
+          <div><p class="eyebrow">${esc(CHAINS[cinema.chainId] || '')}</p><h3>${esc(cinema.name)}</h3><p>${esc(cinema.address)}</p>${isCinemaOnly ? '' : `<a class="momo-live__cinema-link" href="${cinemaHref(cinema)}">Chi tiết rạp ↗</a>`}</div>
           <span class="date-label">${esc(date.split('-').reverse().join('/'))}</span>
         </header>
         <div class="program-list">${programs}</div>
@@ -388,7 +401,7 @@ const { cinemaOnly = false } = Astro.props;
           status('MoMo không trả về rạp nào cho TP. Hồ Chí Minh.', init);
           return;
         }
-        const requestedCinema = params.get("cinema");
+        const requestedCinema = root.dataset.cinemaKey || params.get("cinema");
         const foundCinema = state.cinemas.find((cinema) => cinema.key === requestedCinema);
         if (isCinemaOnly && !foundCinema) {
           cinemasEl.innerHTML = "";
