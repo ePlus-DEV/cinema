@@ -211,6 +211,11 @@ const { cinemaOnly = false } = Astro.props;
         }
         button.addEventListener('click', () => {
           state.chain = Number(button.dataset.chain);
+          const available = visibleCinemas();
+          if (available.length && !available.some(item => item.key === state.selected)) {
+            state.selected = available[0].key;
+            loadSession();
+          }
           renderChips();
           renderCinemas();
         });
@@ -221,19 +226,26 @@ const { cinemaOnly = false } = Astro.props;
       return String(value || '').normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
     }
+    // The upstream feed is currently scoped to HCM (apiCityId=50). Only
+    // expose districts actually present in the returned cinema addresses.
     const districtPatterns = [
-      /(?:quận|quan|q\.)\s*([0-9]{1,2}|bình thạnh|tân bình|tân phú|bình tân|gò vấp|phú nhuận)/i,
-      /(?:huyện|huyen)\s*(bình chánh|hóc môn|củ chi|nhà bè|cần giờ)/i,
-      /(?:tp\.?|thành phố)\s*(thủ đức)/i
+      { regex: /(?:\bquan|\bq\.)\s*(\d{1,2}|binh thanh|tan binh|tan phu|binh tan|go vap|phu nhuan)/i, prefix: 'Quận ' },
+      { regex: /(?:\bhuyen|\bh\.)\s*(binh chanh|hoc mon|cu chi|nha be|can gio)/i, prefix: 'Huyện ' },
+      { regex: /(?:\btp\.?|\bthanh pho)\s*(thu duc)/i, prefix: 'TP. ' }
     ];
+    const areaNames = {
+      'binh thanh': 'Bình Thạnh', 'tan binh': 'Tân Bình',
+      'tan phu': 'Tân Phú', 'binh tan': 'Bình Tân',
+      'go vap': 'Gò Vấp', 'phu nhuan': 'Phú Nhuận',
+      'binh chanh': 'Bình Chánh', 'hoc mon': 'Hóc Môn',
+      'cu chi': 'Củ Chi', 'nha be': 'Nhà Bè',
+      'can gio': 'Cần Giờ', 'thu duc': 'Thủ Đức'
+    };
     function districtFor(cinema) {
-      const address = cinema.address || '';
-      for (const pattern of districtPatterns) {
-        const match = normalize(address).match(pattern);
-        if (match) {
-          const place = match[1].replace(/^./, (letter) => letter.toUpperCase());
-          return (/thủ đức/i.test(place) ? 'TP. ' : /quận|quan|q\./.test(pattern.source) ? 'Quận ' : 'Huyện ') + place;
-        }
+      const address = normalize(cinema.address || '');
+      for (const {regex, prefix} of districtPatterns) {
+        const match = address.match(regex);
+        if (match) return prefix + (areaNames[match[1]] || match[1]);
       }
       return '';
     }
@@ -409,6 +421,11 @@ const { cinemaOnly = false } = Astro.props;
     });
     districtEl?.addEventListener('change', () => {
       state.district = districtEl.value;
+      const available = visibleCinemas();
+      if (available.length && !available.some(item => item.key === state.selected)) {
+        state.selected = available[0].key;
+        loadSession();
+      }
       renderCinemas();
     });
     window.addEventListener('cinema:day', (event) => {
