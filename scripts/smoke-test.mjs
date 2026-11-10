@@ -74,6 +74,7 @@ const mainStart = home.indexOf('<main id="main-content"');
 const mainEnd = home.indexOf('</main>', mainStart);
 const featured = home.indexOf('class="section section--featured', mainStart);
 const footer = home.indexOf('<footer class="footer"');
+console.log('DOM order diagnostics:', JSON.stringify({mainStart,mainEnd,featured,footer,mainTag:home.slice(mainStart,mainStart+260),featuredTag:home.slice(featured,featured+170)}));
 assert.ok(mainStart >= 0 && mainStart < featured && featured < mainEnd && mainEnd < footer,
   'Home content must be INSIDE <main> and BEFORE the footer, not appended after </html>');
 assert.ok(home.indexOf('</html>') > footer, 'HTML document closes before footer');
