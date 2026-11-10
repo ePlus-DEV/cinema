@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
 import MovieExtras from '../../components/MovieExtras.astro';
+import TrailerModal from '../../components/TrailerModal.astro';
 import DetailSkeleton from '../../components/DetailSkeleton.astro';
 import ScheduleSkeleton from '../../components/ScheduleSkeleton.astro';
 import { movies } from '../../lib/cinema-catalog';
@@ -51,6 +52,7 @@ const knownMovieIds = movies.map(movie => movie.id).join(',');
       <MomoShowtimeList />
     </div>
   </section>
+  <TrailerModal />
 </BaseLayout>
 <script>
   import { loadAllFilms } from '../../lib/momo-client.js';
@@ -112,6 +114,25 @@ const knownMovieIds = movies.map(movie => movie.id).join(',');
         if (posterUrl) {
           poster.src = posterUrl;
           poster.alt = 'Poster phim ' + name;
+          // Poster click plays the trailer in the TrailerModal.
+          const posterWrap = poster.parentElement;
+          const ytMatch = String(film.TrailerUrl || film.Trailer || film.YoutubeUrl || '')
+            .match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);
+          const clipUrl = film.ApiAutoplayTrailer || '';
+          if (posterWrap && (clipUrl || ytMatch)) {
+            posterWrap.dataset.playTrailer = '';
+            if (clipUrl) posterWrap.dataset.clip = clipUrl;
+            if (ytMatch) posterWrap.dataset.youtube = ytMatch[1];
+            posterWrap.dataset.title = name;
+            posterWrap.setAttribute('role', 'button');
+            posterWrap.setAttribute('tabindex', '0');
+            posterWrap.setAttribute('aria-label', 'Xem trailer phim ' + name);
+            const pill = document.createElement('span');
+            pill.className = 'poster-trailer-btn';
+            pill.setAttribute('aria-hidden', 'true');
+            pill.textContent = 'Trailer';
+            posterWrap.append(pill);
+          }
         } else {
           poster.hidden = true;
           poster.parentElement.textContent = 'Chưa có poster';
@@ -146,7 +167,18 @@ const knownMovieIds = movies.map(movie => movie.id).join(',');
         window.dispatchEvent(new CustomEvent('cinema:film-loaded', { detail: {
           id, title: name, titleEn: film.TitleEn || '',
           trailerUrl: film.TrailerUrl || film.Trailer || film.YoutubeUrl || film.VideoUrl || '',
-          posterUrl: posterUrl || ''
+          posterUrl: posterUrl || '',
+          autoplayTrailer: film.ApiAutoplayTrailer || '',
+          ratingPoint: typeof film.ApiRatingPoint === 'number' ? film.ApiRatingPoint : null,
+          ratingTotal: film.ApiRatingTotal || 0,
+          momoReviews: (Array.isArray(film.TopComments) ? film.TopComments : []).slice(0, 3).map((c) => ({
+            name: c.creatorName || 'Khán giả MoMo',
+            avatar: c.creatorAvatar || '',
+            point: typeof c.point === 'number' ? c.point : null,
+            desc: c.desc || '',
+            tags: (Array.isArray(c.tagsV2) ? c.tagsV2 : []).map((t) => t.keyword).filter(Boolean),
+            createdTime: c.createdTime || ''
+          }))
         }}));
       } catch (error) {
         showError('Không tải được thông tin phim (' + error.message + ').');

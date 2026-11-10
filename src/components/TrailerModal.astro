@@ -1,0 +1,121 @@
+---
+// Poster-click trailer player. Any element with [data-play-trailer] (the
+// poster overlay button rendered by LiveMovieGrid) opens this modal instead
+// of navigating to the film page. Playback mirrors the detail page: MoMo's
+// own clip (direct mp4, MoMo CDN only) when available, otherwise the
+// validated YouTube trailer. Nothing loads until the visitor clicks.
+---
+
+<div class="trailer-modal" data-trailer-modal hidden>
+  <div class="trailer-modal__backdrop" data-trailer-close></div>
+  <section class="trailer-modal__panel" role="dialog" aria-modal="true" aria-label="Trailer phim">
+    <div class="trailer-modal__head">
+      <strong data-trailer-title>Trailer</strong>
+      <button type="button" class="trailer-modal__close" data-trailer-close aria-label="Đóng trailer">×</button>
+    </div>
+    <div class="trailer-modal__stage" data-trailer-stage></div>
+    <p class="trailer-modal__note" data-trailer-note></p>
+  </section>
+</div>
+
+<style is:global>
+  /* Global on purpose: the player element is injected when the modal opens. */
+  .trailer-modal { position: fixed; inset: 0; z-index: 96; display: grid; place-items: center; }
+  .trailer-modal[hidden] { display: none; }
+  .trailer-modal__backdrop { position: absolute; inset: 0; background: rgba(8, 12, 22, .72); backdrop-filter: blur(3px); }
+  .trailer-modal__panel { position: relative; width: min(880px, calc(100vw - 28px)); background: #101827; border-radius: 18px; overflow: hidden; box-shadow: 0 30px 80px rgba(3, 6, 12, .5); }
+  .trailer-modal__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 16px; color: #f2f5f9; }
+  .trailer-modal__head strong { font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trailer-modal__close { flex: none; width: 34px; height: 34px; border: 0; border-radius: 999px; background: rgba(255,255,255,.12); color: #fff; font-size: 1.2rem; line-height: 1; cursor: pointer; }
+  .trailer-modal__stage { aspect-ratio: 16 / 9; background: #000; display: grid; place-items: center; }
+  .trailer-modal__stage video, .trailer-modal__stage iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .trailer-modal__note { margin: 0; padding: 10px 16px 14px; color: #93a3ba; font-size: .78rem; }
+  .poster-trailer-btn { position: absolute; z-index: 2; right: 10px; bottom: 10px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; background: rgba(12, 18, 30, .82); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .02em; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,.35); backdrop-filter: blur(2px); }
+  .poster-trailer-btn::before { content: '▶'; color: #e7ab42; font-size: 10px; }
+  .poster-trailer-btn:hover, .poster-trailer-btn:focus-visible { background: #b1812f; outline: none; }
+  .poster-trailer-btn:hover::before, .poster-trailer-btn:focus-visible::before { color: #fff; }
+  .live-detail__poster[data-play-trailer] { cursor: pointer; }
+  .live-detail__poster[data-play-trailer]:focus-visible { outline: 3px solid #f3be67; outline-offset: 3px; }
+</style>
+
+<script>
+  const modal = document.querySelector<HTMLElement>('[data-trailer-modal]');
+  if (modal && !(window as any).__eplusTrailerModal) {
+    (window as any).__eplusTrailerModal = true;
+    const stage = modal.querySelector<HTMLElement>('[data-trailer-stage]');
+    const titleEl = modal.querySelector<HTMLElement>('[data-trailer-title]');
+    const noteEl = modal.querySelector<HTMLElement>('[data-trailer-note]');
+
+    function validClip(raw: string | null) {
+      if (!raw) return '';
+      try {
+        const url = new URL(raw);
+        return url.protocol === 'https:' && /(^|\.)momocdn\.net$/.test(url.hostname) ? raw : '';
+      } catch { return ''; }
+    }
+    function validYoutubeId(raw: string | null) {
+      return raw && /^[a-zA-Z0-9_-]{11}$/.test(raw) ? raw : '';
+    }
+    function openModal(title: string, clip: string, youtubeId: string) {
+      if (!stage || !titleEl || !noteEl) return;
+      titleEl.textContent = 'Trailer · ' + (title || 'Phim');
+      stage.replaceChildren();
+      if (clip) {
+        const video = document.createElement('video');
+        video.src = clip;
+        video.controls = true;
+        video.autoplay = true;
+        video.playsInline = true;
+        stage.append(video);
+        noteEl.textContent = 'Clip trailer do MoMo cung cấp.';
+      } else if (youtubeId) {
+        const iframe = document.createElement('iframe');
+        iframe.title = 'Trailer ' + (title || 'phim') + ' – YouTube';
+        iframe.src = 'https://www.youtube-nocookie.com/embed/' + youtubeId + '?autoplay=1&rel=0';
+        iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share';
+        iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+        iframe.allowFullscreen = true;
+        stage.append(iframe);
+        noteEl.textContent = 'Trailer phát qua YouTube.';
+      } else {
+        noteEl.textContent = 'Phim này chưa có trailer.';
+        return;
+      }
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      modal.hidden = true;
+      stage?.replaceChildren();
+      document.body.style.overflow = '';
+    }
+    modal.querySelectorAll('[data-trailer-close]').forEach((el) => el.addEventListener('click', closeModal));
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !modal.hidden) closeModal();
+    });
+    // Capture phase: the poster button sits inside the card's <a>, so stop
+    // the navigation before it happens and play the trailer instead.
+    document.addEventListener('click', (event) => {
+      const trigger = (event.target as HTMLElement).closest<HTMLElement>('[data-play-trailer]');
+      if (!trigger) return;
+      event.preventDefault();
+      event.stopPropagation();
+      openModal(
+        trigger.dataset.title || '',
+        validClip(trigger.dataset.clip || null),
+        validYoutubeId(trigger.dataset.youtube || null)
+      );
+    }, true);
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      const trigger = (event.target as HTMLElement).closest?.('[data-play-trailer]');
+      if (!trigger || trigger.tagName === 'BUTTON') return;
+      event.preventDefault();
+      openModal(
+        trigger.dataset.title || '',
+        validClip(trigger.dataset.clip || null),
+        validYoutubeId(trigger.dataset.youtube || null)
+      );
+    });
+  }
+</script>

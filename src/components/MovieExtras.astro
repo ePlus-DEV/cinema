@@ -1,12 +1,24 @@
 ---
 import { movieMedia, youtubeSearch } from '../lib/movie-media.js';
 import '../styles/movie-extras.css';
+interface MomoReview {
+  name: string;
+  avatar?: string;
+  point?: number | null;
+  desc?: string;
+  tags?: string[];
+  createdTime?: string;
+}
 interface Movie {
   id: string;
   title: string;
   titleEn?: string;
   trailerUrl?: string;
   posterUrl?: string;
+  autoplayTrailer?: string;
+  ratingPoint?: number | null;
+  ratingTotal?: number;
+  momoReviews?: MomoReview[];
 }
 interface Props { movie?: Movie; }
 const { movie } = Astro.props;
@@ -16,6 +28,18 @@ const trailerId = media?.videoId || '';
 const youtubeHref = trailerId
   ? 'https://www.youtube.com/watch?v=' + trailerId
   : youtubeSearch(filmTitle, movie?.titleEn);
+// MoMo's own trailer clip: only ever a direct https mp4 on MoMo's CDN.
+function momoClipUrl(raw?: string) {
+  if (!raw) return '';
+  try {
+    const url = new URL(raw);
+    return url.protocol === 'https:' && /(^|\.)momocdn\.net$/.test(url.hostname) ? raw : '';
+  } catch { return ''; }
+}
+const clipUrl = momoClipUrl(movie?.autoplayTrailer);
+const momoReviews = movie?.momoReviews || [];
+const hasMomoReviews = movie?.ratingPoint != null || momoReviews.length > 0;
+const reviewDate = (value?: string) => value ? value.slice(0, 10).split('-').reverse().join('/') : '';
 ---
 <section class="section container movie-extras" id="trailer" data-movie-extras
   data-film-id={movie?.id || ''}
@@ -38,10 +62,15 @@ const youtubeHref = trailerId
           <span class="movie-extras__label">VIDEO</span>
           <h3 id="movie-trailer-heading">Trailer {filmTitle}</h3>
         </div>
-        <span class="movie-extras__source" data-trailer-source>{media?.source || 'Chưa xác minh'}</span>
+        <span class="movie-extras__source" data-trailer-source>{clipUrl ? 'MoMo Cinema' : (media?.source || 'Chưa xác minh')}</span>
       </div>
       <div class="movie-extras__player" data-trailer-player>
-        {trailerId ? <button type="button" class="movie-extras__play" data-trailer-play
+        {clipUrl ? <button type="button" class="movie-extras__play" data-trailer-play data-trailer-clip={clipUrl}
+          aria-label={'Phát trailer phim ' + filmTitle}>
+          {movie?.posterUrl && <img src={movie.posterUrl} alt="" loading="lazy" decoding="async" />}
+          <span class="movie-extras__play-ico" aria-hidden="true">▶</span>
+          <span class="movie-extras__play-caption">Phát trailer · MoMo</span>
+        </button> : trailerId ? <button type="button" class="movie-extras__play" data-trailer-play
           aria-label={'Phát trailer phim ' + filmTitle}>
           {movie?.posterUrl && <img src={movie.posterUrl} alt="" loading="lazy" decoding="async" />}
           <span class="movie-extras__play-ico" aria-hidden="true">▶</span>
@@ -53,7 +82,7 @@ const youtubeHref = trailerId
         </div>}
       </div>
       <div class="movie-extras__below-player">
-        <small>Video chỉ được tải từ YouTube khi bạn bấm phát, không tự phát âm thanh.</small>
+        <small>{clipUrl ? 'Clip trailer do MoMo cung cấp, chỉ tải khi bạn bấm phát.' : 'Video chỉ được tải từ YouTube khi bạn bấm phát, không tự phát âm thanh.'}</small>
         <a href={youtubeHref} target="_blank" rel="noopener noreferrer" data-trailer-link>
           {trailerId ? 'Xem trên YouTube ↗' : 'Tìm trailer trên YouTube ↗'}
         </a>
@@ -65,6 +94,27 @@ const youtubeHref = trailerId
           <span class="movie-extras__label">GÓC NHÌN</span>
           <h3 id="movie-reviews-heading">Review &amp; cảm nhận</h3>
         </div>
+      </div>
+      <div class="movie-extras__momo" data-momo-reviews>
+        {hasMomoReviews && <>
+          <div class="movie-extras__momo-head">
+            <span class="movie-extras__label">KHÁN GIẢ MOMO</span>
+            {movie?.ratingPoint != null && <span class="movie-extras__momo-score">★ {String(movie.ratingPoint).replace('.', ',')}/10 <small>{(movie.ratingTotal || 0).toLocaleString('vi-VN')} lượt đánh giá trên MoMo</small></span>}
+          </div>
+          {momoReviews.map(item => <article class="momo-review">
+            {item.avatar && <img class="momo-review__avatar" src={item.avatar} alt="" loading="lazy" decoding="async" />}
+            <div class="momo-review__main">
+              <div class="momo-review__head">
+                <strong>{item.name}</strong>
+                {item.point != null && <span class="momo-review__point">★ {item.point}/10</span>}
+                {item.createdTime && <span class="momo-review__date">{reviewDate(item.createdTime)}</span>}
+              </div>
+              {item.tags?.length ? <div class="momo-review__tags">{item.tags.map(tag => <span>{tag}</span>)}</div> : null}
+              {item.desc && <p>{item.desc}</p>}
+            </div>
+          </article>)}
+          <small class="movie-extras__momo-note">Các đánh giá nổi bật từ khán giả đã xem phim trên MoMo, cập nhật cùng dữ liệu phim hằng ngày.</small>
+        </>}
       </div>
       <div class="movie-extras__articles" data-movie-articles>
         {media?.reviews.length ? media.reviews.map(item => <a class="movie-extras__article" href={item.url}
@@ -155,17 +205,103 @@ const youtubeHref = trailerId
           (record.updatedAt ? new Date(record.updatedAt).toLocaleDateString('vi-VN') : 'Của bạn');
       } catch { status.textContent = 'Trình duyệt không thể đọc đánh giá đã lưu.'; }
     }
-    function showTrailer(movie: {title:string;titleEn?:string;posterUrl?:string;trailerUrl?:string}) {
+    const momoPanel = root.querySelector<HTMLElement>('[data-momo-reviews]');
+    function momoClipOf(movie: {autoplayTrailer?:string}) {
+      if (!movie?.autoplayTrailer) return '';
+      try {
+        const url = new URL(movie.autoplayTrailer);
+        return url.protocol === 'https:' && /(^|\.)momocdn\.net$/.test(url.hostname) ? movie.autoplayTrailer : '';
+      } catch { return ''; }
+    }
+    interface MomoReviewInput { name?:string; avatar?:string; point?:number|null; desc?:string; tags?:string[]; createdTime?:string }
+    function renderMomoReviews(movie: {ratingPoint?:number|null;ratingTotal?:number;momoReviews?:MomoReviewInput[]}) {
+      if (!momoPanel) return;
+      momoPanel.replaceChildren();
+      const reviews = Array.isArray(movie.momoReviews) ? movie.momoReviews : [];
+      if (movie.ratingPoint == null && !reviews.length) return;
+      const head = document.createElement('div');
+      head.className = 'movie-extras__momo-head';
+      const label = document.createElement('span');
+      label.className = 'movie-extras__label';
+      label.textContent = 'KHÁN GIẢ MOMO';
+      head.append(label);
+      if (movie.ratingPoint != null) {
+        const score = document.createElement('span');
+        score.className = 'movie-extras__momo-score';
+        score.textContent = '★ ' + String(movie.ratingPoint).replace('.', ',') + '/10 ';
+        const small = document.createElement('small');
+        small.textContent = (movie.ratingTotal || 0).toLocaleString('vi-VN') + ' lượt đánh giá trên MoMo';
+        score.append(small);
+        head.append(score);
+      }
+      momoPanel.append(head);
+      for (const item of reviews) {
+        const card = document.createElement('article');
+        card.className = 'momo-review';
+        if (item.avatar) {
+          const avatar = document.createElement('img');
+          avatar.className = 'momo-review__avatar';
+          avatar.src = item.avatar;
+          avatar.alt = '';
+          avatar.loading = 'lazy';
+          card.append(avatar);
+        }
+        const main = document.createElement('div');
+        main.className = 'momo-review__main';
+        const headRow = document.createElement('div');
+        headRow.className = 'momo-review__head';
+        const name = document.createElement('strong');
+        name.textContent = item.name || 'Khán giả MoMo';
+        headRow.append(name);
+        if (item.point != null) {
+          const point = document.createElement('span');
+          point.className = 'momo-review__point';
+          point.textContent = '★ ' + item.point + '/10';
+          headRow.append(point);
+        }
+        if (item.createdTime) {
+          const date = document.createElement('span');
+          date.className = 'momo-review__date';
+          date.textContent = item.createdTime.slice(0, 10).split('-').reverse().join('/');
+          headRow.append(date);
+        }
+        main.append(headRow);
+        if (item.tags?.length) {
+          const tags = document.createElement('div');
+          tags.className = 'momo-review__tags';
+          for (const tag of item.tags) {
+            const chip = document.createElement('span');
+            chip.textContent = tag;
+            tags.append(chip);
+          }
+          main.append(tags);
+        }
+        if (item.desc) {
+          const desc = document.createElement('p');
+          desc.textContent = item.desc;
+          main.append(desc);
+        }
+        card.append(main);
+        momoPanel.append(card);
+      }
+      const note = document.createElement('small');
+      note.className = 'movie-extras__momo-note';
+      note.textContent = 'Các đánh giá nổi bật từ khán giả đã xem phim trên MoMo, cập nhật cùng dữ liệu phim.';
+      momoPanel.append(note);
+    }
+    function showTrailer(movie: {title:string;titleEn?:string;posterUrl?:string;trailerUrl?:string;autoplayTrailer?:string;ratingPoint?:number|null;ratingTotal?:number;momoReviews?:MomoReviewInput[]}) {
       filmTitle = movie.title;
       const media = movieMedia(movie);
       trailerId = feedTrailerId(movie) || media.videoId;
+      const clip = momoClipOf(movie);
+      renderMomoReviews(movie);
       if (titleEl) titleEl.textContent = 'Trailer ' + filmTitle;
-      if (source) source.textContent = trailerId ? (media.source || 'Nguồn trailer phim') : 'Chưa xác minh';
+      if (source) source.textContent = clip ? 'MoMo Cinema' : (trailerId ? (media.source || 'Nguồn trailer phim') : 'Chưa xác minh');
       trailerLink.href = trailerId ? 'https://www.youtube.com/watch?v=' + trailerId
         : youtubeSearch(movie.title, movie.titleEn);
       trailerLink.textContent = trailerId ? 'Xem trên YouTube ↗' : 'Tìm trailer trên YouTube ↗';
       player.replaceChildren();
-      if (!trailerId) {
+      if (!trailerId && !clip) {
         const blank = document.createElement('div');
         blank.className = 'movie-extras__unavailable';
         const icon = document.createElement('span');
@@ -196,8 +332,9 @@ const youtubeHref = trailerId
         icon.textContent = '▶';
         const caption = document.createElement('span');
         caption.className = 'movie-extras__play-caption';
-        caption.textContent = 'Phát trailer';
+        caption.textContent = clip ? 'Phát trailer · MoMo' : 'Phát trailer';
         button.append(icon,caption);
+        if (clip) button.setAttribute('data-trailer-clip', clip);
         player.append(button);
       }
       articles.replaceChildren();
@@ -234,7 +371,21 @@ const youtubeHref = trailerId
     }
     player.addEventListener('click', event => {
       const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-trailer-play]');
-      if (!button || !trailerId) return;
+      if (!button) return;
+      const clip = button.dataset.trailerClip || '';
+      if (clip) {
+        const video = document.createElement('video');
+        video.className = 'movie-extras__video';
+        video.src = clip;
+        video.controls = true;
+        video.autoplay = true;
+        video.playsInline = true;
+        const posterImg = button.querySelector('img');
+        if (posterImg?.src) video.poster = posterImg.src;
+        player.replaceChildren(video);
+        return;
+      }
+      if (!trailerId) return;
       const iframe = document.createElement('iframe');
       iframe.title = 'Trailer ' + filmTitle + ' – YouTube';
       iframe.src = 'https://www.youtube-nocookie.com/embed/' + trailerId + '?autoplay=1&rel=0';

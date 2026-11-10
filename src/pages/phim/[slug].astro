@@ -2,7 +2,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
 import MovieExtras from '../../components/MovieExtras.astro';
+import TrailerModal from '../../components/TrailerModal.astro';
 import { movies } from '../../lib/cinema-catalog';
+import { youtubeVideoId } from '../../lib/movie-media.js';
 
 interface Props { movie: (typeof movies)[number]; }
 export function getStaticPaths() {
@@ -10,6 +12,16 @@ export function getStaticPaths() {
 }
 const { movie } = Astro.props;
 const showNow = movie.status === 'now';
+// Poster click plays the trailer (TrailerModal): MoMo clip or YouTube.
+const posterClip = (() => {
+  if (!movie.autoplayTrailer) return '';
+  try {
+    const url = new URL(movie.autoplayTrailer);
+    return url.protocol === 'https:' && /(^|\.)momocdn\.net$/.test(url.hostname) ? movie.autoplayTrailer : '';
+  } catch { return ''; }
+})();
+const posterYtId = youtubeVideoId(movie.trailerUrl) || '';
+const hasPosterTrailer = Boolean(posterClip || posterYtId);
 const description = movie.synopsis
   ? movie.synopsis.slice(0, 155)
   : 'Thông tin phim ' + movie.title + (showNow ? ' và lịch chiếu tại TP. Hồ Chí Minh.' : ' sắp ra rạp tại TP. Hồ Chí Minh.');
@@ -23,8 +35,18 @@ const description = movie.synopsis
         <span>/</span><span>{movie.title}</span>
       </nav>
       <div class="live-detail__grid">
-        <div class="live-detail__poster">
+        <div class="live-detail__poster" {...(hasPosterTrailer ? {
+          'data-play-trailer': true,
+          'data-clip': posterClip || undefined,
+          'data-youtube': posterYtId || undefined,
+          'data-title': movie.title,
+          role: 'button',
+          tabindex: 0,
+          'aria-label': 'Xem trailer phim ' + movie.title,
+          title: 'Xem trailer'
+        } : {})}>
           {movie.posterUrl ? <img src={movie.posterUrl} alt={'Poster phim ' + movie.title} decoding="async" fetchpriority="high" /> : <span>Chưa có poster</span>}
+          {hasPosterTrailer && <span class="poster-trailer-btn" aria-hidden="true">Trailer</span>}
         </div>
         <div class="live-detail__info">
           <span class="live-detail__badge">{showNow ? 'Đang chiếu' : 'Sắp chiếu'}</span>
@@ -62,4 +84,5 @@ const description = movie.synopsis
   </section> : <section class="section container">
     <div class="message-panel"><span>✦</span><div><h2>Phim sắp khởi chiếu</h2><p>Thông tin ngày chiếu có thể thay đổi. Xem lại danh sách phim để cập nhật sau.</p></div></div>
   </section>}
+  <TrailerModal />
 </BaseLayout>
