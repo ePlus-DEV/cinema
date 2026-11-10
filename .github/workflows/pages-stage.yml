@@ -86,6 +86,7 @@ jobs:
           npm run build
           node scripts/rewrite-links.mjs
           node scripts/smoke-test.mjs
+          node scripts/seat-color-test.mjs
           node scripts/seo-audit.mjs
 
       - name: Stage full site and preview into gh-pages
