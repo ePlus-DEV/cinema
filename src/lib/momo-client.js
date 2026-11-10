@@ -223,6 +223,9 @@ export function loadAllCinemas() {
         }
       }
       cinemas.sort((a, b) => a.name.localeCompare(b.name, 'vi'));
+      // A temporary proxy/provider outage can produce an empty snapshot.
+      // Do not memoize that forever: the "Thử lại" action must re-fetch.
+      if (!cinemas.length) cinemasPromise = null;
       return cinemas;
     })();
   }
