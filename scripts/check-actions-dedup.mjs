@@ -37,6 +37,7 @@ assert.match(stagingScript, /\.eplus-preview-sha/, 'PR preview marker not saved'
 assert.match(stagingScript, /No gh-pages changes; no Pages publish dispatched/, 'No-op stage must not dispatch publish');
 assert.match(stagingScript, /gh workflow run pages-publish\.yml --ref main/, 'Changed stage must dispatch publish');
 assert.match(stagingScript, /-f preview_pr="\$PR_NUMBER" -f preview_sha="\$PR_HEAD_SHA"/, 'Staging must send PR identity to trusted publisher');
+assert.match(stagingScript, /-f preview_pr="" -f preview_sha=""/, 'Production and preview deletion must pass empty optional inputs without interactive prompts');
 assert.match(previewNotifier, /\.eplus-preview-sha/, 'Notifier must reject stale staging commits');
 assert.match(previewNotifier, /\.head\.repo\.full_name/, 'Notifier must refuse external PR code');
 assert.match(previewNotifier, /github-actions\[bot\]/, 'Only marked bot comments may be updated');

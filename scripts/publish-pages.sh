@@ -106,7 +106,12 @@ if ! git -C "$branch_dir" diff --cached --quiet; then
     if [[ "$PAGES_DEPLOY_KIND" == preview ]] && grep -Eq '^[[:space:]]*preview_pr:' <<< "$publisher"; then
       gh workflow run pages-publish.yml --ref main -f preview_pr="$PR_NUMBER" -f preview_sha="$PR_HEAD_SHA"
     else
-      gh workflow run pages-publish.yml --ref main
+      if grep -Eq '^[[:space:]]*preview_pr:' <<< "$publisher"; then
+        # Supply optional inputs explicitly to avoid GitHub CLI prompts on CI.
+        gh workflow run pages-publish.yml --ref main -f preview_pr="" -f preview_sha=""
+      else
+        gh workflow run pages-publish.yml --ref main
+      fi
     fi
     echo "Dispatched exactly one Pages publish for this staged change"
   else
