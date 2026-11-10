@@ -127,6 +127,20 @@ for (const [items,status] of [[now,'now'],[soon,'soon']]) {
       posterUrl:String(f.GraphicUrl || f.ImageUrl || ''),
       // Trailer URL is optional and must be validated before rendering.
       trailerUrl:String(f.TrailerUrl || f.Trailer || f.YoutubeTrailerUrl || f.YoutubeUrl || f.VideoUrl || ''),
+      // MoMo's own trailer clip (direct mp4 on MoMo's CDN) — validated before rendering.
+      autoplayTrailer:String(f.ApiAutoplayTrailer || ''),
+      // MoMo audience score for this film (point is /10, total is the vote count).
+      ratingPoint:typeof f.ApiRatingPoint === 'number' ? f.ApiRatingPoint : null,
+      ratingTotal:Number(f.ApiRatingTotal) || 0,
+      // Top audience reviews MoMo attaches to the film (TopComments).
+      momoReviews:(Array.isArray(f.TopComments) ? f.TopComments : []).slice(0, 3).map(c => ({
+        name:String(c.creatorName || 'Khán giả MoMo'),
+        avatar:String(c.creatorAvatar || ''),
+        point:typeof c.point === 'number' ? c.point : null,
+        desc:String(c.desc || '').slice(0, 600),
+        tags:(Array.isArray(c.tagsV2) ? c.tagsV2 : []).map(t => String(t.keyword || '')).filter(Boolean).slice(0, 4),
+        createdTime:String(c.createdTime || '').slice(0, 19)
+      })),
       synopsis:String(f.Synopsis || ''),
       openingDate:String(f.OpeningDate || f.ApiReleaseDate || '').slice(0,10),
       status

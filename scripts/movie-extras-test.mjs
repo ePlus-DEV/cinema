@@ -33,6 +33,13 @@ assert.ok(fallbackPage.includes('<MovieExtras />'), 'Legacy query details must h
 assert.ok(fallbackPage.includes("new CustomEvent('cinema:film-loaded'"), 'Fallback page must update extras on film load');
 assert.ok(catalog.includes('trailerUrl: strings(row.trailerUrl)'), 'Catalog must pass trailer metadata');
 assert.ok(sync.includes('trailerUrl:String(f.TrailerUrl'), 'Daily sync must capture optional trailer metadata');
+assert.ok(sync.includes('autoplayTrailer:String(f.ApiAutoplayTrailer'), 'Daily sync must capture the MoMo trailer clip');
+assert.ok(sync.includes('momoReviews:(Array.isArray(f.TopComments)'), 'Daily sync must capture MoMo audience reviews');
+assert.ok(sync.includes('ratingPoint:typeof f.ApiRatingPoint'), 'Daily sync must capture the MoMo audience score');
+assert.ok(catalog.includes('momoReviews: momoReviewsOf(row)'), 'Catalog must pass MoMo audience reviews');
+assert.ok(component.includes('data-momo-reviews'), 'Film details must render MoMo audience reviews');
+assert.ok(component.includes('data-trailer-clip'), 'MoMo trailer clip must be playable on-site');
+assert.ok(component.includes('momocdn'), 'MoMo clip URLs must be restricted to the MoMo CDN');
 assert.ok(component.includes('https://www.youtube-nocookie.com/embed/'), 'Privacy-enhanced trailer player required');
 assert.ok(component.includes("player.addEventListener('click'"), 'Video should only load after explicit click');
 assert.ok(component.includes('window.localStorage.setItem(storageKey()'), 'Personal reviews must save locally');
