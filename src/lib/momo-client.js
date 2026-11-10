@@ -229,6 +229,28 @@ export function loadAllCinemas() {
   return cinemasPromise;
 }
 
+/**
+ * Seat map for one showtime. `show` is a ShowTimes entry from the session
+ * response. Resolves to the first Data element: { SeatsInfo: { Seats (rows of
+ * seat cells), SeatTypes, TotalCol, TotalRow }, ... }. In a seat cell,
+ * `id: null` is a gap (aisle/no seat), `status: 0` is available and any other
+ * status is taken; `cinemaAreaCode` matches a SeatTypes.Type; `price` is VND.
+ */
+export async function loadSeats(show) {
+  const data = await momoPost('/v2/cinema/seat', {
+    apiCinemaId: show.ApiCinemaId,
+    cineplex: show.Cineplex,
+    sessionId: show.SessionId,
+    screenNumber: show.ScreenNumber,
+    screenName: show.ScreenName,
+    showDateTime: show.ShowDateTime,
+    RecaptchaToken: ''
+  });
+  const first = Array.isArray(data) ? data[0] : data;
+  if (!first || !first.SeatsInfo) throw new Error('MoMo không trả về sơ đồ ghế');
+  return first;
+}
+
 /** Date string (YYYY-MM-DD) in Asia/Ho_Chi_Minh, `offset` days from today. */
 export function saigonDate(offset = 0) {
   const shifted = new Date(Date.now() + offset * 24 * 60 * 60 * 1000);
