@@ -46,6 +46,10 @@ assert.ok(grid.includes('data-play-trailer'), 'Movie posters must offer trailer 
 assert.ok(grid.includes('poster-trailer-btn'), 'Movie posters must show a trailer button');
 assert.ok(trailerModal.includes("addEventListener('click'"), 'Poster trailer clicks must be intercepted');
 assert.ok(trailerModal.includes('momocdn'), 'Poster trailer clips must be restricted to the MoMo CDN');
+assert.ok(staticPage.includes('data-play-trailer'), 'Prebuilt detail poster must offer trailer playback');
+assert.ok(staticPage.includes('<TrailerModal />'), 'Prebuilt detail pages must include the trailer modal');
+assert.ok(fallbackPage.includes('<TrailerModal />'), 'Fallback detail page must include the trailer modal');
+assert.ok(fallbackPage.includes('posterWrap.dataset.playTrailer'), 'Fallback detail poster must offer trailer playback');
 assert.ok(component.includes('https://www.youtube-nocookie.com/embed/'), 'Privacy-enhanced trailer player required');
 assert.ok(component.includes("player.addEventListener('click'"), 'Video should only load after explicit click');
 assert.ok(component.includes('window.localStorage.setItem(storageKey()'), 'Personal reviews must save locally');
