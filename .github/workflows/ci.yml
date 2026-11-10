@@ -23,11 +23,13 @@ jobs:
           node-version: '22'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: Probe live film/cinema API once for this PR (non-blocking)
+      - name: Trial full daily catalog refresh (PR only, no commit)
         if: github.event_name == 'pull_request'
         continue-on-error: true
-        timeout-minutes: 2
-        run: node scripts/sync-cinema-catalog.mjs --probe
+        timeout-minutes: 8
+        run: |
+          node scripts/sync-cinema-catalog.mjs
+          node scripts/sync-cinema-catalog.mjs --check
       - name: Validate catalog refresher syntax
         run: |
           node --check scripts/sync-cinema-catalog.mjs
