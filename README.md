@@ -3,7 +3,7 @@
 Responsive, mobile-first concept for a Vietnamese cinema discovery and showtimes website.
 
 > [!IMPORTANT]
-> **UI preview only.** All movie titles, film descriptions, poster art, dates, and showtimes are sample fixtures, not live cinema schedules. This project does **not** sell tickets or connect to MoMo. All current pages have **noindex** until approved real data is integrated.
+> **UI preview only.** The homepage and live schedule use a third-party MoMo data feed for discovery, while movie detail/catalog and other pages still contain sample fixtures. ePlus Cinema does **not** sell tickets or redirect visitors to MoMo for booking. All pages remain **noindex** until authorized data is available.
 
 ## Features
 
@@ -110,7 +110,7 @@ scripts/
 
 ## Real showtime data from MoMo (experimental)
 
-The page `/lich-chieu/momo/` loads showtimes **live in the visitor's browser**
+The pages `/lich-chieu/` and `/lich-chieu/momo/` load showtimes **live in the visitor's browser**
 from the same API the public MoMo Cinema schedule page
 (<https://www.momo.vn/cinema/lich-chieu>) uses:
 
@@ -125,7 +125,7 @@ from the same API the public MoMo Cinema schedule page
   CORS proxy configured by the **`PUBLIC_MOMO_CORS_PROXY`** env variable
   (see `.env.example`; the Pages workflow sets it from the repository variable
   of the same name, defaulting to the ePlus cors-anywhere instance on Heroku).
-- The page is still `noindex`, sells no tickets, and showtime links go to MoMo.
+- Both pages stay `noindex` and sell no tickets. Showtime buttons open the **on-site seat-map preview**. Home cinema cards preserve the selected cinema in an internal query parameter; there are no visitor-facing MoMo booking links.
 
 An offline snapshot path also exists for development:
 `scripts/fetch-momo-showtimes.mjs` makes the same calls from Node and writes
