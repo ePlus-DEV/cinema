@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
+import PageSkeleton from '../components/PageSkeleton.astro';
 
 interface Props {
   title?: string;
@@ -26,6 +27,11 @@ const {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <title>{title}</title>
+    <script is:inline>
+      document.documentElement.classList.add('has-js');
+      // Fail-safe if a bundled script is blocked or a provider never responds.
+      window.setTimeout(() => document.documentElement.classList.add('page-skeleton-done'), 5000);
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Bỏ qua điều hướng</a>
@@ -34,6 +40,7 @@ const {
       Đây là bản xem trước giao diện. Trang chủ và lịch chiếu MoMo dùng dữ liệu trực tiếp từ MoMo; một số mục khác vẫn là dữ liệu minh họa.
     </div>
     <SiteHeader active={active} />
+    <PageSkeleton active={active} />
     <main id="main-content"><slot /></main>
     <footer class="footer">
       <div class="container footer__inner">
