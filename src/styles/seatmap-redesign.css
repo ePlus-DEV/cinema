@@ -1,9 +1,46 @@
 /* Accessible dark seat-map preview. No checkout or reservation simulation. */
 .seatmap .seatmap__backdrop { background: rgba(8, 13, 25, .76); backdrop-filter: blur(4px); }
+.seatmap {
+  /* Above the sticky mobile site header (z-index: 150). */
+  z-index: 1200;
+  padding: max(8px, env(safe-area-inset-top)) 0 max(8px, env(safe-area-inset-bottom));
+}
 .seatmap .seatmap__panel {
-  width: min(980px, calc(100vw - 28px)); max-height: min(94dvh, 900px);
+  width: min(980px, calc(100vw - 28px));
+  max-height: calc(100dvh - max(8px, env(safe-area-inset-top)) - max(8px, env(safe-area-inset-bottom)));
   border-radius: 21px; background: #201f27; color: #f8fafc;
   box-shadow: 0 36px 110px rgba(0, 0, 0, .42);
+}
+.seatmap .seatmap__zoom-controls {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  flex: 0 0 auto; padding: 10px 20px; background: #292630;
+  color: #f2edf7; border-bottom: 1px solid rgba(255,255,255,.10);
+}
+.seatmap .seatmap__zoom-controls[hidden] { display: none; }
+.seatmap .seatmap__zoom-label { font-size: 12px; font-weight: 800; }
+.seatmap .seatmap__zoom-actions { display: flex; align-items: center; gap: 6px; }
+.seatmap .seatmap__zoom-actions button {
+  min-width: 36px; min-height: 36px; padding: 6px 9px;
+  color: #f8fafc; background: #393644; border: 1px solid #625b70;
+  border-radius: 9px; font-size: 15px; font-weight: 800; cursor: pointer;
+}
+.seatmap .seatmap__zoom-actions button[data-seatmap-zoom-fit],
+.seatmap .seatmap__zoom-actions button[data-seatmap-zoom-reset] {
+  font-size: 11px; font-weight: 700;
+}
+.seatmap .seatmap__zoom-actions button:disabled { opacity: .4; cursor: not-allowed; }
+.seatmap .seatmap__zoom-actions button:not(:disabled):hover { background: #504b60; }
+.seatmap .seatmap__zoom-actions button:focus-visible { outline: 2px solid #ffd47b; outline-offset: 2px; }
+.seatmap .seatmap__zoom-actions output { font-variant-numeric: tabular-nums; font-size: 12px; min-width: 42px; text-align: center; }
+.seatmap .seatmap__stage { transform-origin: 0 0; }
+.seatmap .seatmap__grid { position: relative; }
+.seatmap .seatmap__center-zone {
+  position: absolute; z-index: 2; pointer-events: none;
+  border: 2px solid #7cdaa4; border-radius: 11px;
+  box-shadow: 0 0 0 1px rgba(10, 34, 20, .6), inset 0 0 0 1px rgba(14, 29, 18, .3);
+}
+.seatmap .seatmap__swatch--center {
+  background: transparent; border: 2px solid #7cdaa4; border-radius: 4px;
 }
 .seatmap .seatmap__header {
   padding: 19px 27px 18px; align-items: center; background: #26314a; color: #fff;
@@ -21,8 +58,9 @@
 }
 .seatmap .seatmap__close:hover { background: rgba(255,255,255,.17); }
 .seatmap .seatmap__body {
-  padding: 29px 25px 20px; background: radial-gradient(circle at center 30%, #2d2934, #211f28 76%);
-  min-height: 230px; scrollbar-color: #5d5866 transparent;
+  padding: 24px 25px 20px; background: radial-gradient(circle at center 30%, #2d2934, #211f28 76%);
+  min-height: 0; flex: 1 1 auto; overflow: auto;
+  scrollbar-color: #5d5866 transparent; overscroll-behavior: contain;
 }
 .seatmap .seatmap__map-scroll { padding: 1px 0 14px; scrollbar-color: #696479 transparent; }
 .seatmap .seatmap__stage { padding: 0 10px; }
@@ -56,14 +94,17 @@
   background: #53505b; border-color: transparent; color: #c3becd;
   text-decoration: none; cursor: not-allowed; opacity: .7;
 }
-.seatmap .seat[aria-pressed="true"], .seatmap .seat--available[aria-pressed="true"] {
-  background: #19b3a8; border-color: #b7fff7; color: #061d25;
-  box-shadow: 0 0 0 2px rgba(25,179,168,.23); transform: none;
-}
-/* Selected seat must stay teal even when hovered (hover specificity is higher). */
-.seatmap .seat--available[aria-pressed="true"]:hover:not(:disabled) {
-  background: #19b3a8; color: #061d25; border-color: #b7fff7;
-  filter: none; transform: none;
+/* Safari may keep :hover/:active sticky after a touch. A dedicated state
+   class takes precedence over provider type colors for ALL interactions. */
+.seatmap .seat.seat--selected,
+.seatmap .seat.seat--selected:hover:not(:disabled),
+.seatmap .seat.seat--selected:focus,
+.seatmap .seat.seat--selected:active,
+.seatmap .seat.seat--available[aria-pressed="true"] {
+  background: #19b3a8 !important; color: #061d25 !important;
+  border-color: #b7fff7 !important;
+  box-shadow: 0 0 0 2px rgba(25,179,168,.28) !important;
+  filter: none !important; transform: none !important;
 }
 .seatmap .seat--gap { visibility: hidden; }
 .seatmap .seatmap__legend {
@@ -97,7 +138,16 @@
 .seatmap .seatmap__seats-placeholder-screen { background: #c5c9d5; }
 .seatmap .seatmap__close:focus-visible, .seatmap .seat:focus-visible { outline-color: #ffe09d; }
 @media (max-width: 600px) {
-  .seatmap .seatmap__panel { width: calc(100vw - 12px); max-height: calc(100dvh - 12px); border-radius: 15px; }
+  .seatmap .seatmap__panel {
+    width: calc(100vw - 12px);
+    max-height: calc(100dvh - max(8px, env(safe-area-inset-top)) - max(8px, env(safe-area-inset-bottom)));
+    border-radius: 15px;
+  }
+  .seatmap .seatmap__zoom-controls { padding: 9px 12px; gap: 6px; }
+  .seatmap .seatmap__zoom-label { display: none; }
+  .seatmap .seatmap__zoom-actions { width: 100%; justify-content: center; gap: 7px; }
+  .seatmap .seatmap__zoom-actions button { min-height: 40px; min-width: 40px; }
+  .seatmap .seatmap__zoom-actions output { min-width: 50px; }
   .seatmap .seatmap__header { padding: 14px 15px; }
   .seatmap .seatmap__header h3 { font-size: 17px; }
   .seatmap .seatmap__header p { font-size: 11px; }
