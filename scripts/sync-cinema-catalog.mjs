@@ -12,7 +12,6 @@ import { createCipheriv, createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, renameSync } from 'node:fs';
 
 const out = new URL('../src/data/cinema-snapshot.json', import.meta.url);
-const oldLegacy = new URL('../src/data/momo-showtimes.json', import.meta.url);
 const BASE = 'https://aws.momo.vn/momovn-cinema/public';
 const CITY_ID = 50;
 const CHAIN_NAMES = {
@@ -153,9 +152,10 @@ const next=validated({
   movies,cinemas
 });
 const previous=JSON.parse(readFileSync(out,'utf8'));
-const baseline=previous.movies?.length && previous.cinemas?.length ? previous
-  : JSON.parse(readFileSync(oldLegacy,'utf8'));
-const prevFilms=baseline.movies?.length || 0, prevCinemas=baseline.cinemas?.length || 0;
+// The initial legacy file includes historical session-only films, so do not
+// compare it against the first lean directory refresh. Once a refresh succeeds,
+// use the previous daily directory as the fail-closed baseline.
+const prevFilms=previous.movies?.length || 0, prevCinemas=previous.cinemas?.length || 0;
 // Fail closed on empty/partial provider responses. Never overwrite a healthy
 // published snapshot with a suspiciously small refresh.
 if(movies.length<5 || cinemas.length<10 ||
