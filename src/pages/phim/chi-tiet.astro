@@ -76,7 +76,10 @@ import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
         return;
       }
       try {
-        const [now, soon] = await Promise.all([loadAllFilms('now'), loadAllFilms('soon')]);
+        const [nowResult, soonResult] = await Promise.allSettled([loadAllFilms('now'), loadAllFilms('soon')]);
+        const now = nowResult.status === 'fulfilled' ? nowResult.value : [];
+        const soon = soonResult.status === 'fulfilled' ? soonResult.value : [];
+        if (nowResult.status === 'rejected' && soonResult.status === 'rejected') throw nowResult.reason;
         const film = now.concat(soon).find((item) => String(item.Id) === id);
         if (!film) {
           showError('Không tìm thấy phim trong danh sách cập nhật hiện tại.');
