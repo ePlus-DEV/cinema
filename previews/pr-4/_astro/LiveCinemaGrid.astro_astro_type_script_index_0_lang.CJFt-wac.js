@@ -1,0 +1,5 @@
+import{l as c,C as r}from"./momo-client.B02bffMT.js";const e=a=>String(a??"").replace(/[&<>"']/g,n=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[n]);document.querySelectorAll("[data-live-cinemas]").forEach(async a=>{const n=Number(a.dataset.limit||8);try{const s=await c();if(!s.length)throw new Error("MoMo không trả về rạp nào");a.innerHTML=s.slice(0,n).map((t,i)=>{const l=r[t.chainId]||"Rạp";return`<a class="cinema-tile" href="/previews/pr-4/lich-chieu/?cinema=${encodeURIComponent(t.key)}" aria-label="${e(`Xem suất chiếu tại ${t.name}`)}">
+          <span class="cinema-tile__symbol cinema-tile__symbol--${i%4}">${e(l.slice(0,1))}</span>
+          <span class="cinema-tile__body"><strong>${e(t.name)}</strong><small>${e(l)} · TP. Hồ Chí Minh</small></span>
+          <span class="cinema-tile__arrow">↗</span>
+        </a>`}).join(""),a.setAttribute("aria-busy","false")}catch(s){a.innerHTML=`<p class="live-status">Không tải được danh sách rạp từ MoMo (${e(s.message)}).</p>`,a.setAttribute("aria-busy","false")}});
