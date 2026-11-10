@@ -56,3 +56,17 @@ for (const [route, html] of [['phim/chi-tiet', filmPage], ['rap/chi-tiet', cinem
 assert.ok(home.includes('skeleton__poster-badge'), 'Live film card skeletons missing');
 assert.ok(home.includes('momo-live__loading-program'), 'Live showtime card skeletons missing');
 console.log('PASS: full-page and per-section loading states');
+
+const explorer = readFileSync('dist/lich-chieu/index.html', 'utf8');
+assert.ok(explorer.includes('schedule-page--explorer'), 'Standalone schedule must use full-width explorer');
+assert.ok(explorer.includes('data-momo-district'), 'Missing functional location/district selector');
+assert.ok(explorer.includes('data-momo-chips'), 'Missing cinema chain filters');
+assert.ok(explorer.includes('data-momo-cinemas'), 'Missing cinema selector');
+assert.ok(explorer.includes('data-momo-selected-cinema'), 'Missing selected venue title');
+assert.equal((explorer.match(/data-date-picker/g) || []).length, 1, 'Exactly one date picker should appear in explorer');
+assert.ok(explorer.includes('seatmap__eyebrow'), 'Seat map should explain the preview-only flow');
+assert.ok(existsSync('src/lib/cinema-logos.js'), 'Theater logos helper is missing');
+const logos = readFileSync('src/lib/cinema-logos.js', 'utf8');
+assert.ok(logos.includes('CHAIN_LOGOS'), 'Logo mapping missing');
+assert.ok(logos.includes('createChainLogo'), 'Logo fallback helper missing');
+console.log('PASS: location selector, theater logos, internal date rail and seat-map preview');
