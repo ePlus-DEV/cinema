@@ -81,7 +81,9 @@ const dates = Array.from({ length: 5 }, (_, i) => i);
 </div>
 <style is:global>
   .page-skeleton { display: none; position: fixed; inset: 0; z-index: 200; overflow: auto; background: #fff; pointer-events: auto; }
-  html.has-js:not(.page-skeleton-done) .page-skeleton { display: block; }
+  html.has-js:not(.page-skeleton-done) .page-skeleton { display: flex; flex-direction: column; }
+  .page-skeleton__detail { order: 1; }
+  .page-skeleton__schedule { order: 2; }
   .page-skeleton__container { width: min(calc(100% - 64px), 1220px); margin-inline: auto; }
   .page-skeleton__notice { height: 32px; background: #fff8e8; display: grid; place-items: center; }
   .page-skeleton__header { height: 82px; border-bottom: 1px solid #edf0f5; }
