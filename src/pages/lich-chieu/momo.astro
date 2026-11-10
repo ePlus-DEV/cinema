@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DatePicker from '../../components/DatePicker.astro';
+import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
+import data from '../../data/momo-showtimes.json';
+const fetched = new Date(data.fetchedAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+const totalTimes = data.showtimes.reduce((n, s) => n + s.times.length, 0);
+---
+<BaseLayout title="Lịch chiếu thật từ MoMo | ePlus Cinema" active="schedule">
+  <section class="page-hero page-hero--schedule"><div class="container">
+    <div class="breadcrumbs"><a href="/">Trang chủ</a><span>/</span><a href="/lich-chieu">Lịch chiếu</a><span>/</span><span>Dữ liệu MoMo</span></div>
+    <span class="eyebrow">LỊCH CHIẾU THẬT · NGUỒN MOMO</span><h1>Lịch chiếu phim<span class="title-spark"> ✳</span></h1>
+    <p>Danh sách suất chiếu tại TP. Hồ Chí Minh lấy từ API công khai mà trang MoMo Cinema sử dụng, cập nhật lúc {fetched}. Trang này vẫn để noindex và không bán vé — bấm vào giờ chiếu để xem chi tiết trên MoMo.</p>
+  </div></section>
+  <section class="container section schedule-page">
+    <aside class="schedule-aside">
+      <div class="schedule-aside__card"><span class="eyebrow">KHU VỰC ĐANG XEM</span><h2>⌖ TP. Hồ Chí Minh</h2><p>{data.cinemas.length} rạp · {data.movies.filter((m) => m.status === 'now').length} phim đang chiếu · {totalTimes} suất trong {data.dates.length} ngày ({data.dates[0]} → {data.dates[data.dates.length - 1]}).</p></div>
+      <div class="schedule-aside__tip"><strong>✦ Cách cập nhật</strong><p>Chạy <code>node scripts/fetch-momo-showtimes.mjs</code> trong repo để tải lịch mới (mặc định: TP.HCM, 3 ngày, mọi chuỗi rạp).</p></div>
+      <a href={data.sourceUrl} target="_blank" rel="noopener noreferrer" class="schedule-aside__link">Nguồn: MoMo Cinema ↗</a>
+    </aside>
+    <div class="schedule-main"><div class="schedule-shell">
+      <div class="schedule-shell__top"><div><strong>Suất chiếu theo ngày</strong><span>Dữ liệu thật từ MoMo · Chưa đặt vé tại đây</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
+      <DatePicker />
+      <MomoShowtimeList />
+    </div></div>
+  </section>
+</BaseLayout>
