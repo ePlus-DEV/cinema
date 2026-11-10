@@ -17,7 +17,7 @@ const youtubeHref = trailerId
   ? 'https://www.youtube.com/watch?v=' + trailerId
   : youtubeSearch(filmTitle, movie?.titleEn);
 ---
-<section class="section container movie-extras" data-movie-extras
+<section class="section container movie-extras" id="trailer" data-movie-extras
   data-film-id={movie?.id || ''}
   data-film-title={filmTitle}
   data-film-title-en={movie?.titleEn || ''}
