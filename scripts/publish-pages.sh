@@ -100,7 +100,14 @@ if ! git -C "$branch_dir" diff --cached --quiet; then
   # try to dispatch a trigger it does not yet expose.
   publisher="$(gh api "repos/${GITHUB_REPOSITORY}/contents/.github/workflows/pages-publish.yml?ref=main" --jq '.content' | base64 --decode)"
   if grep -Eq '^[[:space:]]*workflow_dispatch:' <<< "$publisher"; then
-    gh workflow run pages-publish.yml --ref main
+    # When main supports preview metadata, the trusted publisher will notify
+    # the corresponding PR only after a successful Pages deployment.
+    # Backwards compatibility: the PR version may run before this change merges.
+    if [[ "$PAGES_DEPLOY_KIND" == preview ]] && grep -Eq '^[[:space:]]*preview_pr:' <<< "$publisher"; then
+      gh workflow run pages-publish.yml --ref main -f preview_pr="$PR_NUMBER" -f preview_sha="$PR_HEAD_SHA"
+    else
+      gh workflow run pages-publish.yml --ref main
+    fi
     echo "Dispatched exactly one Pages publish for this staged change"
   else
     echo "Legacy workflow_run publisher on main handles the PR preview until merge"
