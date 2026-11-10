@@ -5,6 +5,11 @@ on:
   schedule:
     - cron: '10 18 * * *'
   workflow_dispatch:
+    inputs:
+      force:
+        description: 'Re-fetch even if the catalog was already updated today'
+        type: boolean
+        default: false
   # Bootstrap the first catalog immediately when this new workflow is merged.
   # Future regular source pushes do NOT start a fetch.
   push:
@@ -37,11 +42,39 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Skip a second catalog refresh on the same Vietnam date
+        id: due
+        shell: bash
+        env:
+          FORCE_REFRESH: ${{ inputs.force || false }}
+        run: |
+          set -euo pipefail
+          today="$(TZ=Asia/Ho_Chi_Minh date +%F)"
+          snapshot_day="$(node --input-type=module -e '
+            import { readFileSync } from "node:fs";
+            const stamp=JSON.parse(readFileSync("src/data/cinema-snapshot.json","utf8")).fetchedAt;
+            if (stamp && !Number.isNaN(Date.parse(stamp))) {
+              console.log(new Intl.DateTimeFormat("en-CA", {
+                timeZone:"Asia/Ho_Chi_Minh", year:"numeric", month:"2-digit", day:"2-digit"
+              }).format(new Date(stamp)));
+            }
+          ')"
+          if [[ "$FORCE_REFRESH" != "true" && "$snapshot_day" == "$today" ]]; then
+            echo "due=false" >> "$GITHUB_OUTPUT"
+            echo "Catalog already refreshed today ($today); skip duplicate fetch/build/deploy." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "due=true" >> "$GITHUB_OUTPUT"
+            echo "Catalog refresh due (today=$today, cached=${snapshot_day:-none})."
+          fi
+
       - name: Install dependencies
+        if: steps.due.outputs.due == 'true'
         run: npm install --no-audit --no-fund
       - name: Download film and cinema directory only
+        if: steps.due.outputs.due == 'true'
         run: node scripts/sync-cinema-catalog.mjs
       - name: Validate new snapshot and prerendered pages
+        if: steps.due.outputs.due == 'true'
         run: |
           node scripts/sync-cinema-catalog.mjs --check
           npm run build
@@ -50,6 +83,7 @@ jobs:
           node scripts/seo-audit.mjs
           node scripts/check-outbound-links.mjs
       - name: Commit new catalog to main for normal Pages deployment
+        if: steps.due.outputs.due == 'true'
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -63,9 +97,28 @@ jobs:
             exit 0
           fi
           git commit -m "data(cinema): refresh daily movie and theater snapshot"
-          # Never force push, rewrite history, or hide branch protections.
-          git push origin HEAD:main
-          # GITHUB_TOKEN pushes do NOT trigger regular on:push workflows.
-          # workflow_dispatch is specifically allowed, so explicitly build/deploy.
+          # Avoid the non-fast-forward failure observed on the first bootstrap:
+          # rebase only when main advanced, without force-pushing or overwriting
+          # another catalog update. A conflict fails closed.
+          pushed=false
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "Main now has conflicting catalog updates; refusing to overwrite." >&2
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              pushed=true
+              break
+            fi
+            echo "Main advanced during push attempt $attempt; retrying safely."
+          done
+          if [[ "$pushed" != "true" ]]; then
+            echo "Unable to fast-forward main after 3 attempts." >&2
+            exit 1
+          fi
+          # GITHUB_TOKEN pushes do not trigger standard on:push workflows.
+          # Dispatch the normal stage exactly once for this successful commit.
           gh workflow run pages-stage.yml --ref main
-          echo "Snapshot committed and Pages deployment explicitly dispatched."
+          echo "Snapshot committed; one Pages staging run dispatched."
