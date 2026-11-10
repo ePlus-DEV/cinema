@@ -9,7 +9,7 @@ const sourceUrl = 'https://www.momo.vn/cinema/lich-chieu';
   <section class="page-hero page-hero--schedule"><div class="container">
     <div class="breadcrumbs"><a href="/">Trang chủ</a><span>/</span><a href="/lich-chieu">Lịch chiếu</a><span>/</span><span>Dữ liệu MoMo</span></div>
     <span class="eyebrow">LỊCH CHIẾU TRỰC TIẾP · NGUỒN MOMO</span><h1>Lịch chiếu phim<span class="title-spark"> ✳</span></h1>
-    <p>Danh sách suất chiếu tại TP. Hồ Chí Minh được tải trực tiếp từ API mà trang MoMo Cinema sử dụng, ngay khi bạn mở trang (qua CORS proxy đã cấu hình). Trang này vẫn để noindex và không bán vé — bấm vào giờ chiếu để xem chi tiết trên MoMo.</p>
+    <p>Danh sách suất chiếu tại TP. Hồ Chí Minh được tải trực tiếp từ API mà trang MoMo Cinema sử dụng, ngay khi bạn mở trang (qua CORS proxy đã cấu hình). Trang này vẫn để noindex — bấm vào giờ chiếu để xem sơ đồ ghế và chọn ghế ngay tại đây.</p>
   </div></section>
   <section class="container section schedule-page">
     <aside class="schedule-aside">
@@ -18,7 +18,7 @@ const sourceUrl = 'https://www.momo.vn/cinema/lich-chieu';
       <a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="schedule-aside__link">Nguồn: MoMo Cinema ↗</a>
     </aside>
     <div class="schedule-main"><div class="schedule-shell">
-      <div class="schedule-shell__top"><div><strong>Suất chiếu theo ngày</strong><span>Dữ liệu trực tiếp từ MoMo · Chưa đặt vé tại đây</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
+      <div class="schedule-shell__top"><div><strong>Suất chiếu theo ngày</strong><span>Dữ liệu trực tiếp từ MoMo · Bấm giờ chiếu để chọn ghế</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
       <DatePicker />
       <MomoShowtimeList />
     </div></div>
