@@ -31,7 +31,7 @@ const knownMovieIds = movies.map(movie => movie.id).join(',');
             <a class="button button--gold" data-film-action href="#lich-chieu">Xem lịch chiếu <span aria-hidden="true">↗</span></a>
             <a class="button button--glass" href="/phim-dang-chieu">Các phim khác</a>
           </div>
-          <p class="live-detail__source">Thông tin tham khảo từ MoMo Cinema · Không bán vé hoặc giữ ghế.</p>
+          <p class="live-detail__source">Thông tin phim tham khảo · Không bán vé hoặc giữ ghế.</p>
         </div>
       </div>
     </div>
@@ -48,7 +48,7 @@ const knownMovieIds = movies.map(movie => movie.id).join(',');
       <a class="section-link" href="/lich-chieu">Xem tất cả <span>↗</span></a>
     </div>
     <div class="schedule-shell">
-      <div class="schedule-shell__top"><div><strong data-film-schedule-name>Suất chiếu theo rạp</strong><span>Nguồn tham khảo MoMo Cinema · Không hỗ trợ đặt vé</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
+      <div class="schedule-shell__top"><div><strong data-film-schedule-name>Suất chiếu theo rạp</strong><span>Lịch chiếu tham khảo · Không hỗ trợ đặt vé</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
       <MomoShowtimeList />
     </div>
   </section>
@@ -172,7 +172,7 @@ const knownMovieIds = movies.map(movie => movie.id).join(',');
           ratingPoint: typeof film.ApiRatingPoint === 'number' ? film.ApiRatingPoint : null,
           ratingTotal: film.ApiRatingTotal || 0,
           momoReviews: (Array.isArray(film.TopComments) ? film.TopComments : []).slice(0, 3).map((c) => ({
-            name: c.creatorName || 'Khán giả MoMo',
+            name: c.creatorName || 'Khán giả',
             avatar: c.creatorAvatar || '',
             point: typeof c.point === 'number' ? c.point : null,
             desc: c.desc || '',
