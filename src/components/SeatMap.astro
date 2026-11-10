@@ -119,6 +119,9 @@ import '../styles/seatmap-redesign.css';
 
   const root = document.querySelector('[data-seatmap]');
   if (root) {
+    // Escape parent stacking contexts so the fixed dialog is never covered
+    // by the sticky site header or clipped inside a schedule card on iOS.
+    if (root.parentElement !== document.body) document.body.append(root);
     const titleEl = root.querySelector('[data-seatmap-title]');
     const metaEl = root.querySelector('[data-seatmap-meta]');
     const bodyEl = root.querySelector('[data-seatmap-body]');
