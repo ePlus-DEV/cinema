@@ -44,7 +44,12 @@ export function estimateCenterZone(rows) {
     const count = a => a.reduce((sum,row)=>sum + row.seats.length,0);
     return count(current)>count(best) ? current : best;
   }, blocks[0]);
-  if (primary.length < 4) return null;
+  // Scale with room size: in a tiny auditorium (fewer than 5 main rows or
+  // fewer than 40 seats in the whole room — e.g. a 4-row, 32-seat premium
+  // room) practically every seat is "central", so a frame would be
+  // misleading pseudo-precision. Draw nothing there.
+  const totalSeats = validRows.reduce((sum, row) => sum + row.seats.length, 0);
+  if (primary.length < 5 || totalSeats < 40) return null;
 
   // A central viewing band is typically around the middle/back-middle of the
   // main uninterrupted seat bank. Use 40–90% (row indices are screen-to-back).
@@ -54,8 +59,32 @@ export function estimateCenterZone(rows) {
   const seats = middleRows.flatMap(row=>row.seats);
   if (seats.length < 6) return null;
 
-  const minX = Math.min(...seats.map(s=>s.x));
-  const maxX = Math.max(...seats.map(s=>s.x+s.width));
+  // Center on the dominant column bank when the middle rows are split
+  // unevenly (e.g. a 2-seat side bank next to the main 8-seat bank would
+  // otherwise drag the "center" sideways). Balanced splits (8+8 across a
+  // center aisle) keep the full-span center: there the middle seats really
+  // are the aisle-adjacent ones on both sides.
+  let minX = Math.min(...seats.map(s=>s.x));
+  let maxX = Math.max(...seats.map(s=>s.x+s.width));
+  const sortedByX = [...seats].sort((a, b) => a.x - b.x);
+  const seatPitch = sortedByX.length > 1
+    ? Math.min(...sortedByX.slice(1).map((s, i) => s.x - sortedByX[i].x).filter(d => d > 0))
+    : 0;
+  const banks = [];
+  let bank = [sortedByX[0]];
+  for (let i = 1; i < sortedByX.length; i++) {
+    const gap = sortedByX[i].x - (sortedByX[i - 1].x + sortedByX[i - 1].width);
+    if (seatPitch && gap > seatPitch * 0.6) { banks.push(bank); bank = []; }
+    bank.push(sortedByX[i]);
+  }
+  if (sortedByX.length) banks.push(bank);
+  if (banks.length > 1) {
+    const dominant = banks.reduce((a, b) => (b.length > a.length ? b : a), banks[0]);
+    if (dominant.length >= seats.length * 0.6 && dominant.length < seats.length) {
+      minX = Math.min(...dominant.map(s => s.x));
+      maxX = Math.max(...dominant.map(s => s.x + s.width));
+    }
+  }
   const centerX = (minX+maxX)/2;
   const halfBand = (maxX-minX)*0.22;
   const centralSeats = seats.filter(seat => {
