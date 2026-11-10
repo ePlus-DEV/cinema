@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import DatePicker from '../components/DatePicker.astro';
 import LiveMovieGrid from '../components/LiveMovieGrid.astro';
 import LiveCinemaGrid from '../components/LiveCinemaGrid.astro';
 import MomoShowtimeList from '../components/MomoShowtimeList.astro';
@@ -26,7 +25,6 @@ import MomoShowtimeList from '../components/MomoShowtimeList.astro';
       </div>
       <div class="schedule-shell">
         <div class="schedule-shell__top"><div><strong>Lịch chiếu tại TP. Hồ Chí Minh</strong><span>Dữ liệu tham khảo từ MoMo · Bấm giờ để xem sơ đồ ghế</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
-        <DatePicker />
         <MomoShowtimeList />
         <div class="schedule-shell__footer"><a href="/lich-chieu" class="button button--outline">Tra cứu tất cả suất chiếu <span>↗</span></a></div>
       </div>
