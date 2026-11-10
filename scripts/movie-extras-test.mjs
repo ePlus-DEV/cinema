@@ -37,9 +37,10 @@ assert.ok(sync.includes('autoplayTrailer:String(f.ApiAutoplayTrailer'), 'Daily s
 assert.ok(sync.includes('momoReviews:(Array.isArray(f.TopComments)'), 'Daily sync must capture MoMo audience reviews');
 assert.ok(sync.includes('ratingPoint:typeof f.ApiRatingPoint'), 'Daily sync must capture the MoMo audience score');
 assert.ok(catalog.includes('momoReviews: momoReviewsOf(row)'), 'Catalog must pass MoMo audience reviews');
-assert.ok(component.includes('data-momo-reviews'), 'Film details must render MoMo audience reviews');
-assert.ok(component.includes('data-trailer-clip'), 'MoMo trailer clip must be playable on-site');
-assert.ok(component.includes('momocdn'), 'MoMo clip URLs must be restricted to the MoMo CDN');
+assert.ok(component.includes('data-momo-reviews'), 'Film details must render audience reviews');
+assert.ok(!component.includes('data-trailer-player'), 'Detail page must have a single trailer entry: the poster modal, no inline player');
+assert.ok(!component.includes('KHÁN GIẢ MOMO'), 'Audience reviews must not carry third-party branding');
+assert.ok(!component.includes('MoMo Cinema'), 'UI copy must not name the data source');
 const grid = readFileSync('src/components/LiveMovieGrid.astro', 'utf8');
 const trailerModal = readFileSync('src/components/TrailerModal.astro', 'utf8');
 assert.ok(grid.includes('data-play-trailer'), 'Movie posters must offer trailer playback');
@@ -50,8 +51,7 @@ assert.ok(staticPage.includes('data-play-trailer'), 'Prebuilt detail poster must
 assert.ok(staticPage.includes('<TrailerModal />'), 'Prebuilt detail pages must include the trailer modal');
 assert.ok(fallbackPage.includes('<TrailerModal />'), 'Fallback detail page must include the trailer modal');
 assert.ok(fallbackPage.includes('posterWrap.dataset.playTrailer'), 'Fallback detail poster must offer trailer playback');
-assert.ok(component.includes('https://www.youtube-nocookie.com/embed/'), 'Privacy-enhanced trailer player required');
-assert.ok(component.includes("player.addEventListener('click'"), 'Video should only load after explicit click');
+assert.ok(trailerModal.includes('https://www.youtube-nocookie.com/embed/'), 'Privacy-enhanced trailer player required');
 assert.ok(component.includes('window.localStorage.setItem(storageKey()'), 'Personal reviews must save locally');
 assert.ok(component.includes('window.localStorage.removeItem(storageKey()'), 'Personal reviews must be deletable');
 assert.ok(component.includes('Riêng tư trên trình duyệt này'), 'Review scope must be clearly labeled');
