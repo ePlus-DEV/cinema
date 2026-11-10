@@ -62,8 +62,10 @@ npm run preview
 ## Daily film and cinema catalog
 
 - Workflow: `.github/workflows/cinema-catalog-daily.yml`, one scheduled run
-  each day at **01:10 Asia/Ho_Chi_Minh (18:10 UTC)**, plus an optional
-  manual `workflow_dispatch` after merging. It runs only on `main`.
+  each day at **01:10 Asia/Ho_Chi_Minh (18:10 UTC)**, plus an optional manual
+  `workflow_dispatch`. A one-time `push` bootstrap also runs automatically
+  when the workflow is first merged to `main` (or when that workflow file
+  itself changes). Normal source commits do not re-fetch the catalog.
 - Downloads **only film and cinema directory data** for TP. Hồ Chí Minh
   (`apiCityId=50`) using the same unsigned/public-web API access pattern
   already in this repository. It does **not** download ticket availability,
@@ -83,8 +85,9 @@ npm run preview
   explicitly dispatches the existing `pages-stage.yml` workflow because
   normal push events created by `GITHUB_TOKEN` do not launch other workflows.
   Branch-protection rejection will fail the job; no force push or bypass.
-- To test after the merge: **Actions → Refresh cinema catalog daily → Run workflow**.
-  Review the commit and subsequent Pages deployment. To validate an existing
+- After merge, verify the first automatic run under **Actions → Refresh cinema catalog daily**.
+  Manual rerun is available through **Run workflow**. Review the resulting
+  commit and downstream Pages deployment. To validate an existing
   local snapshot without network access: `npm run check:catalog`.
 - **Rights:** the upstream API is not a licensed feed. Do not enable search
   indexing/booking or expand geographic coverage without validation.
