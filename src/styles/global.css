@@ -526,3 +526,9 @@ h1, h2, h3, p { margin-top: 0; }
   .momo-live .showtime { min-height: 44px; }
   .footer__links a { font-size: 11px; }
 }
+
+/* On smaller screens, show the actionable date/rating filters before tips. */
+@media (max-width: 860px) {
+  .schedule-main { order: -1; }
+  .schedule-aside { margin-top: 4px; }
+}
