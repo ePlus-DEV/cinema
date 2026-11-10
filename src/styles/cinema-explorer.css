@@ -174,3 +174,13 @@
   .momo-live .showtime { min-width: 68px; min-height: 44px; }
   .momo-live .theater-showtime__header h3 { font-size: 13px; }
 }
+
+/* Standalone /lich-chieu uses the full content width after removing the
+   old informational sidebar. Without this it inherits a 260px grid column. */
+.schedule-page--explorer { display: block; }
+.schedule-page--explorer .schedule-main { width: 100%; min-width: 0; }
+.schedule-page--explorer .schedule-shell { width: 100%; }
+.momo-live[data-cinema-only="true"] .momo-live__district-label,
+.momo-live[data-cinema-only="true"] .momo-live__location-note { display: none; }
+.chain-logo { width: 48px; height: 48px; }
+@media (max-width: 760px) { .schedule-page--explorer { padding-top: 22px; } }
