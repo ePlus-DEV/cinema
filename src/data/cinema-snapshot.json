@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "fetchedAt": "2026-11-10T14:09:08.532Z",
+  "fetchedAt": "2026-11-10T15:36:59.933Z",
   "cityId": 50,
   "source": "MoMo Cinema public web API (undocumented)",
   "movies": [
@@ -12,6 +12,11 @@
       "duration": 107,
       "age": "16+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/4986547019998252-1200wx1600h.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=gihuep9BNSg",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/4986294605389273-nccm.mp4",
+      "ratingPoint": 9,
+      "ratingTotal": 34,
+      "momoReviews": [],
       "synopsis": "Có những đứa con dành cả tuổi thơ chỉ để chứng minh mình xứng đáng được yêu thương. Và cũng có những người mẹ dành cả đời để yêu con theo cách mà con chẳng thể nào hiểu nổi. Mây lớn lên với niềm tin sắt đá rằng trong tim bà Tím, anh Hai Pháo luôn là tất cả. Nỗi đau bị \"bỏ quên\" khiến cô biến mọi câu chuyện thành tranh cãi, dựng nên bức tường im lặng giữa hai mẹ con. Cho đến khi biến cố bất ngờ ập xuống, Mây mới bàng hoàng nhận ra: điều đau đớn nhất không phải là chưa từng được yêu, mà là cô đã dành trọn thanh xuân để trách một người mẹ... mà chưa từng thật sự hiểu bà. Khai thác góc nhìn chân thật về \"đứa con thừa\", NGÀY CON CÒN MẸ là hành trình giằng xé nhưng ấm áp, nhắc nhở chúng ta học cách tha thứ và yêu thương khi mọi thứ vẫn còn kịp.",
       "openingDate": "2026-11-11",
       "status": "now"
@@ -24,6 +29,47 @@
       "duration": 108,
       "age": "18+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/4904564921820363-bsb_1200x1600.png?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=u19T6zs4Ksk",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/d7ccc92f3a20456eb1a6ad4a19d39b22.mp4",
+      "ratingPoint": 8.2,
+      "ratingTotal": 1409,
+      "momoReviews": [
+        {
+          "name": "Triệu Trần Ngọc Bích",
+          "avatar": "https://avatar.momocdn.net/avatar/a5fc/a457fa957cc467884bb390d9862e5afb7a11188a71be8435627bb5597694.png",
+          "point": 9,
+          "desc": "Nếu mà nói về xuất sắc thì kh đâu, nhưng mà nó vuii. Diễn viên ai cũm oke hết. Cười sặc sụa thì kh có đâu nhưng có những tình huống cười hợp lí mà dễ thương lắm. Coi thử ii kh phí đâu",
+          "tags": [
+            "Hài hước",
+            "Cảm động",
+            "Đáng xem"
+          ],
+          "createdTime": "2026-11-10 20:50:43"
+        },
+        {
+          "name": "Trần Công Tiến",
+          "avatar": "https://avatar.momocdn.net/avatar/145c/6672fea95460e5bcdb18c01afc0714bd8148f7045a503d8da99e5e22f846.png",
+          "point": 6,
+          "desc": "Nhạc phim rất hay cùng với dàn diễn viên là điểm thu hút của bộ phim, nội dung phim mang tính giải trí, thiếu sự logic cũng tạm chấp nhận với Đạo diễn trẻ 2k2",
+          "tags": [
+            "Bình thường",
+            "Cũng tạm"
+          ],
+          "createdTime": "2026-11-10 20:21:43"
+        },
+        {
+          "name": "Lê Hà Phương",
+          "avatar": "",
+          "point": 10,
+          "desc": "Phim hay, đề tài mới thú vị, đáng xem. Gia Huy, Tiểu Vy diễn tốt, xem để trải nghiệm cũng đc nha mn",
+          "tags": [
+            "Đáng xem",
+            "Giải trí",
+            "Hài lòng"
+          ],
+          "createdTime": "2026-11-10 16:48:29"
+        }
+      ],
       "synopsis": "Vào những năm 90, một trang trại bò sữa đang nghiên cứu một công thức sữa độc quyền có thể chữa lành vết thương, trẻ hóa và nhiều công dụng đặc biệt khác. Để thoát nghèo, một nhóm công nhân quyết định đánh cắp công thức sữa ấy, cho đến khi Trâu - tên đầu sỏ có cảm tình đặc biệt với người tạo nên công thức sữa.",
       "openingDate": "2026-11-06",
       "status": "now"
@@ -36,6 +82,50 @@
       "duration": 135,
       "age": "16+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/2404819473541948-godzzzzz.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=-HhqsE1gK38",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/665216039815959-GODZILLA.mp4",
+      "ratingPoint": 7.9,
+      "ratingTotal": 1576,
+      "momoReviews": [
+        {
+          "name": "Nguyễn Quang Trung",
+          "avatar": "",
+          "point": 10,
+          "desc": "Phim xuất sắc, kỹ xảo đỉnh cao so vs phim Nhật làm với phần 1, cốt truyện hậu chiến đầy cảm xúc và nhân văn. Xem cực cuốn màn nội tâm của nhân vật giáo sư, và âm thanh nổi da gà thật sự",
+          "tags": [
+            "Tuyệt vời",
+            "Đáng xem",
+            "Siêu phẩm"
+          ],
+          "createdTime": "2026-11-10 20:32:46"
+        },
+        {
+          "name": "Dương Cẩm Tiên",
+          "avatar": "https://avatar.momocdn.net/avatar/b37c/40c0bd0e6c357e4fe775ef585028e9d35b2dd17ed8af3e20965de47f5797.png",
+          "point": 8,
+          "desc": "Phim cũng được mấy phần trước chưa có dịp xem phần này cũng ổn nhưng mà khúc đánh nhau hơi ít nhiều hơn xí sẽ gây cấn hơn hy vọng phần tiếp theo sẽ ổn và gây cấn hơn",
+          "tags": [
+            "Ý nghĩa",
+            "Nhân văn",
+            "Đáng tiền",
+            "Đáng suy ngẫm"
+          ],
+          "createdTime": "2026-11-10 20:21:10"
+        },
+        {
+          "name": "Phạm Minh Trí",
+          "avatar": "",
+          "point": 10,
+          "desc": "Godzilla Minus Zero hứa hẹn mang đến một trải nghiệm điện ảnh hoành tráng với những màn đối đầu mãn nhãn, kỹ xảo ấn tượng và bầu không khí căng thẳng. Không chỉ đơn thuần là một bộ phim quái vật phá hoại thành phố, tác phẩm còn khai thác chiều sâu cảm xúc, sự sinh tồn và ý chí của con người trước thảm họa. Đây chắc chắn là một bộ phim đáng mong chờ dành cho những người yêu thích Godzilla.",
+          "tags": [
+            "Tuyệt vời",
+            "Hài lòng",
+            "Ý nghĩa",
+            "Đáng xem"
+          ],
+          "createdTime": "2026-11-10 20:18:31"
+        }
+      ],
       "synopsis": "Chiến tranh đã đưa Nhật Bản về con số 0, Godzilla đã kéo con số ấy lao dốc xuống số âm. Đã hai năm kể từ cuộc chiến, đất nước đang đấu tranh để phục hồi và họ cuối cùng đã lấy lại được cuộc sống thường nhật. Ngay khi nhân loại cố bám giữ sự yên bình mong manh vừa giành lại được, thì một mối đe dọa mới xuất hiện, nghiền nát tất cả hy vọng. Không còn cơ hội nào nữa. Tất cả sẽ kết thúc tại đây.",
       "openingDate": "2026-11-06",
       "status": "now"
@@ -48,6 +138,11 @@
       "duration": 123,
       "age": "16+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/3867294930842850-tghp.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=rG3MuGSBY5k",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/3867373104983363-tghp.mp4",
+      "ratingPoint": 10,
+      "ratingTotal": 32,
+      "momoReviews": [],
       "synopsis": "Phúc (Tuấn Trần) vốn là một thầy giáo hiền lành, nhưng phải ngồi tù sau khi gây ra án mạng để bảo vệ em gái mình (Sally Hồng Anh). Trong trại giam, lòng tốt của Phúc dần cảm hóa các bạn tù và cả Tú (Ma Ran Đô), người quản giáo luôn làm đúng nguyên tắc. Trong khi em gái Phúc phải một mình đối mặt với khó khăn ở bên ngoài, Long (Lương Thế Thành), một phạm nhân sừng sỏ, vẫn nuôi ý định trả thù anh.",
       "openingDate": "2026-11-20",
       "status": "now"
@@ -60,6 +155,45 @@
       "duration": 195,
       "age": "13+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/4290560789334802-Ramayana_600x800.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=6BDX2p1aNlE",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/4290661911047588-suthiramya.mp4",
+      "ratingPoint": 9.3,
+      "ratingTotal": 851,
+      "momoReviews": [
+        {
+          "name": "Vũ Tuấn Anh",
+          "avatar": "https://avatar.momocdn.net/avatar/1122/acb015273ccec0c7a14ea497b1e76db552168082012a06a2cae315e598da.png",
+          "point": 10,
+          "desc": "Phim hay, cảnh đẹp, chờ phần 2",
+          "tags": [
+            "Tuyệt vời"
+          ],
+          "createdTime": "2026-11-10 21:56:19"
+        },
+        {
+          "name": "Lê Đặng Thiên Kim",
+          "avatar": "https://avatar.momocdn.net/avatar/eee0/e7e650174871251af517c23df75554031ed0703d79cc74802dfb754b2877.png",
+          "point": 10,
+          "desc": "Rất hay luôn á trời tiếc không coi sớm hơn,kỹ xảo quá tuyệt vời luôn",
+          "tags": [
+            "Tuyệt vời",
+            "Hài lòng",
+            "Ý nghĩa",
+            "Siêu phẩm"
+          ],
+          "createdTime": "2026-11-10 17:59:23"
+        },
+        {
+          "name": "Chu Đức Thắng",
+          "avatar": "https://avatar.momocdn.net/avatar/ea2d/85e1909883672f902ae5c03fef484e7809280b6182bd7962f4c9b6f68d21.png",
+          "point": 10,
+          "desc": "Ok ổn , hay , phim nên xem , kỹ xảo tốt , nội dung cũng có ý nghĩa__ nhạc phim ổn _ diễn viên ok , kỹ xảo bình thường",
+          "tags": [
+            "Đáng xem"
+          ],
+          "createdTime": "2026-11-10 17:39:27"
+        }
+      ],
       "synopsis": "Xoay quanh câu chuyện tình yêu giữa Rama và Sita, quãng thời gian lưu đày 14 năm trong rừng sâu cùng người em Lakshmana, và kết thúc ở sự kiện Quỷ vương Ravana bắt cóc Sita đưa về đảo quốc Lanka.",
       "openingDate": "2026-11-06",
       "status": "now"
@@ -72,6 +206,50 @@
       "duration": 109,
       "age": "18+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/3869267109340679-Clayface_600x800.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=NL3clCsupBw",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/9542f9eedf354b04b7d5f2b21f4fc2b0.mp4",
+      "ratingPoint": 9.2,
+      "ratingTotal": 1236,
+      "momoReviews": [
+        {
+          "name": "Nguyễn Minh Hiền",
+          "avatar": "https://avatar.momocdn.net/avatar/4512/965c996ca3d5c0b07b167f4e919d1b21e87725f43e08746f7267a35700e5.png",
+          "point": 8,
+          "desc": "Ai mê vũ trụ siêu anh hùng, đặc biệt là Batman, chắc không xa lạ gì với Clayface - gã phản diện có cơ thể nhầy nhụa, biến dạng như một đống bùn sống. Nhưng lần này, DC Studios chọn một xuất thân khá thú vị: Matt Hagen - ngôi sao Hollywood từng có tất cả.\n\nVới mình, điểm sáng nhất của phim nằm ở kịch bản có tính logic, những chi tiết cài cắm và diễn xuất nội tâm của hai nhân vật chính. Việc xây dựng Clayface từ một ngôi sao điện ảnh trên đỉnh danh vọng rồi dần biến thành quái vật là một lựa chọn thông minh.\n\nCó một câu thoại khá đắt khi Matt hỏi nhà sản xuất tại sao lại ruồng bỏ mình sau tai nạ",
+          "tags": [
+            "Ý nghĩa",
+            "Hồi hộp",
+            "Gay cấn",
+            "Kịch tính"
+          ],
+          "createdTime": "2026-11-10 20:13:42"
+        },
+        {
+          "name": "Nguyễn Anh Khoa",
+          "avatar": "https://avatar.momocdn.net/avatar/b1af/4833d75546f5b2e237f6c9a65503952725946a493f54989a3407a30e5423.png",
+          "point": 9,
+          "desc": "nó giống một bộ phim nào đó mình từng coi họ 2024 rồi, cốt truyện cũng tương tự nhưng nhân vật là nữ chính mà quên tên mất tiêu. kỹ xảo khá tốt không có bị giả",
+          "tags": [
+            "Đáng xem",
+            "Siêu phẩm",
+            "Hài lòng"
+          ],
+          "createdTime": "2026-11-09 23:00:24"
+        },
+        {
+          "name": "Hoàng Tuấn",
+          "avatar": "https://avatar.momocdn.net/avatar/fbde/fcf445ebd97df5a4739de553b521cabcebd25e1e601949fb06f83a45315f.png",
+          "point": 10,
+          "desc": "1000/1001 sao",
+          "tags": [
+            "Tuyệt vời",
+            "Hài lòng",
+            "Cảm động",
+            "Hài hước"
+          ],
+          "createdTime": "2026-11-09 14:01:48"
+        }
+      ],
       "synopsis": "Bộ phim theo chân hành trình sa ngã kinh hoàng của một diễn viên triển vọng ở Hollywood khi anh dần biến thành một quái vật bị thôi thúc bởi lòng thù hận, qua đó phơi bày sự đánh mất bản ngã và nhân tính, những tàn phá của tình yêu độc hại và mặt tối của tham vọng khoa học.",
       "openingDate": "2026-10-23",
       "status": "now"
@@ -84,6 +262,11 @@
       "duration": 122,
       "age": "18+",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/966a52d2eb6c73dcb49282f2804483e686339d442cd0d0f31b39ce178d430200?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=EPIRfant4y4",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/5529766036155710-howtorobabank.mp4",
+      "ratingPoint": 10,
+      "ratingTotal": 36,
+      "momoReviews": [],
       "synopsis": "Một băng cướp ngân hàng am hiểu mạng xã hội biến những phi vụ táo tợn thành màn trình diễn gây sốt trên mạng, không biết rằng danh tiếng đang kéo họ vào tầm ngắm của một đặc vụ FBI kỳ cựu và một kỹ sư phần mềm thiên tài. Khi vòng vây siết chặt, nhóm tội phạm vẫn liều lĩnh vượt mọi giới hạn để đánh cược tất cả cho vụ cướp tham vọng nhất.",
       "openingDate": "2026-11-13",
       "status": "now"
@@ -96,6 +279,48 @@
       "duration": 101,
       "age": "18+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/5079258849952693-Thien_Duong_Tam_Toi_1200x1600.png?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=eptNsWCFz4o",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/3868933319688996-thienduongtamtoi.mp4",
+      "ratingPoint": 4.8,
+      "ratingTotal": 126,
+      "momoReviews": [
+        {
+          "name": "Đặng Phương Linh",
+          "avatar": "",
+          "point": 1,
+          "desc": "Xem chán lắm, k logic, mình ngủ mấy lần trong rạp, phí 2 tiếng cdoi :)) k hiểu sao đạo diễn có thể cho 1 kịch bản nnay để chiếu lên rạp😃",
+          "tags": [
+            "Nhạt",
+            "Khó hiểu",
+            "Thất vọng",
+            "Buồn ngủ"
+          ],
+          "createdTime": "2026-11-10 18:55:43"
+        },
+        {
+          "name": "Hồ Cát Vinh",
+          "avatar": "https://avatar.momocdn.net/avatar/71fc/15b12663321d32c98badb16a2dd2bc5239aee2d1472675e12f91e3fa39a0.png",
+          "point": 10,
+          "desc": "Phim đáng xem, tình tiết diễn biến nhanh nhưng đoạn cuối lột tả được những thắc mắc và là nút thắt dẫn tới bi kịch, màu phim đẹp, âm thanh cao trào và đặc biệt là diễn xuất của nhân vật người mẹ rất tốt, phim xứng đáng được nhiều người biết đến hơn.",
+          "tags": [
+            "Hài lòng",
+            "Đáng xem"
+          ],
+          "createdTime": "2026-11-08 19:56:10"
+        },
+        {
+          "name": "Trần Hương Giang",
+          "avatar": "https://avatar.momocdn.net/avatar/2093/f6b8ed4533bba58536694ebea2bd56f7ab9866af37a76752d0e7b2996a5f.png",
+          "point": 10,
+          "desc": "Hình ảnh và diễn xuất tốt, diễn viên Kim Huyn Joo diễn ánh mắt đỉnh thật sự",
+          "tags": [
+            "Tuyệt vời",
+            "Hài lòng",
+            "Đáng xem"
+          ],
+          "createdTime": "2026-11-07 21:50:50"
+        }
+      ],
       "synopsis": "Bộ phim Thiên Đường Tăm Tối xoay quanh hành trình bi thương của So-young - một người mẹ bất ngờ mất đi đứa con của mình. Giữa nỗi đau tận cùng, So-young tìm thấy niềm an ủi khi kết nối với hình ảnh cậu con trai Sun-woo đã mất tích thông qua một chiếc kính tích hợp công nghệ AI. Chín năm sau, điều tưởng như không thể xảy ra: Sun-woo “bằng xương bằng thịt” thật sự trở về, nay đã là một chàng trai trưởng thành. Thế nhưng, cuộc đoàn tụ không mang đến hạnh phúc mà một lần nữa đẩy So-young vào tuyệt vọng khi người con trai trở về giờ đây xa lạ và lạnh lùng, trong khi phiên bản Sun-woo ảo lại ngày càng cần đến cô, buộc cô phải đối diện với lựa chọn đau đớn giữa thực tại và một thế giới được tạo nên từ ký ức.",
       "openingDate": "2026-11-06",
       "status": "now"
@@ -108,6 +333,46 @@
       "duration": 122,
       "age": "18+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/4463292240117827-cc33.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=kgzSbNJWnf4",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/113068227296532229-ccee3.mp4",
+      "ratingPoint": 6.5,
+      "ratingTotal": 7457,
+      "momoReviews": [
+        {
+          "name": "Lê Thị Khánh Ly",
+          "avatar": "",
+          "point": 9,
+          "desc": "đừng đọc mxh ngta chê nhiều rồi bỏ lỡ nha, t thấy phim không dở như ngta chê trên mạng, cũng gọi là đáng để xem thử",
+          "tags": [
+            "Cười banh rạp",
+            "Hài hước",
+            "Giải trí",
+            "Đáng xem"
+          ],
+          "createdTime": "2026-11-10 20:40:54"
+        },
+        {
+          "name": "Cao Thanh Vân",
+          "avatar": "",
+          "point": 1,
+          "desc": "phim dở nhất tui từng xem, thô thiển , cổ xí ngoại tình , gớm",
+          "tags": [
+            "Phí tiền",
+            "Thất vọng"
+          ],
+          "createdTime": "2026-11-10 20:26:42"
+        },
+        {
+          "name": "Lê Nhật Minh",
+          "avatar": "",
+          "point": 10,
+          "desc": "Kịch bản phim xem ổn để giải trí, diễn viên với bối cảnh quay siu đẹpp, nhạc phim hay, mik đi suất cinetour được gặp mấy achi diễn viên giao lưu cực thân thiệnn",
+          "tags": [
+            "Hài lòng"
+          ],
+          "createdTime": "2026-11-10 20:22:34"
+        }
+      ],
       "synopsis": "Giữa xã hội Bắc Bộ cũ đầy lễ giáo và những khuôn phép khắt khe, Thị Mầu – tiểu thư nổi tiếng tài sắc nhất vùng – bước vào một thế giới nơi tình yêu chưa bao giờ là chuyện của riêng hai người. Những rung động bị che giấu, những mối quan hệ chồng chéo và những lựa chọn trái với khuôn phép dần tạo nên một mạng nhện tình cảm rối ren, nơi mỗi người đều có một bí mật, một toan tính và một người không thể gọi tên.\nKhi tình yêu và danh dự không thể cùng tồn tại, liệu ai sẽ là người thoát khỏi mạng nhện ấy – và ai sẽ phải trả giá cho thứ tình cảm mình không thể cưỡng lại?\n",
       "openingDate": "2026-10-30",
       "status": "now"
@@ -120,6 +385,11 @@
       "duration": 77,
       "age": "P",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/83bd51b05dd6fbbe72f3b82b06fbd0fd9a49c4433f2062e23b3ed4066ac9fa85?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=vbhTyM5E9QE",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/5526043313846378-kienlephieulieuky.mp4",
+      "ratingPoint": 8,
+      "ratingTotal": 27,
+      "momoReviews": [],
       "synopsis": "Giữa cơn hạn khốc liệt đe dọa cả đồng cỏ, 2 anh chàng kiến vụng về Arnie và Barney bất ngờ lao vào hành trình giải cứu tổ kiến theo cách chẳng ai dám trông cậy. Nhưng từ một loạt tình huống dở khóc dở cười, họ lại khám phá ra âm mưu trục lợi nguồn nước và cùng một siêu anh hùng muỗi bí ẩn trở thành những người hùng không ai ngờ tới.",
       "openingDate": "2026-11-20",
       "status": "now"
@@ -132,6 +402,51 @@
       "duration": 107,
       "age": "P",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/baaf9e8cdc307bc2a22024cc1b58e3c932bb24e0085aec89bc5c12c2236a7aa9?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=jz8pLlPhSeY",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 24,
+      "momoReviews": [
+        {
+          "name": "Võ Trường Thọ",
+          "avatar": "https://avatar.momocdn.net/avatar/d1ac/9235cdcb1ae5cf17f6a48b211e4315df8925800c010192495715ebf189f5.png",
+          "point": 10,
+          "desc": "Phim quá hay cho độ tuổi từ 5-10 , rất có ý nghĩa. 2 đứa nhỏ xem mà cười cả buổi luôn. 2 cha me đi cùng xem cũng cười đã đời.. Hy vọng ra nhiều phim hài giải trí nữa ạ",
+          "tags": [
+            "Tuyệt vời",
+            "Hài lòng",
+            "Hài hước",
+            "Ý nghĩa"
+          ],
+          "createdTime": "2026-11-09 21:01:59"
+        },
+        {
+          "name": "Lê Thị Thu Hà",
+          "avatar": "https://avatar.momocdn.net/avatar/65bd/359af3fa90a7e9f0c5065d06b0a0ef02498300461281fb9b6415b352fbc1.png",
+          "point": 10,
+          "desc": "Đáng xem nhé. Nội dung khai thác hợp lý. Xem mà cười banh rạp. Cũng có xúc động việc khi làm người lớn ấy. Xem vào đúng đợt sale nên đặt qua momo. Giá ưu đãi lắm nè",
+          "tags": [
+            "Tuyệt vời",
+            "Hài lòng",
+            "Cảm động",
+            "Hài hước"
+          ],
+          "createdTime": "2026-11-08 14:48:31"
+        },
+        {
+          "name": "Lê Kim Quý",
+          "avatar": "https://avatar.momocdn.net/avatar/1348/f0fed5328fcfda994dd3f43f6271b2fb8e29bfc90162f580eb0cbfa2322d.png",
+          "point": 9,
+          "desc": "Phim có nhiều tầng ý nghĩa phù hợp với cả trẻ em và trẻ em lâu năm (người lớn :)) ❤️ Nhiều jokes thú vị, dễ hiểu, đủ hài mà vẫn đủ meaning không bị dài dòng/xàm/bày trò nông cạn 🥳 nên xem cùng gia đình là best ❤️❤️❤️",
+          "tags": [
+            "Tuyệt vời",
+            "Hài hước",
+            "Ý nghĩa",
+            "Cười banh rạp"
+          ],
+          "createdTime": "2026-11-07 22:23:15"
+        }
+      ],
       "synopsis": "Với sở trường quen thuộc của mình, Mèo Ta lại mang niềm vui đến cho trẻ em theo cách hài hước, độc đáo và cực kỳ “lầy lội”, đưa các em - cùng khán giả - bước vào một hành trình kỳ ảo trong thế giới chưa từng thấy trước đây.\nLần này, anh hùng của chúng ta nhận nhiệm vụ khó khăn nhất từ I.I.I.I. (Viện Tưởng Tượng và Truyền Cảm Hứng, LLC): giúp Gabby và Sebastian, hai anh em đang chật vật thích nghi với cuộc sống ở thị trấn mới, tìm lại niềm vui.\nNhưng vốn nổi tiếng với “thói quen đi quá xa”, đây có thể là cơ hội cuối cùng để Mèo Ta chứng minh bản thân… hoặc mất đi chiếc nón phép thuật mãi mãi!",
       "openingDate": "2026-11-06",
       "status": "now"
@@ -144,6 +459,48 @@
       "duration": 86,
       "age": "18+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/4997156767786073-thebell.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=2M02dobFABQ",
+      "autoplayTrailer": "",
+      "ratingPoint": 2.8,
+      "ratingTotal": 56,
+      "momoReviews": [
+        {
+          "name": "Đặng Thị Thu Hạnh",
+          "avatar": "https://avatar.momocdn.net/avatar/853a/1a3496fbc7fd881fafb74a6fbf1a4f87ee9a5c73aa19453146f6927dedde.png",
+          "point": 1,
+          "desc": "Tệ nha không nên xem:)",
+          "tags": [
+            "Nhạt",
+            "Khó hiểu",
+            "Thất vọng",
+            "Buồn ngủ"
+          ],
+          "createdTime": "2026-11-10 13:16:56"
+        },
+        {
+          "name": "Nguyễn Tiến Hưng",
+          "avatar": "https://avatar.momocdn.net/avatar/41af/9900caea00838972f284ad0282d55b602b00432a159c25cdcb98389a5b9b.png",
+          "point": 1,
+          "desc": "Phim tình cảm",
+          "tags": [
+            "Nhạt"
+          ],
+          "createdTime": "2026-11-09 00:55:41"
+        },
+        {
+          "name": "Phạm Văn Hoàng",
+          "avatar": "https://avatar.momocdn.net/avatar/8566/5295f010d3dfd99cbc81a5620310f4ec35f374db005f3f5a3c1fe0c9b84b.png",
+          "point": 9,
+          "desc": "Nói chung phim hay đáng để xem mn ơiiiiii, có cái kết hoie xuuuu thôi chứ tôi nghĩ sẽ có phần 2 đó",
+          "tags": [
+            "Tuyệt vời",
+            "Cảm động",
+            "Hài hước",
+            "Hài lòng"
+          ],
+          "createdTime": "2026-11-07 10:49:33"
+        }
+      ],
       "synopsis": "Khi Thần Chết Đổ Chuông xoay quanh Danto (Bhisma Mulia) – người đàn ông trở về quê nhà sau nhiều năm xa cách, sau khi hay tin ông mình, pháp sư Baharun, bị sát hại bởi Panebok – linh hồn không đầu gieo rắc nỗi kinh hoàng tại vùng đất Belitung. Khi chiếc chuông thiêng vốn dùng để phong ấn những linh hồn bị chiếm giữ, hàng loạt vụ giết người bí ẩn liên tiếp xảy ra. Các nạn nhân bị chặt đầu, còn truyền thuyết kinh hoàng tưởng chừng chỉ dùng để dọa trẻ con dần trở thành cơn ác mộng hiện hữu. Để ngăn chặn thảm kịch tiếp diễn, Danto buộc phải đối mặt với bí mật gia đình và tìm cách phong ấn Panebok, trước khi linh hồn không đầu này giải phóng hàng loạt linh hồn bị giam cầm bên trong chiếc chuông.",
       "openingDate": "2026-11-06",
       "status": "now"
@@ -156,6 +513,43 @@
       "duration": 96,
       "age": "16+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/3863953741906020-anmkta.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=V9AdvOLV8Hw",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/39484460799226257-1stloook.mp4",
+      "ratingPoint": 7.5,
+      "ratingTotal": 4505,
+      "momoReviews": [
+        {
+          "name": "Đào Thị Thanh Chúc",
+          "avatar": "https://avatar.momocdn.net/avatar/4a1a/8569b71b09e1e37e001539ad05a4884385baf36868e5674fbb1c345918a5.png",
+          "point": 10,
+          "desc": "Phim hay đó ạ,nghe tên phim thì kỳ mà nội dung lại bánh cuốn phết.Ban đầu đi xem cũng k hy vọng lắm mà xem cũng okilalo,vai a Thanh Sơn đóng peak he.Trùm cuối khó đoán,vài pha kinh dị giật gân máu me cũng tởm tởm",
+          "tags": [
+            "Hài lòng"
+          ],
+          "createdTime": "2026-10-22 08:55:51"
+        },
+        {
+          "name": "Trần Thị Thu Hằng",
+          "avatar": "https://avatar.momocdn.net/avatar/6815/190ed82e90bcbbd5cc8ee922d38bc83eb27d2a5bd96fa22744b177f5fec9.png",
+          "point": 10,
+          "desc": "Phim khúc đầu thấy nhảm , mà khúc sau thì hay nha.nên xem. Thiên ân gánh cả phim\nNói thiệt coi pim xong ám ảnh bài hát bà thủy hát luôn á. Các diễn viên diễn tròn vai. Hay",
+          "tags": [
+            "Tuyệt vời",
+            "Ý nghĩa",
+            "Giải trí",
+            "Hài lòng"
+          ],
+          "createdTime": "2026-10-21 21:48:10"
+        },
+        {
+          "name": "Hoàng Minh Ngọc",
+          "avatar": "",
+          "point": 7,
+          "desc": "Phim xem khá ổn, nhịp phim nhanh và có nhiều phân cảnh kịch tính, hồi hộp đúng chất tâm lý ly kỳ. Các nút thắt trong câu chuyện được giải quyết ở mức vừa vặn, dù một vài chi tiết còn hơi dễ đoán. Nhìn chung là một tác phẩm giải trí xứng đáng với thời gian bỏ ra, rất hợp để đi xem cùng bạn bè cuối tuần.",
+          "tags": [],
+          "createdTime": "2026-10-21 22:23:13"
+        }
+      ],
       "synopsis": "Một người hàng xóm mê hát karaoke bất ngờ bị sát hại trong căn homestay thiền biệt lập trên núi, khiến chuyến hành hương của một xóm nhỏ bị biến thành trò chơi đầu trí bất đắc dĩ.",
       "openingDate": "2026-10-30",
       "status": "now"
@@ -168,6 +562,11 @@
       "duration": 120,
       "age": "18+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/5350668003153869-ThongLongMa.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=f3cerkvG0-A",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/5527117020309727-quycaidoimang.mp4",
+      "ratingPoint": 8,
+      "ratingTotal": 18,
+      "momoReviews": [],
       "synopsis": "Bộ phim mở đầu bằng một nghi lễ trừ tà bị cấm được phát trực tiếp tại Indonesia, vô tình đánh thức Kuntilanak - linh hồn nữ quỷ báo thù trong truyền thuyết dân gian địa phương. Lời nguyền nhanh chóng lan đến Đài Loan, kéo theo hàng loạt cái chết bí ẩn và những vụ quỷ ám kinh hoàng. Sau khi Mila trở thành nạn nhân đầu tiên, con trai cô quyết định đưa tro cốt của mẹ trở về Indonesia để tìm hiểu sự thật đằng sau cái chết, nhưng lại bị cuốn vào cơn ác mộng bắt nguồn từ những tín ngưỡng cổ xưa và mối thù hận chưa được hóa giải. Khi thế lực siêu nhiên ngày càng trở nên đáng sợ, cả nhóm buộc phải đối mặt với Kuntilanak và tìm cách chấm dứt lời nguyền trước khi nó cướp đi tất cả.",
       "openingDate": "2026-11-13",
       "status": "now"
@@ -180,6 +579,11 @@
       "duration": 102,
       "age": "16+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/5350475710387797-KeHoiSinh.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=FU3hfOVkPYI",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/5527473417940313-kehoising.mp4",
+      "ratingPoint": 9,
+      "ratingTotal": 36,
+      "momoReviews": [],
       "synopsis": "Bộ phim xoay quanh Seok Hwan, một thanh niên thất nghiệp bất ngờ bị sát hại sau một buổi phỏng vấn xin việc thất bại. Kỳ tích xảy ra khi anh đột ngột sống lại sau đúng 72 giờ và phát hiện ra bản thân sở hữu năng lực hồi sinh vô hạn, đồng thời cơ thể sẽ trở nên mạnh mẽ hơn sau mỗi lần cận kề cái chết. Tuy nhiên, món quà này sớm biến thành lời nguyền khi anh lọt vào tầm ngắm và bị săn lùng gắt gao bởi một tổ chức bí ẩn.",
       "openingDate": "2026-11-13",
       "status": "now"
@@ -192,6 +596,50 @@
       "duration": 135,
       "age": "18+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/867383626301392-tbnpo.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=nlFar2vq4Yo",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/74805918951361256-tbnts.mp4",
+      "ratingPoint": 9.6,
+      "ratingTotal": 33056,
+      "momoReviews": [
+        {
+          "name": "Lê Phương Uyên",
+          "avatar": "https://avatar.momocdn.net/avatar/c36f/06418b46053219ce4c66ad887f6fdbe9ec29f3116b18845ba6f2a2ebcf2d.png",
+          "point": 10,
+          "desc": "Đây là bộ phim Việt Nam hay nhất mà t từng xem. Nhân vật nào diễn cũng rất đạt. Bộ phim phản ánh rất chân thực vấn nạn đào lửa và buôn người ngày nay. Nhiều phân đoạn lấy đi nước mắt của người xem. Các pha hành động đấm đá cũng rất mãn nhãn. Mọi người hãy đi xem nhé, ko hối hận đâu.",
+          "tags": [
+            "Tuyệt vời",
+            "Hài lòng",
+            "Cảm động",
+            "Hài hước"
+          ],
+          "createdTime": "2026-11-10 15:08:35"
+        },
+        {
+          "name": "Trương Văn Đức",
+          "avatar": "",
+          "point": 10,
+          "desc": "phim hay hấp hẫn",
+          "tags": [
+            "Tuyệt vời",
+            "Đáng xem",
+            "Siêu phẩm"
+          ],
+          "createdTime": "2026-11-09 14:59:35"
+        },
+        {
+          "name": "Trần Xuân Mai",
+          "avatar": "",
+          "point": 10,
+          "desc": "phim ok, đáng coi, anh steve vô tri nhưng được cái dũng cảm tốt bụng, xem mà hồi hộp liên tục, không biết tiếp theo còn cái gì ở phía trước :))) giải trí cuối tuần là phù hợp nha mọi ngửi :> coi ủng hộ anh duyễn vuyên 1000 tỉ",
+          "tags": [
+            "Ý nghĩa",
+            "Cảm động",
+            "Hài hước",
+            "Hài lòng"
+          ],
+          "createdTime": "2026-11-08 18:32:00"
+        }
+      ],
       "synopsis": "Vì cứu em gái sa bẫy buôn người ở vùng biên giới, Ny (Steven Nguyễn) cùng bạn thân Báu (Trầm Minh Hoàng) bị bắt làm nô dịch trong sào huyệt lừa đảo tàn bạo. Tại đây, họ cùng các trinh sát nằm vùng và các nạn nhân âm thầm lập kế hoạch trốn thoát.",
       "openingDate": "2026-09-25",
       "status": "now"
@@ -204,6 +652,48 @@
       "duration": 95,
       "age": "K",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/3868482440442438-KamenRider_Zeztz_600x800.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=nAITH2SRdSE",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/3868562766098316-kamenrider.mp4",
+      "ratingPoint": 9.6,
+      "ratingTotal": 74,
+      "momoReviews": [
+        {
+          "name": "Đinh Đức Thuận",
+          "avatar": "https://avatar.momocdn.net/avatar/62f2/a442e52efe8a82532e08daf839efcdd7292ab41e7bea33302d23b93d2368.png",
+          "point": 8,
+          "desc": "Khá là đã và \"gay\" cấn, thời lượng tuy hơi ít nhưng vẫn đủ để thoả mãn người xem lâu năm, rất đang để trải nhiệm ngoài rạp vì nếu xem màn ảnh nhỏ sẽ khó có được cảm xúc như xem ngoài rạp",
+          "tags": [
+            "Hay"
+          ],
+          "createdTime": "2026-11-08 22:06:49"
+        },
+        {
+          "name": "Nguyễn Trọng Nhân",
+          "avatar": "",
+          "point": 10,
+          "desc": "Phim đơn giản, dành cho fan nhưng nonfan cũng có thể xem được. Phù hợp với mọi lứa tuổi. Hơi buồn vì quả poster không bốc trúng cái mình muốn, nhưng ít nhất cũng coi như là một kỷ niệm đẹp. Dù sao không phải lúc nào phim Tokusatsu nhà Toei có thể về VN, nhất là một phim (kỳ thực là hai phim gộp chung) đảm bảo chất lượng ở mức ổn như này",
+          "tags": [
+            "Giải trí",
+            "Ý nghĩa",
+            "Hài lòng",
+            "Đáng xem"
+          ],
+          "createdTime": "2026-11-06 10:46:10"
+        },
+        {
+          "name": "Nguyễn Châu Đại Dương",
+          "avatar": "https://avatar.momocdn.net/avatar/55ed/edfa6c275a04b5653035639dc5d37aa5018371c69e7a1316237ff47e869d.png",
+          "point": 10,
+          "desc": "Quá xuất sắc, miễn chê, mong là nhiều phim Rider sẽ về Việt Nam thêm ạ😘",
+          "tags": [
+            "Tuyệt vời",
+            "Hài lòng",
+            "Giải trí",
+            "Đáng xem"
+          ],
+          "createdTime": "2026-11-05 19:27:26"
+        }
+      ],
       "synopsis": "Trụ sở Cảnh sát Quốc gia bị đánh bom, Yorozu Baku (Zeztz) trở thành nghi phạm số một và bị truy nã toàn quốc. Odaka Kensei (Nox) quyết tâm tìm ra kẻ đứng sau – Kamen Rider Mugen. Cùng sát cánh, Zeztz và Nox đối đầu Mugen, nhưng bí ẩn đã ập đảo bởi năng lực “Mộng giữa Ban ngày” có thể thao túng thực tại. Baku buộc phải đưa ra quyết định tàn khốc. Mặt Trời của Trái Đất Đa Nguyên A0073 bị Không Gian Ma Giới nuốt chửng, đổi lại kẻ thù yêu cầu mạng Gavan. Reiji bàng hoàng phát hiện Gavan Killer chính là Hase Makoto, tiền bối anh kính trọng. Khi Reiji rơi vào tuyệt vọng, các Gavan từ khắp đa chiều không gian đồng loạt hội tụ, mở màn trận chiến đa vũ trụ nhằm vạch trần âm mưu thực sự.",
       "openingDate": "2026-10-30",
       "status": "now"
@@ -216,6 +706,47 @@
       "duration": 97,
       "age": "K",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/3691152596963362-ngumieuphaan.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=zFXDG7_fOOY",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/3691476027126472-ngumieuphaan.mp4",
+      "ratingPoint": 8.6,
+      "ratingTotal": 63,
+      "momoReviews": [
+        {
+          "name": "Tăng Thị Hiền",
+          "avatar": "https://avatar.momocdn.net/avatar/bae8/986bd4d935e76301c7c81ca52a1c7cc41b2eb660636adeaf4f6a2925b3cd.png",
+          "point": 6,
+          "desc": "Phim cũng tạm ổn xem được hài nếu mà cốt truyện thì không được logic phần nhân vật đánh nhau không phản diện rồi không được gây cấn kịch bản tạm được diễn viên￼ hài",
+          "tags": [
+            "Bình thường"
+          ],
+          "createdTime": "2026-11-04 19:46:38"
+        },
+        {
+          "name": "Vũ Thùy Linh",
+          "avatar": "https://avatar.momocdn.net/avatar/e354/521e2cf061e869e219ed3e6af746958f428be61797ef4973fba5810926c4.png",
+          "point": 8,
+          "desc": "Phim phá án, cũng hay, kỹ xảo âm thanh hay",
+          "tags": [
+            "Gay cấn",
+            "Kịch tính",
+            "Hay",
+            "Mãn nhãn"
+          ],
+          "createdTime": "2026-11-03 21:15:38"
+        },
+        {
+          "name": "Nguyễn Thanh Liêm",
+          "avatar": "https://avatar.momocdn.net/avatar/fb51/f1a33cc343e1027dfcc1b4f31e601da90e5228327e05dbba4a3cd296385e.png",
+          "point": 9,
+          "desc": "phim hay dễ coi. con nít coi được vì mấy con mèo con chó, đánh nhau siêu nhân gao hoành tráng. còn người lớn thì coi cũng ngờ ngợ mấy phim bao công hồi xưa",
+          "tags": [
+            "Hài lòng",
+            "Giải trí",
+            "Đáng xem"
+          ],
+          "createdTime": "2026-10-24 23:37:24"
+        }
+      ],
       "synopsis": "Tại thành cổ Kim Lăng, Triển Ngao - cận vệ thân tín của Khấu Tướng Quân - cùng chàng thiếu niên Bao Chửng, Cẩm Mao Thử và Khấu Châu, con gái của Khấu Tướng Quân, hợp sức điều tra chân tướng, phá giải những vụ án bí ẩn và từng bước khám phá một âm mưu động trời.",
       "openingDate": "2026-10-30",
       "status": "now"
@@ -228,6 +759,51 @@
       "duration": 119,
       "age": "16+",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/828b56d93d2f00be168fb17e06cdf8ab0051a3b59762b65d45d6eb9eba6df8dd?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=xwnZ_uvrFs0",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/f48f4cf7c4064468a1f26825026ac303.mp4",
+      "ratingPoint": 8.1,
+      "ratingTotal": 178,
+      "momoReviews": [
+        {
+          "name": "Phạm Quốc Huy",
+          "avatar": "https://avatar.momocdn.net/avatar/9ecc/f1f230b8b3202c06ced05471261b113d32d1df96a996f8b188497c33610c.png",
+          "point": 10,
+          "desc": "#good phim tuổi thơ chuyển thể từ game, mong đợi câc phần tiếp theo",
+          "tags": [
+            "Tuyệt vời",
+            "Hài lòng",
+            "Cảm động",
+            "Hài hước"
+          ],
+          "createdTime": "2026-11-02 08:56:28"
+        },
+        {
+          "name": "Phùng Lê Trung Hậu",
+          "avatar": "https://avatar.momocdn.net/avatar/510d/a0674097e3a45a31888f30c39fe1b98cd0daee4ff8eae72f188555daf262.png",
+          "point": 10,
+          "desc": "Phim rất fan service",
+          "tags": [
+            "Tuyệt vời",
+            "Hài lòng",
+            "Cười banh rạp",
+            "Giải trí"
+          ],
+          "createdTime": "2026-10-29 08:14:17"
+        },
+        {
+          "name": "Lê Hoàng Việt",
+          "avatar": "https://avatar.momocdn.net/avatar/1aa3/bed321d042ab5e77242af94d2606f4515ca7c795a9f5399bbf4f8bad5198.png",
+          "point": 10,
+          "desc": "Thăng Long Quyền 🗣️🔥🔥🔥",
+          "tags": [
+            "Tuyệt vời",
+            "Hài lòng",
+            "Hài hước",
+            "Đáng xem"
+          ],
+          "createdTime": "2026-10-28 16:12:09"
+        }
+      ],
       "synopsis": "Lấy bối cảnh năm 1993, Ryu và Ken, hai đấu sĩ từng xa cách bị kéo trở lại chiến đấu khi Chun-Li chiêu mộ họ tham gia giải Chiến Binh Thế Giới đầy khốc liệt. Nhưng đằng sau đó là một âm mưu chết chóc, buộc họ phải đối đầu với nhau và quá khứ của chính mình, nếu không tất cả sẽ CHẤM HẾT! Dưới sự chỉ đạo của đạo diễn Kitao Sakurai, Street Fighter mang những trận chiến game thùng lên màn ảnh rộng với các đòn thế quen thuộc cùng dàn nhân vật được yêu thích.",
       "openingDate": "2026-10-16",
       "status": "now"
@@ -240,6 +816,43 @@
       "duration": 114,
       "age": "18+",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/82f58bede9aaec5588e338b29ecee0f047c415ba675a5f93a05078b57b92c503?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=ngRz7p3elTk",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/2508780176554717-verity.mp4",
+      "ratingPoint": 8.8,
+      "ratingTotal": 282,
+      "momoReviews": [
+        {
+          "name": "Nguyễn Thị Kim Châu",
+          "avatar": "https://avatar.momocdn.net/avatar/40f8/d666f0e633ee5d2361a786dd55ddfc290d9ea55d2c01e57d54c62aae71ce.png",
+          "point": 7,
+          "desc": "Phim tạm đc, kịch bản ko có gì khó đoán. Ana Hathaway diễn đỉnh, 2 người còn lại hơi gượng nhẹ",
+          "tags": [
+            "Hồi hộp"
+          ],
+          "createdTime": "2026-11-04 11:00:17"
+        },
+        {
+          "name": "Nguyễn Thụy Bích Châu",
+          "avatar": "https://avatar.momocdn.net/avatar/9492/c760454ff6d35dd4099f83440083b614933c637b46154dd369d6699fffb5.png",
+          "point": 8,
+          "desc": "Đáng xem, có mấy cảnh làm giật mình nhẹ nha,nhưng kết dễ đoán nên có hơi thất vọng tí",
+          "tags": [
+            "Kịch tính",
+            "Mãn nhãn"
+          ],
+          "createdTime": "2026-10-27 13:52:01"
+        },
+        {
+          "name": "Trương Anh Tài",
+          "avatar": "",
+          "point": 10,
+          "desc": "Phim hay vì có cú twist và cái kết mở. Mọi người nên đi xem nhé. Phim mang yếu tố tâm lý hơn là gay cấn. Ảnh mang tính chất minh họa",
+          "tags": [
+            "Tuyệt vời"
+          ],
+          "createdTime": "2026-10-26 21:23:54"
+        }
+      ],
       "synopsis": "Được chuyển thể từ cuốn tiểu thuyết bán chạy nhất của Colleen Hoover, Bí Mật Bị Chôn Vùi( Verity) phim giật gân tâm lý đầy lôi cuốn này xoay quanh nữ nhà văn nổi tiếng Verity Crawford (Anne Hathaway) và Lowen Ashleigh (Dakota Johnson), một nhà văn đang chật vật với sự nghiệp, được mời đến dinh thự hẻo lánh Crawford để viết thay Verity. Tại đây, Lowen phát hiện những ghi chép ám ảnh, hé lộ những bí mật gây sốc về chồng Verity, Jeremy (Josh Hartnett), khiến cô dần lạc lối giữa hư cấu và thực tại, giữa thao túng và sức hút , cũng như giữa cơ hội và sự ám ảnh.",
       "openingDate": "2026-10-16",
       "status": "now"
@@ -252,6 +865,41 @@
       "duration": 111,
       "age": "18+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/2675537174708980-ty4ht.png?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=B3itnSt3GQI",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/1553320219894420-ty4ht.mp4",
+      "ratingPoint": 7.5,
+      "ratingTotal": 3723,
+      "momoReviews": [
+        {
+          "name": "Nguyễn Tấn Sang",
+          "avatar": "https://avatar.momocdn.net/avatar/143b/d4a63eacfa206bd5292d3081c357eb8d7e44e05790f54572ff5a368974aa.png",
+          "point": 10,
+          "desc": "Phim hay, kịch tính, những cảnh hành động mãn nhãn, tạo hình nhân vật rùng rợn. Mạch phim dễ hiểu với người mới xem và không theo dõi các phần trước đây.",
+          "tags": [],
+          "createdTime": "2026-10-15 14:08:18"
+        },
+        {
+          "name": "Bùi Văn Mạnh",
+          "avatar": "",
+          "point": 10,
+          "desc": "coi phim này t muốn nín thở :)) vãi, rượt chạy trong rừng mà yak còn xém bị hại đầu phim á chứ, ảnh bị vùi xuống nc là t nam mô ko lun",
+          "tags": [],
+          "createdTime": "2026-10-15 14:02:34"
+        },
+        {
+          "name": "Đinh Hạo Nguyên",
+          "avatar": "",
+          "point": 10,
+          "desc": "Phần 4 cho cảm giác như một chương mới của Tee Yod vậy. Yak lần này có hẳn một cuộc đi săn để giải cứu người mất tích, nên câu chuyện có cảm giác chủ động và dồn dập hơn.",
+          "tags": [
+            "Cười banh rạp",
+            "Hài lòng",
+            "Khóc trôi rạp",
+            "Ý nghĩa"
+          ],
+          "createdTime": "2026-10-15 14:44:31"
+        }
+      ],
       "synopsis": "Cuộc gặp gỡ đầu tiên giữa Yak và Trung sĩ Paphan khi cả hai dấn thân vào một nhiệm vụ sinh tử: truy tìm một người đàn ông mất tích. Dẫn đầu toán quân tiến sâu vào vùng hiểm địa âm u, họ phải đối mặt với Hổ tinh ăn thịt người vùng Khao Khwang, kẻ sở hữu khả năng biến hóa khôn lường thành muôn hình vạn trạng. Bị bủa vây giữa ngàn trùng nguy hiểm của rừng thiêng, Yak và Trung sĩ Paphan chỉ còn một con đường duy nhất: sát cánh chiến đấu để sinh tồn và vạch trần sự thật tàn khốc trước khi chính họ trở thành mồi ngon tiếp theo của nó.",
       "openingDate": "2026-10-16",
       "status": "now"
@@ -264,6 +912,46 @@
       "duration": 81,
       "age": "P",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/eb5b60d0fe91019e17234516476138a6530ef520344acb3dfe386e2d4c46e787?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=8q6XZq8a0iA",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/2509057960733009-shaun.mp4",
+      "ratingPoint": 9.5,
+      "ratingTotal": 244,
+      "momoReviews": [
+        {
+          "name": "Trần Ngọc Thảo Hiền",
+          "avatar": "https://avatar.momocdn.net/avatar/6d7d/13e8e4c15cf8dd8168fe3f297355b258b2f833c0c5b230d53f23ac3d6c70.png",
+          "point": 8,
+          "desc": "Vẫn là Shaun The Sheep với nhiều tầng ý nghĩa lồng ghép, không chỉ đơn giản là hoạt hình mà còn có nhiều bài học, phù hợp để người lớn dắt các em đi xem và giải thích",
+          "tags": [
+            "Ý nghĩa",
+            "Đáng suy ngẫm"
+          ],
+          "createdTime": "2026-11-08 10:34:45"
+        },
+        {
+          "name": "Lê Hữu Phước",
+          "avatar": "https://avatar.momocdn.net/avatar/fccb/955ff95724adea93777b48276501ba3fe295edd30b0d1251d6209fb8e629.png",
+          "point": 10,
+          "desc": "Tuổi thơ đây rồi, nhớ đoạn nhạc huýt sáo như ngày ấy, phim nó cũng chỉ đám cừu, con chó vàng, chủ hói, vẫn thế, cái kịch bản làm ra phù hợp thị hiếu của người lớn lẫn trẻ con\n#shauns",
+          "tags": [
+            "Tuyệt vời",
+            "Hài lòng",
+            "Cảm động",
+            "Siêu phẩm"
+          ],
+          "createdTime": "2026-11-08 09:25:59"
+        },
+        {
+          "name": "Nguyễn Hiền Lương",
+          "avatar": "https://avatar.momocdn.net/avatar/1e07/4fcc695f07abc9facfd03443d2ff3f9d63ea7fc065d9d25922ee555cee63.png",
+          "point": 8,
+          "desc": "Phim hay, vui vẻ tình tiết khá thú vị hợp với thiếu nhi \nXem trùng vào hallowed nên hợp với ngày lễ \nKhá recommend phim ạ",
+          "tags": [
+            "Hay"
+          ],
+          "createdTime": "2026-11-05 22:17:05"
+        }
+      ],
       "synopsis": "SHAUN THE SHEEP: “QUÁI LẠ” GHÉ NHÀ bắt đầu với sự cố Ông chủ vô tình phá hỏng vườn bí ngô mà đàn cừu đang chuẩn bị cho Halloween. Để cứu vãn tình hình, Shaun trổ tài làm “nhà khoa học”, nhưng thí nghiệm lại kéo theo hàng loạt rắc rối ngoài dự tính. Khi Ông chủ mất tích và một sinh vật bí ẩn xuất hiện trong rừng, cả đàn cừu lên đường tìm kiếm Ông chủ và đối mặt với một chuyến phiêu lưu vừa quái vừa nhộn.",
       "openingDate": "2026-10-16",
       "status": "now"
@@ -276,6 +964,51 @@
       "duration": 120,
       "age": "16+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/169975628854232523-lhfinal.png?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=ZImBtmy3XrA",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/5d66fe182a724b7ca66b97f38d55e58e.mp4",
+      "ratingPoint": 9.3,
+      "ratingTotal": 8734,
+      "momoReviews": [
+        {
+          "name": "Tô Nguyễn Phương Trinh",
+          "avatar": "https://avatar.momocdn.net/avatar/82ab/d1916a13362580cd1164f5e4ee1320f16360c9bff943c7010afaef4730e1.png",
+          "point": 10,
+          "desc": "phim gì hay điên cười nổ ruột luon í phim đi tới từng cảm xúc trong mình luon tht sự rất đáng để xem ai không xem là đang bỏ lỡ 1 bộ phim hay á nhe hihi",
+          "tags": [
+            "Khóc trôi rạp",
+            "Hài lòng",
+            "Cảm động",
+            "Hài hước"
+          ],
+          "createdTime": "2026-11-10 17:32:02"
+        },
+        {
+          "name": "Đào Tiến Hậu",
+          "avatar": "https://avatar.momocdn.net/avatar/cf94/ffac65902f98d06f254dbd0df97898342498927b3faae3a7630d3c23f6f7.png",
+          "point": 10,
+          "desc": "Phim có ý nghĩa, diễn viên nhập tâm vào vai diễn, đáng để xem. Rạp xạch sẽ, thoải mái.",
+          "tags": [
+            "Tuyệt vời",
+            "Hài lòng",
+            "Cảm động",
+            "Hài hước"
+          ],
+          "createdTime": "2026-11-10 14:46:05"
+        },
+        {
+          "name": "Nguyễn Minh Trung",
+          "avatar": "",
+          "point": 10,
+          "desc": "rất hay và cảm động",
+          "tags": [
+            "Hài hước",
+            "Cảm động",
+            "Đáng xem",
+            "Ý nghĩa"
+          ],
+          "createdTime": "2026-11-08 11:04:31"
+        }
+      ],
       "synopsis": "Một bà chủ của trại hòm ế ẩm và một thanh niên cần tiền trang trải cuộc sống đã vô tình mắc vào một “giao kèo định mệnh\". Một người cố giữ nghề, một người cố cứu mạng người mẹ đang bệnh nặng, mở ra bí mật về món nợ đã chôn vùi suốt nhiều năm.",
       "openingDate": "2026-09-14",
       "status": "now"
@@ -288,6 +1021,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/612a762b3cb77f060e38f1ae9c06be4b06e90a13ceffd6d599174dd64387bf91?size=M",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": null,
+      "ratingTotal": 0,
+      "momoReviews": [],
       "synopsis": "Dune: Part 3 tiếp nối câu chuyện khi Paul Atreides trở thành Hoàng đế, phải đối mặt với hậu quả của cuộc Thánh chiến và âm mưu phản loạn từ các thế lực khác. Phim khai thác sâu bi kịch quyền lực, niềm tin mù quáng và những lựa chọn định đoạt tương lai nhân loại.",
       "openingDate": "2026-12-18",
       "status": "soon"
@@ -300,6 +1038,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/be785a96d1c29543ee343fff7d5a7fdce6f934e9f8048466d56ed66c3f264c16?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=jZMjK1Y1Fv0",
+      "autoplayTrailer": "https://www.youtube.com/watch?v=jZMjK1Y1Fv0",
+      "ratingPoint": 9,
+      "ratingTotal": 17,
+      "momoReviews": [],
       "synopsis": "The Avengers, Wakandans, Fantastic Four, Thunderbolts, and X-Men all fight against Doctor Doom. Plot TBA.",
       "openingDate": "2026-12-18",
       "status": "soon"
@@ -312,6 +1055,11 @@
       "duration": 0,
       "age": "18+",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/86709cf43ca55d920481decf2acf6da5756929ef5de10cff3a23a23d1d8f448b?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=nHnI7dL57Nc",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/110252228795450510-redcarpet.mp4",
+      "ratingPoint": 9.5,
+      "ratingTotal": 34,
+      "momoReviews": [],
       "synopsis": "Một kẻ cuồng tín sau cơn đau đầu dữ dội phát hiện ra mình có một con mắt dọc trên trán. Những vụ sát nhân hàng loạt. Những hồn ma bóng quỷ lẩn khuất trong đời sống. Những nỗi sợ rình rập từ ám ảnh quá khứ. Sợi Chỉ Đỏ là gì, và sẽ kết nối tất cả như thế nào?",
       "openingDate": "2026-12-04",
       "status": "soon"
@@ -324,6 +1072,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/169449900843357660-6a8e65fcc56f4621082505.png?size=SM",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": null,
+      "ratingTotal": 0,
+      "momoReviews": [],
       "synopsis": "Từ một chuyến đi biển định mệnh, Hoàng (Phương Nam) và cậu con trai tinh nghịch An (Lê Bảo Nam) bị cuốn vào cơn bão, mắc kẹt trên hoang đảo và buộc phải cùng nhau sinh tồn. Giữa thiên nhiên khắc nghiệt, những tình huống dở khóc dở cười, cả hai bắt đầu một hành trình không chỉ để tìm đường về nhà, mà còn để tìm lại nhau.",
       "openingDate": "2027-01-22",
       "status": "soon"
@@ -336,6 +1089,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/4051174948654157-VungTroiLua.png?size=SM",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 17,
+      "momoReviews": [],
       "synopsis": "VÙNG TRỜI LỬA - GIAI THOẠI LỊCH SỬ VỀ SỰ KIỆN NÉM BOM DINH ĐỘC LẬP 1975  Lần đầu tiên đề tài không quân và đời sống phi công quân sự Việt Nam được khai thác trên màn ảnh rộng trong VÙNG TRỜI LỬA.  Bộ phim sẽ tái hiện giai thoại lịch sử tráng lệ về sự kiện chiến sĩ phi công Nguyễn Thành Trung ném bom vào Dinh Độc Lập tháng 4/1975.  VÙNG TRỜI LỬA dự kiến ra rạp dịp lễ 30.04.2027.",
       "openingDate": "2027-04-30",
       "status": "soon"
@@ -348,6 +1106,11 @@
       "duration": 132,
       "age": "16+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/154903476143772777-PosterTHAMTUKIEN2compressed.jpg?size=M",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 19,
+      "momoReviews": [],
       "synopsis": "Thám Tử Kiên 2: Lời Nguyền Hoàng Kim chưa có ngày chiếu chính thức, dự kiến ra mắt 2026",
       "openingDate": "2027-02-06",
       "status": "soon"
@@ -360,6 +1123,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/4048591886680052-BatCaBaTay.png?size=SM",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 8.5,
+      "ratingTotal": 20,
+      "momoReviews": [],
       "synopsis": "Cánh cửa mở ra, trước mắt nàng là ba chàng trai. Một người trưởng thành lịch lãm, một người dịu dàng ấm áp và một \"hồng hài nhi\" tươi trẻ cá tính. Mỗi chàng đều có những sức hút riêng, liệu nàng sẽ chọn ai trao trái tim mình?",
       "openingDate": "2026-12-04",
       "status": "soon"
@@ -372,6 +1140,11 @@
       "duration": 125,
       "age": "18+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/1189440217284670-memin.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=4rTkZ9HYSA8",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/1189397709700742-memininin.mp4",
+      "ratingPoint": 8,
+      "ratingTotal": 26,
+      "momoReviews": [],
       "synopsis": "MẸ MÌN – một nhân vật bí ẩn – có khả năng ban phát điều ước cho mọi người, nhưng điều ước nào cũng sẽ đi kèm điều kiện của nó.",
       "openingDate": "2026-11-27",
       "status": "soon"
@@ -384,6 +1157,11 @@
       "duration": 105,
       "age": "",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/52e1271dc9f3d6ba6c7f38e060ab0692254826dd1bee7e0cae963248e10d35e0?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=9CKu3WoMYCg",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 23,
+      "momoReviews": [],
       "synopsis": "Henry, con trai của Greg Focker đưa bạn gái mình, một chuyên gia đàm phán con tin của FBI về ra mắt gia đình. Mọi chuyện bắt đầu trở nên rối rắm khi Henry tiết lộ kế hoạch cầu hôn, khiến Greg không khỏi lo lắng và kéo theo hàng loạt tình huống dở khóc dở cười.",
       "openingDate": "2026-11-27",
       "status": "soon"
@@ -396,6 +1174,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/4050465616649161-Em.jpg?size=SM",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 24,
+      "momoReviews": [],
       "synopsis": "EM (Phim Tết 2027) của đạo diễn Trấn Thành, sau các dự án: Bố Già, Nhà Bà Nữ, MAI, Bộ Tứ Báo Thủ, Thỏ Ơi.",
       "openingDate": "2027-02-06",
       "status": "soon"
@@ -408,6 +1191,11 @@
       "duration": 96,
       "age": "P",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/32b71240dce92e49d316788328816d2453290802145dff02947e397e21b547e3?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=a9DB_aUMzME",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 23,
+      "momoReviews": [],
       "synopsis": "Dịp lễ này, Red sẽ phải đối đầu với thử thách nhọc nhằn nhất đời mình: vừa học cách làm cha, vừa giải cứu thế giới!",
       "openingDate": "2027-01-01",
       "status": "soon"
@@ -420,6 +1208,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/169450140804337896-nguoi-me-xau-500_1781239561463.png?size=SM",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 19,
+      "momoReviews": [],
       "synopsis": "Một cuộc chạy trốn trong mưa. Một người mẹ không hoàn hảo. Một người con không thế quay đầu.\nSau thành công của Thiên Đường Máu, đạo diễn Hoàng Tuấn Cường chính thức trở lại với Người Mẹ Xấu, bộ phim hành động - tình cảm mang đậm màu sắc Việt Nam.",
       "openingDate": "2026-12-31",
       "status": "soon"
@@ -432,6 +1225,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/baa217ecef0904660e4bf168cfafa9a25ae6a33aa3b2726603440552eaa9e9b2?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=zhApeaHMvfs",
+      "autoplayTrailer": "",
+      "ratingPoint": 8.5,
+      "ratingTotal": 38,
+      "momoReviews": [],
       "synopsis": "Các anh hùng của chúng ta từng thoát khỏi khu rừng rậm Jumanji luôn biến đổi, nhưng lần này, trò chơi sẽ tìm đến thế giới của chúng ta! Jumanji thoát khỏi chiếc máy chơi game, giải phóng sự hỗn loạn và những hiểm họa vào thế giới thực.",
       "openingDate": "2026-12-25",
       "status": "soon"
@@ -444,6 +1242,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/4048774253655443-HuyetThong.png?size=SM",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 27,
+      "momoReviews": [],
       "synopsis": "Huyết Thống là một bản \"tụng kinh hoà tấu\" xoay quanh nhân vật Tâm (Quách Ngọc Ngoan) và Liêm (Quang Tuấn) trong hành trình trục vong cho một bé gái. Một người là bác sĩ đầy thành tựu tin vào sức mạnh của y học, người còn lại là thầy pháp tin vào luật nhân quả. Hai người đàn ông với hai niềm tin và phương cách khác nhau nhưng cùng chung một mục đích cứu lấy đứa trẻ vô tội. Nhưng \"nợ máu trả máu\", chính cái nghiệp báo không đứt đã đánh thức một oán linh cực kì nguy hiểm trở lại dương thế, mở ra một cuộc đối đầu kinh hãi trên màn ảnh.",
       "openingDate": "2026-12-25",
       "status": "soon"
@@ -456,6 +1259,11 @@
       "duration": 115,
       "age": "",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/8d57b543f0fdb5ed6132b6f99695e937be4a06b8d7ae34f349a6448ef732326a?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=l_Ozo1xUgbU",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 39,
+      "momoReviews": [],
       "synopsis": "Tháng 11 này, Johnny Depp sẽ hóa thân thành Ebenezer Scrooge. Một cái tên quen thuộc và một câu chuyện chưa từng được kể.",
       "openingDate": "2026-11-13",
       "status": "soon"
@@ -468,6 +1276,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/14f19ff598242f004a5bf53a97a293142bbb9a1e1922cf8f907b232c66415cd1?size=M",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 35,
+      "momoReviews": [],
       "synopsis": "Trung – một người đàn ông mang theo quá khứ nhiều biến động – bước vào hành trình tìm kiếm một con đường mới giữa thế giới của tiền bạc, quyền lực, tội phạm và những ràng buộc gia đình.",
       "openingDate": "2027-01-01",
       "status": "soon"
@@ -480,6 +1293,11 @@
       "duration": 103,
       "age": "P",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/b044348b4caa31c4affb67a56f323d344c49c99fd8f6a464840ea6a12d476043?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=KXO21xZdUaM",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 22,
+      "momoReviews": [],
       "synopsis": "Một cô gái tuổi teen khác biệt phát hiện mình sở hữu những năng lực phép thuật bí mật. Khi sức mạnh ấy được giải phóng, cô bị cuốn vào một hành trình choáng ngợp qua thế giới ẩn giấu của các phù thủy.",
       "openingDate": "2026-11-27",
       "status": "soon"
@@ -492,6 +1310,11 @@
       "duration": 0,
       "age": "P",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/5351069101232156-NgoiSaoMatTrang.png?size=SM",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 8,
+      "ratingTotal": 32,
+      "momoReviews": [],
       "synopsis": "Thám tử Butt nhận nhiệm vụ tìm kiếm một người thân bị mất tích sau khi tham gia cuộc thi thần tượng tổ chức tại Đảo Bụi Sao – nơi đặt trụ sở của Học Viện Đạo Tặc, một tổ chức tội phạm quốc tế đang triển khai dự án bí ẩn DARK AGE. Trong quá trình điều tra, Butt vô tình trở thành một ngôi sao thần tượng và giành chiến thắng trong cuộc thi. Cùng lúc đó, Đạo tặc U đột nhập vào học viện để lấy lại Nguyệt Quang Thạch bị Đạo tặc G đánh cắp. Để ngăn chặn dự án DARK AGE, Butt và Đạo tặc U buộc phải hợp tác. Bí mật nào ẩn giấu trong Nguyệt Quang Thạch? Mục đích thật sự của Đạo tặc G là gì? Khi hai đối thủ truyền kiếp cùng chiến đấu, một phép màu sẽ xảy ra...",
       "openingDate": "2026-11-13",
       "status": "soon"
@@ -504,6 +1327,11 @@
       "duration": 98,
       "age": "",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/4048337863507914-donhangmaam.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=iAAtCbIbGfU",
+      "autoplayTrailer": "",
+      "ratingPoint": 8,
+      "ratingTotal": 38,
+      "momoReviews": [],
       "synopsis": "Khi nhận hàng online trở thành án tử! Một nhóm sinh viên nhận được những kiện hàng bí ẩn không rõ nguồn gốc. Sự tò mò thôi thúc họ mở từng kiện hàng, nhưng cũng chính là lúc cơn ác mộng bắt đầu… Những cái chết kỳ dị liên tiếp xảy ra: thi thể bị đàn ong vây kín, tai nạn quái dị và sự mất kiểm soát tâm trí. Giữa vòng xoáy nghi kỵ, họ bàng hoàng nhận ra sự thật lạnh sống lưng: Mỗi lần nhận hàng đều có thể dẫn đến cái chết. Lời nguyền này đến từ đâu, ai là kẻ chủ mưu giật dây cho cuộc tàn sát đẫm máu? Một cuộc đua sinh tồn nghẹt thở, nơi lòng tin vỡ vụn và cái chết chực chờ sau mỗi lần mở đơn hàng online.",
       "openingDate": "2026-11-06",
       "status": "soon"
@@ -516,6 +1344,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/22098eb966245c5992ff5c09fca8ef29d946d60d36c5a11ac334633d6092c41b?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=gnm4HgIAVmU",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 23,
+      "momoReviews": [],
       "synopsis": "Một thiên tài giàu có với sở thích mạo hiểm bị cuốn vào trò chơi mèo vờn chuột đầy quyến rũ, nơi những phi vụ táo bạo, sự lừa dối và sức hút nguy hiểm đan xen với nhau.",
       "openingDate": "2027-03-05",
       "status": "soon"
@@ -528,6 +1361,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/014eeff7f51a25c62ac28f2b2f32833badef73858fc3774007e629b70bd2a9da?size=M",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 8,
+      "ratingTotal": 25,
+      "momoReviews": [],
       "synopsis": "Phim có sự góp mặt của Đỗ Nhật Hoàng và Mie, dự kiến ra rạp vào mùa Valentines 2027.",
       "openingDate": "2027-02-19",
       "status": "soon"
@@ -540,6 +1378,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/4050374568263496-LoanThe.png?size=SM",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 35,
+      "momoReviews": [],
       "synopsis": "Sau cú hit phòng vé Truy Tìm Long Diên Hương, ekip và đạo diễn Dương Minh Chiến lần đầu tham gia đường đua phim Tết. Một thời đại nghĩa hiệp sắp được mở ra. Tác phẩm võ hiệp hành động được phối hợp thực hiện bởi Bluebells Studios và ActionC.",
       "openingDate": "2027-02-06",
       "status": "soon"
@@ -552,6 +1395,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/4050230173676690-CanKeCaiChet.png?size=SM",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 39,
+      "momoReviews": [],
       "synopsis": "Lấy cảm hứng từ những cuộc vượt ngục huyền thoại thời kháng chiến chống Mỹ. Dự kiến ra rạp Tết 2027.",
       "openingDate": "2027-02-06",
       "status": "soon"
@@ -564,6 +1412,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/3a6ddcdebfe18ac2aa7178bccf84fa63cd99098c35b5bc2e6b79dfbd235b8ecd?size=M",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 8,
+      "ratingTotal": 23,
+      "momoReviews": [],
       "synopsis": "Phim điện ảnh học đường mang phong cách Dark Academia đầu tiên tại Việt Nam. Dự kiến khởi chiếu vào mùa xuân 2027.",
       "openingDate": "2027-01-29",
       "status": "soon"
@@ -576,6 +1429,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/4049159947315402-CaoThuBiA.png?size=SM",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 8.8,
+      "ratingTotal": 25,
+      "momoReviews": [],
       "synopsis": "Phim Điện Ảnh Việt Nam Của 1977 Vlog",
       "openingDate": "2027-01-08",
       "status": "soon"
@@ -588,6 +1446,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/8b4311a28899cde7dd5c40e4c4851c24433d986231c067919936aec47f7dc4e8?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=gDJ-ini7fF0",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 34,
+      "momoReviews": [],
       "synopsis": "Digory Kirke và Polly Plummer vô tình phát hiện ra những chiếc nhẫn ma thuật của người chú độc ác Andrew. Chiếc nhẫn đưa hai đứa trẻ du hành qua các thế giới song song, vô tình đánh thức phù thủy Jadis độc ác từ một hành tinh đang lụi tàn, và cuối cùng đặt chân đến một vùng đất trống rỗng, nơi chúng được chứng kiến sư tử Aslan dùng tiếng hát để khai sinh ra vương quốc Narnia.",
       "openingDate": "2027-02-12",
       "status": "soon"
@@ -600,6 +1463,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/c7a77845e63e4171a81a8582d5ff4e9cee84c94e03d1b70d7bf3474e0e066732?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=iIEYfH-jg1Y",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 24,
+      "momoReviews": [],
       "synopsis": "Mười ba năm trước, nữ thanh tra cảnh sát New York Julie Miller (Scarlett Johansson) đã chấm dứt chuỗi tội ác kinh hoàng của Cha Chủ Nhật (Father Sunday), kẻ sát nhân hàng loạt tôn thờ quỷ Satan. Vụ án đưa Julie trở thành người hùng, nhưng cũng khiến cô ngày càng vùi mình vào công việc. Tưởng rằng những ký ức đen tối đã được chôn vùi cùng tên sát nhân, Julie bất ngờ bị kéo trở lại quá khứ khi một kẻ giết người mới dùng máu của một lễ sinh để viết tên cô lên những bức tường trong hầm mộ của nhà thờ. Để lần theo dấu vết kẻ sát nhân, Julie hợp tác với Cha William (ngôi sao “Backrooms” Chiwetel Ejiofor), cựu tuyên úy nhà tù từng nghe lời thú tội cuối cùng của Father Sunday, cùng Gina Restrepo (Sasha Calle), nữ thanh tra trẻ sắc sảo mới vào nghề. Càng đào sâu điều tra, họ càng phát hiện mối liên kết bí ẩn giữa nhiều thế hệ sát nhân hàng loạt, từ H. H. Holmes đến Zodiac Killer (Sát nhân Hoàng đạo). Dường như đằng sau những vụ án tưởng chừng riêng biệt là một thế lực tà ác vượt xa giới hạn của thế giới con người, có khả năng hủy hoại mọi thứ, kể cả những người Julie yêu thương nhất.",
       "openingDate": "2027-03-12",
       "status": "soon"
@@ -612,6 +1480,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/d89ceccadc21d3700014fcd626f0b86d2c674b6567c3a379ac739f0f9806f313?size=M",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 18,
+      "momoReviews": [],
       "synopsis": "Sau nhiều năm len lỏi giữa thành phố đầy kênh rạch và mê tín, một chú mèo đen tên Nero bắt đầu tự hỏi liệu mình có đang sống đúng cuộc đời hay không. Mang nợ một ông trùm mèo địa phương, Nero rơi vào tình thế khó xử và buộc phải xây dựng một tình bạn hoàn toàn không ngờ tới — mối gắn kết có thể cuối cùng sẽ dẫn cậu đến với mục đích sống của mình, nếu Venice không quật ngã cậu trước.",
       "openingDate": "2027-03-05",
       "status": "soon"
@@ -624,6 +1497,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/969f8e9c677a4c3c7aa771bdf5b5335c56a8c40ffcaf0411b80a8c6e99d37820?size=M",
+      "trailerUrl": "https://www.youtube.com/watch?v=Swiz1XyfhcI",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 39,
+      "momoReviews": [],
       "synopsis": "Shrek và Lừa lại cùng nhau bước vào một chuyến phiêu lưu náo nhiệt giữa thành phố lớn, lần này là tại vùng đất thần tiên Xa Tít Xa Tít.",
       "openingDate": "2027-07-02",
       "status": "soon"
@@ -636,6 +1514,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/111912809723526329-61d7ef9c698ea169910803.jpg?size=M",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": null,
+      "ratingTotal": 0,
+      "momoReviews": [],
       "synopsis": "Đang cập nhật",
       "openingDate": "2031-12-19",
       "status": "soon"
@@ -648,6 +1531,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/1352086a27ffcf90f9dcebbe9e316be9e250a38e8b2f68d460cf587581f9a269?size=M",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": null,
+      "ratingTotal": 0,
+      "momoReviews": [],
       "synopsis": "Avatar 4 là bộ phim điện ảnh sử thi-khoa học viễn tưởng ra mắt năm 2029 do James Cameron đạo diễn kiêm đồng biên kịch, đồng dựng phim và đồng sản xuất. Phim sẽ là hậu truyện của Avatar 3 ra mắt năm 2025 và là phần phim thứ tư thuộc loạt phim Avatar.",
       "openingDate": "2029-12-21",
       "status": "soon"
@@ -660,6 +1548,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://image-fworker.momocdn.net/momo-external/c2bc0909bdeab77acd4d2b7703a6c4e55abbf36a567eea005f1046888957bd31?size=M",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 1000,
+      "momoReviews": [],
       "synopsis": "Disney đã bật đèn xanh cho Frozen 3. D23 cũng đã trình chiếu một đoạn teaser của phần phim mới cho thấy hai chị em Elsa và Anna đang cùng nhau cưỡi ngựa đi trên một con đường xa lạ. Đằng sau Anna là Olaf. Ở góc hình, một hình bóng lạ mặt bám theo sau.",
       "openingDate": "2027-11-26",
       "status": "soon"
@@ -672,6 +1565,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/4051023911849126-MatMaDongDuong.png?size=SM",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 32,
+      "momoReviews": [],
       "synopsis": "Một bộ phim của Điện ảnh Công an Nhân dân. Dự kiến khởi chiếu 30/04/2027.",
       "openingDate": "2027-04-30",
       "status": "soon"
@@ -684,6 +1582,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/4051097073603188-NuBietDongSaiGon.png?size=SM",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 9,
+      "ratingTotal": 27,
+      "momoReviews": [],
       "synopsis": "Tác phẩm xoay quanh câu chuyện về tình thân trong nghịch cảnh. Nhân vật trung tâm là Giang và Gấm, hai chị em ruột lạc nhau trong chiến tranh. Ngày gặp lại, họ phát hiện ra cả hai giờ ở hai đầu chiến tuyến. Giữa những tình huống ngàn cân treo sợi tóc, họ đứng giữa nhiều giằng xé khi phía bên kia là máu mủ tình thân.",
       "openingDate": "2027-04-30",
       "status": "soon"
@@ -696,6 +1599,11 @@
       "duration": 123,
       "age": "16+",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/4050684204728060-HoangHauCuoiCung.png?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=gV6xpwrOS6k",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/dfa796de56534a7191d451627c4a3edc.mp4",
+      "ratingPoint": null,
+      "ratingTotal": 0,
+      "momoReviews": [],
       "synopsis": "Giữa vẻ huy hoàng của Đại Nội là một gia đình cũng có những yêu thương, những rạn nứt và những lựa chọn không hề dễ dàng.",
       "openingDate": "2027-03-05",
       "status": "soon"
@@ -708,6 +1616,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/169449770605007316-tra_n-ye_m-poster-co_ng-bo_-du_-a_n.jpg?size=SM",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 8,
+      "ratingTotal": 16,
+      "momoReviews": [],
       "synopsis": "Sau cái chết bí ẩn của cha trong ngôi nhà mới xây, Ân quyết định ghi lại những hiện tượng tâm linh kỳ quái liên tục xảy ra quanh mình. Nhưng càng đào sâu sự thật, anh vô tình phát hiện một nghi lễ cấm kỵ ghê rợn đang ẩn náu bên trong ngôi nhà - thứ đã liên kết nơi đây với hàng loạt hiện tượng siêu nhiên bí ẩn mà người đời gọi là Bùa Lỗ Ban.",
       "openingDate": "2026-12-25",
       "status": "soon"
@@ -720,6 +1633,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/154903641510946968-PosterNguoiDuocChoncompressed.jpg?size=M",
+      "trailerUrl": "https://homepage.momocdn.net/default/s/no-image-momo.jpg",
+      "autoplayTrailer": "",
+      "ratingPoint": 8.8,
+      "ratingTotal": 34,
+      "momoReviews": [],
       "synopsis": "Phim điện ảnh đầu tiên của Việt Nam về hầu đồng.",
       "openingDate": "2026-12-04",
       "status": "soon"
@@ -732,6 +1650,11 @@
       "duration": 0,
       "age": "",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/3864033921859582-thehungergamesunrise.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=fS35YSjopjE",
+      "autoplayTrailer": "",
+      "ratingPoint": null,
+      "ratingTotal": 0,
+      "momoReviews": [],
       "synopsis": "Được chuyển thể từ cuốn tiểu thuyết cùng tên, Đấu Trường Sinh Tử: Bình Minh Ngày Chiêu Quân sẽ đưa khán giả trở lại Panem 24 năm trước những sự kiện trong phần phim Đấu Trường Sinh Tử đầu tiên, bắt đầu vào buổi sáng diễn ra Lễ Chiêu Quân lần thứ 50, hay còn được biết đến với tên gọi Huyết trường Tứ phân lần thứ hai.",
       "openingDate": "2026-11-20",
       "status": "soon"
@@ -744,6 +1667,11 @@
       "duration": 90,
       "age": "P",
       "posterUrl": "https://cinema.momocdn.net/convert-webp/img/5418176870666729-mmkbnh.jpg?size=SM",
+      "trailerUrl": "https://www.youtube.com/watch?v=wmWxobzatPw",
+      "autoplayTrailer": "https://cinema.momocdn.net/video/5418261438569135-mmcokbh.mp4",
+      "ratingPoint": 9,
+      "ratingTotal": 15,
+      "momoReviews": [],
       "synopsis": "Fluffy là một chú ma mút con tỉnh giấc sau giấc ngủ kéo dài hàng nghìn năm giữa vùng Nam Cực băng giá. Khi nhận ra mình đã lạc khỏi đàn, Fluffy bắt đầu hành trình tìm kiếm mẹ. Theo lời kể của những người xung quanh, mẹ cùng đàn ma mút của cậu có thể đã đến châu Phi xa xôi. Trên hành trình tìm mẹ đầy gian nan ấy, Fluffy gặp gỡ Puffin, một chú hải âu cổ rụt nhỏ mang trong mình ước mơ trở thành rapper nổi tiếng và được biểu diễn tại cuộc thi tìm kiếm tài năng Africa's Got Talent.",
       "openingDate": "2026-11-20",
       "status": "soon"
