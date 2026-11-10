@@ -66,6 +66,7 @@ import ScheduleSkeleton from '../../components/ScheduleSkeleton.astro';
       return element;
     }
     function showError(message) {
+      state.classList.remove('live-detail__loading--skeleton');
       state.setAttribute('aria-busy', 'false');
       if (scheduleLoading) scheduleLoading.hidden = true;
       state.textContent = message + ' ';
