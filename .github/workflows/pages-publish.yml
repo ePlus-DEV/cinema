@@ -1,11 +1,10 @@
 name: Publish GitHub Pages
 
+# Only the staging workflow dispatches this after it PUSHES a changed
+# gh-pages tree. A successful no-op stage must not create another deploy.
 # This trusted workflow always runs from the default branch.
-# PR workflows only stage static files; they cannot deploy Pages directly.
 on:
-  workflow_run:
-    workflows: ["Build and stage GitHub Pages"]
-    types: [completed]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -18,7 +17,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
