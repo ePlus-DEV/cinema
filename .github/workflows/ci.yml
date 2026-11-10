@@ -1,13 +1,16 @@
 name: CI
 
+# Production pushes already run the same build/smoke tests in pages-stage.
+# Run CI for pull requests only; superseded commits never need finishing.
 on:
   pull_request:
-  push:
-    branches:
-      - main
 
 permissions:
   contents: read
+
+concurrency:
+  group: cinema-ci-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -38,6 +41,7 @@ jobs:
           node scripts/seat-center-zone-test.mjs
           node scripts/seo-audit.mjs
           node scripts/check-outbound-links.mjs
+          node scripts/check-actions-dedup.mjs
       - name: Verify explicitly indexable build
         run: |
           SEO_INDEXABLE=true npm run build
