@@ -140,6 +140,7 @@ jobs:
           node scripts/seat-color-test.mjs
           node scripts/seo-audit.mjs
           node scripts/check-outbound-links.mjs
+          node scripts/check-actions-dedup.mjs
 
       - name: Stage full site and preview into gh-pages
         if: steps.gate.outputs.run == 'true'
