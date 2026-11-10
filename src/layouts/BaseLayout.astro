@@ -23,6 +23,7 @@ const {
 // Force the page slot into <main> synchronously instead of streaming it
 // after </html> (observed on generated GitHub Pages output).
 const pageHtml = await Astro.slots.render('default');
+const isPrPreview = /\/previews\/pr-\d+\//.test(import.meta.env.BASE_URL || '/');
 ---
 <!doctype html>
 <html lang="vi">
@@ -44,10 +45,10 @@ const pageHtml = await Astro.slots.render('default');
   </head>
   <body>
     <a class="skip-link" href="#main-content">Bỏ qua điều hướng</a>
-    <div class="preview-banner" role="note">
+    {isPrPreview && <div class="preview-banner" role="note">
       <span class="preview-banner__dot"></span>
-      Đây là bản xem trước giao diện. Trang chủ và lịch chiếu MoMo dùng dữ liệu trực tiếp từ MoMo; một số mục khác vẫn là dữ liệu minh họa.
-    </div>
+      Bản xem trước của ePlus Cinema · Thông tin phim/rạp tải từ bản cập nhật hằng ngày; lịch chiếu được tra cứu trực tiếp.
+    </div>}
     <SiteHeader active={active} />
     <PageSkeleton active={active} />
     <main id="main-content" set:html={pageHtml}></main>
