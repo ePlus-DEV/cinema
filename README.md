@@ -142,6 +142,7 @@ Two workflows work together:
    - Runs from the repository's **default branch** only when staging pushes a **real change** to `gh-pages` and dispatches the publisher.
    - Checks out the complete `gh-pages` branch, uploads one Pages artifact and deploys it with GitHub's official `actions/deploy-pages`.
    - Does not execute PR source code and avoids deploying directly from a PR context.
+   - For an updated same-repository PR preview, receives its PR number and exact head SHA from staging. After a **successful** Pages deployment it creates or updates one marked bot comment with the preview URL; stale or closed PRs are ignored.
 
 This staging/deployment split is necessary because public GitHub Pages does not offer native isolated PR preview deployments. Commits made by `GITHUB_TOKEN` do not trigger normal push workflows, so staging explicitly sends one `workflow_dispatch` after each changed `gh-pages` commit. A no-op staging run sends none. Preview folders are part of the same complete Pages site.
 
@@ -149,7 +150,7 @@ This staging/deployment split is necessary because public GitHub Pages does not 
 
 1. Merge the deployment PR so both workflow files are on `main`.
 2. Visit **Repository → Settings → Pages** and set **Build and deployment → Source → GitHub Actions**. Do **not** select `Deploy from a branch` for this configuration.
-3. In **Settings → Actions → General**, ensure workflows can use the scoped `GITHUB_TOKEN` with `contents: write` and `actions: write` as requested. If the organization restricts writable workflow tokens, an administrator must adjust the repository policy.
+3. In **Settings → Actions → General**, ensure workflows can use the scoped `GITHUB_TOKEN` with `contents: write` and `actions: write` for staging and `issues: write` for the trusted publishing notifier. If the organization restricts writable workflow tokens, an administrator must adjust the repository policy.
 4. Under **Settings → Environments → github-pages**, allow default-branch deployments. The trusted publishing workflow runs from `main`.
 5. Trigger **Actions → Build and stage GitHub Pages → Run workflow** on `main` for the first production release (or use the automatic `main` push).
 6. Check **Actions → Publish GitHub Pages** for successful deployment.
@@ -162,7 +163,7 @@ https://cinema.eplus.dev/
 
 https://cinema.eplus.dev/previews/pr-3/
 
-Each PR preview URL appears in the staging workflow run Summary. Automatic PR comments are intentionally not required because organization token policies may prevent issue comments. URLs are only live after the downstream `Publish GitHub Pages` workflow succeeds. Closing a PR removes its preview path.
+Each PR preview URL appears in the staging workflow run Summary. After **Publish GitHub Pages** succeeds, the trusted default-branch publisher also posts/updates a single `github-actions[bot]` comment on the PR with the link `https://cinema.eplus.dev/previews/pr-N/` (using `issues: write` on the built-in `GITHUB_TOKEN`, no PAT). Re-runs update the same marked comment, not a new one. If organization policy blocks bot comments, the publishing run reports that error, and the staging Summary remains available. URLs are live only after successful Pages deployment; closing a PR removes its preview path.
 
 ### Custom domain: cinema.eplus.dev
 

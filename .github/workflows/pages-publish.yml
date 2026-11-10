@@ -5,11 +5,21 @@ name: Publish GitHub Pages
 # This trusted workflow always runs from the default branch.
 on:
   workflow_dispatch:
+    inputs:
+      preview_pr:
+        description: 'PR number to notify after the Pages deployment succeeds (preview only)'
+        required: false
+        type: string
+      preview_sha:
+        description: 'Exact staged PR head SHA, used to reject stale notifications'
+        required: false
+        type: string
 
 permissions:
   contents: read
   pages: write
   id-token: write
+  issues: write
 
 concurrency:
   group: cinema-pages-publish
@@ -39,3 +49,21 @@ jobs:
       - name: Publish GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      # Only the trusted default-branch publisher can post the link, and only
+      # after deploy-pages succeeded. Never execute scripts from the PR.
+      - name: Checkout trusted notification helper
+        if: inputs.preview_pr != ''
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: automation
+          persist-credentials: false
+
+      - name: Post or update PR preview link
+        if: inputs.preview_pr != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PREVIEW_PR: ${{ inputs.preview_pr }}
+          PREVIEW_SHA: ${{ inputs.preview_sha }}
+        run: bash automation/scripts/post-preview-link.sh

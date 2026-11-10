@@ -7,6 +7,7 @@ const stage = readFileSync('.github/workflows/pages-stage.yml', 'utf8');
 const publish = readFileSync('.github/workflows/pages-publish.yml', 'utf8');
 const daily = readFileSync('.github/workflows/cinema-catalog-daily.yml', 'utf8');
 const stagingScript = readFileSync('scripts/publish-pages.sh', 'utf8');
+const previewNotifier = readFileSync('scripts/post-preview-link.sh', 'utf8');
 
 // CI is for PRs. The staging workflow validates main after pushes.
 assert.match(ci, /on:\s*\n\s*pull_request:/, 'PR CI trigger is missing');
@@ -24,11 +25,24 @@ assert.match(stage, /actions: write/, 'Publisher dispatch permission missing');
 assert.match(publish, /^\s+workflow_dispatch:/m, 'Publisher needs dispatch-only trigger');
 assert.doesNotMatch(publish, /workflow_run:/, 'Publisher must not run on no-op staging success');
 assert.match(publish, /group: cinema-pages-publish/, 'Publisher needs serial deployment');
+assert.match(publish, /preview_pr:/, 'Publisher should accept a PR number from staging');
+assert.match(publish, /preview_sha:/, 'Publisher should accept the exact preview commit');
+assert.match(publish, /issues: write/, 'Trusted publisher needs permission to post issue comments');
+assert.match(publish, /if: inputs\.preview_pr != ''/, 'Only preview deployments should notify PRs');
+assert.ok(publish.indexOf('Post or update PR preview link') > publish.indexOf('uses: actions/deploy-pages@v4'), 'Never notify before Pages successfully deploys');
+assert.match(publish, /bash automation\/scripts\/post-preview-link\.sh/, 'Notifier must come from the trusted branch');
 
 assert.match(stagingScript, /\.eplus-production-sha/, 'Production marker not saved');
 assert.match(stagingScript, /\.eplus-preview-sha/, 'PR preview marker not saved');
 assert.match(stagingScript, /No gh-pages changes; no Pages publish dispatched/, 'No-op stage must not dispatch publish');
 assert.match(stagingScript, /gh workflow run pages-publish\.yml --ref main/, 'Changed stage must dispatch publish');
+assert.match(stagingScript, /-f preview_pr="\$PR_NUMBER" -f preview_sha="\$PR_HEAD_SHA"/, 'Staging must send PR identity to trusted publisher');
+assert.match(stagingScript, /-f preview_pr="" -f preview_sha=""/, 'Production and preview deletion must pass empty optional inputs without interactive prompts');
+assert.match(previewNotifier, /\.eplus-preview-sha/, 'Notifier must reject stale staging commits');
+assert.match(previewNotifier, /\.head\.repo\.full_name/, 'Notifier must refuse external PR code');
+assert.match(previewNotifier, /github-actions\[bot\]/, 'Only marked bot comments may be updated');
+assert.match(previewNotifier, /--method PATCH/, 'Notifier should update previous bot comments');
+assert.match(previewNotifier, /--method POST/, 'Notifier should create one bot comment when absent');
 
 assert.match(daily, /group: cinema-catalog-daily/, 'Catalog refresh concurrency missing');
 assert.match(daily, /steps\.due\.outputs\.due == 'true'/, 'Same-day refresh guard missing');
