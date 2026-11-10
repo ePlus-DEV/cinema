@@ -1,5 +1,37 @@
 # ePlus Cinema
 
+## Technical SEO readiness (indexing deliberately disabled)
+
+- Unique `title` and `description` on the home, now-showing, coming-soon,
+  cinemas and showtimes pages; canonical URLs always use
+  `https://cinema.eplus.dev/`, not a pull-request preview URL.
+- Open Graph and Twitter summary metadata; valid JSON-LD `WebSite`,
+  `WebPage`, and `BreadcrumbList` for **actual, static, visible** site
+  navigation. No invented Movie/LocalBusiness ratings, prices, or showtimes.
+- Auto-generated `/robots.txt` and `/sitemap.xml`. The sitemap lists
+  only the five stable editorial/discovery routes when indexing is enabled.
+  Legacy `/lich-chieu/momo/` canonicalizes to `/lich-chieu/`.
+  Demo fixture slugs and browser-rendered query pages stay `noindex`;
+  the latter do not emit a misleading canonical URL.
+- **Current policy:** `SEO_INDEXABLE=false` by default. This preserves the
+  existing noindex restriction while the MoMo data feed is undocumented and
+  its reuse/rights are unverified. Do not enable Search indexing just
+  because metadata or sitemap files exist.
+- After validating content rights, metadata quality, actual indexable text
+  in initial HTML (including film/cinema-specific URLs), and the site's
+  public readiness, set the GitHub **repository variable**
+  `CINEMA_SEO_INDEXABLE=true` and trigger the normal production build.
+  Only five stable routes become `index,follow`; PR previews remain
+  `noindex,nofollow` regardless of the variable.
+- Use `node scripts/seo-audit.mjs` after `npm run build`, plus
+  Rich Results Test, Search Console URL Inspection, and sitemap submission
+  once an indexing launch is actually approved. Those Google checks
+  cannot be verified by the local CI alone.
+- Social preview images (`og:image` / `twitter:image`) are intentionally
+  not published until a verified public raster cover asset is available;
+  no broken or unowned preview image is advertised.
+
+
 Responsive, mobile-first concept for a Vietnamese cinema discovery and showtimes website.
 
 > [!IMPORTANT]
