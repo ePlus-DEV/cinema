@@ -1,9 +1,18 @@
 ---
 import { moviesNow, moviesSoon } from '../lib/cinema-catalog';
 import { moviePath } from '../lib/cinema-routes.js';
+import { youtubeVideoId } from '../lib/movie-media.js';
 interface Props { status: 'now' | 'soon'; limit?: number; searchable?: boolean; }
 const { status, limit = 12, searchable = false } = Astro.props;
 const films = (status === 'soon' ? moviesSoon : moviesNow).slice(0, limit);
+// Poster trailer trigger data: MoMo clip (MoMo CDN only) or validated YouTube id.
+const momoClip = (raw?: string) => {
+  if (!raw) return '';
+  try {
+    const url = new URL(raw);
+    return url.protocol === 'https:' && /(^|\.)momocdn\.net$/.test(url.hostname) ? raw : '';
+  } catch { return ''; }
+};
 const normalize = (text: string) => text.normalize('NFD')
   .replace(/[\u0300-\u036f]/g, '').toLowerCase();
 const base = import.meta.env.BASE_URL;
@@ -17,7 +26,10 @@ const base = import.meta.env.BASE_URL;
     <span class="live-catalog__count" data-live-movie-count aria-live="polite">{films.length} phim</span>
   </div>}
   <div class="movie-grid" data-live-movies aria-busy="false">
-    {films.map((film, index) => <a
+    {films.map((film, index) => {
+      const clip = momoClip(film.autoplayTrailer);
+      const ytId = youtubeVideoId(film.trailerUrl) || '';
+      return <a
       class="movie-card live-movie-card"
       href={moviePath(film.id, base)}
       aria-label={'Xem chi tiết phim ' + film.title}
@@ -26,13 +38,17 @@ const base = import.meta.env.BASE_URL;
       <div class="live-poster">
         <span class="live-poster__badge">{status === 'now' ? 'Đang chiếu' : 'Sắp chiếu'}</span>
         {film.posterUrl && <img src={film.posterUrl} alt={'Poster phim ' + film.title} loading={index < 2 ? 'eager' : 'lazy'} decoding="async" />}
+        {(clip || ytId) && <span class="poster-trailer-btn" role="button" tabindex="0" data-play-trailer
+          data-clip={clip || undefined} data-youtube={ytId || undefined} data-title={film.title}
+          aria-label={'Xem trailer phim ' + film.title}>Trailer</span>}
       </div>
       <div class="movie-card__info">
         <div class="movie-card__head"><h3>{film.title}</h3>{film.age && <span class="age-badge">{film.age}</span>}</div>
         <p>{[film.genre, film.duration ? film.duration + ' phút' : ''].filter(Boolean).join(' · ')}</p>
         <span class="movie-card__status">{status === 'now' ? 'Chi tiết & lịch chiếu ↗' : 'Chi tiết phim ↗'}</span>
       </div>
-    </a>)}
+    </a>;
+    })}
   </div>
   <p class="empty-results" data-live-movie-empty hidden>Không tìm thấy phim phù hợp. Hãy thử từ khóa khác.</p>
   {films.length === 0 && <p class="live-status">Chưa có dữ liệu phim trong bản cập nhật gần nhất.</p>}
