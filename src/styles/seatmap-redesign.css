@@ -40,13 +40,18 @@
   width: 30px; height: 30px; font-size: 10px; font-weight: 800;
   background: #7850d6; color: #fff; transition: background .14s, box-shadow .14s, transform .14s;
 }
-.seatmap .seat--available.seat--vip { background: #ec3e53; color: white; }
-.seatmap .seat--available.seat--couple { background: #d936a8; color: white; min-width: 47px; }
-.seatmap .seat:hover:not(:disabled) {
-  background: #9978f0; border-color: #f9edff; color: #fff; transform: translateY(-2px);
+.seatmap .seat--available {
+  background: var(--seat-type-color, #637186);
+  color: var(--seat-type-foreground, #ffffff);
 }
-.seatmap .seat--available.seat--vip:hover:not(:disabled) { background: #fb6576; }
-.seatmap .seat--available.seat--couple:hover:not(:disabled) { background: #f064c7; }
+.seatmap .seat--available:hover:not(:disabled) {
+  background: var(--seat-type-color, #637186);
+  color: var(--seat-type-foreground, #ffffff);
+  border-color: #faf4ff;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.35);
+  filter: brightness(1.12);
+  transform: translateY(-2px);
+}
 .seatmap .seat:disabled {
   background: #53505b; border-color: transparent; color: #c3becd;
   text-decoration: none; cursor: not-allowed; opacity: .7;
@@ -61,12 +66,19 @@
   border-top: 1px solid rgba(255,255,255,.1); justify-content: center; gap: 12px 20px;
   color: #d2ccd9; font-size: 11px; line-height: 1.5;
 }
-.seatmap .seatmap__swatch { width: 16px; height: 16px; border: 0; border-radius: 4px; background: #7850d6; }
-.seatmap .seatmap__swatch--standard { background: #7850d6; }
-.seatmap .seatmap__swatch--vip { background: #ec3e53; }
-.seatmap .seatmap__swatch--couple { background: #d936a8; }
+.seatmap .seatmap__swatch { width: 16px; height: 16px; border: 0; border-radius: 4px; display: inline-block; }
+.seatmap .seatmap__swatch--type { background: var(--seat-type-color, #637186); }
+.seatmap .seatmap__swatch--unknown { background: #637186; }
 .seatmap .seatmap__swatch--taken { background: #53505b; }
 .seatmap .seatmap__swatch--selected { background: #19b3a8; }
+.seatmap .seatmap__counts {
+  display: flex; justify-content: center; gap: 22px; flex-wrap: wrap;
+  padding: 15px 0 0; margin: 10px auto 0; border-top: 1px solid rgba(255,255,255,.12);
+  font-size: 12px; color: #c9c6d1;
+}
+.seatmap .seatmap__counts strong { color: #fff; margin-left: 5px; font-variant-numeric: tabular-nums; }
+.seatmap .seatmap__legend { border-top: 0; padding-top: 9px; margin-top: 0; }
+.seatmap .seatmap__legend span { white-space: normal; }
 .seatmap .seatmap__scroll-hint { color: #e0d6ec; font-size: 12px; margin: 3px 0 14px; }
 .seatmap .seatmap__status { color: #c8c4d3; font-size: 13px; line-height: 1.65; }
 .seatmap .seatmap__status button { background: #2b354c; color: #fff; border-color: #667084; }
