@@ -108,6 +108,27 @@ scripts/
   pages-publish.yml # Official GitHub Pages deployment
 ```
 
+## Real showtime data from MoMo (experimental)
+
+`scripts/fetch-momo-showtimes.mjs` reproduces the calls the public MoMo Cinema
+schedule page (<https://www.momo.vn/cinema/lich-chieu>) makes in the browser and
+writes a normalized snapshot to `src/data/momo-showtimes.json`:
+
+```bash
+npm run fetch:showtimes -- [--city=50] [--cineplex=6] [--days=3] [--date=YYYY-MM-DD]
+```
+
+- API base: `https://aws.momo.vn/momovn-cinema/public`, signed per request with
+  the same `X-Client-Token` scheme the web app uses (AES-256-CBC, see script header).
+- Movies: `GET /cinema/ci-film/loadMore` (`apiStatus=3` now showing, `2` coming soon);
+  cinemas: `GET /cinema/ci-cinema/loadMore`; showtimes: `POST /v2/cinema/session`
+  per cinema + date → `Films[].VersionsCaptions[].ShowTimes[]`.
+- The snapshot renders at `/lich-chieu/momo/` (still `noindex`, no ticket sales;
+  showtime links go to MoMo). Snapshot taken 2026-11-10: 61 films, 60 cinemas,
+  5,417 showtimes for Ho Chi Minh City over 3 days.
+- This is an **undocumented public web API, not a licensed partner feed** — keep
+  the attribution and the `noindex` rule until a licensed source is confirmed.
+
 ## Next phase: real showtime data
 
 1. Confirm a licensed partner/source API for movie and screening data (public MoMo pages are not an API license).
