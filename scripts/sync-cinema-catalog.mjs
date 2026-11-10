@@ -104,6 +104,15 @@ async function pages(kind, param) {
   }
   return items;
 }
+if (process.argv.includes('--probe')) {
+  const [filmPage, cinemaPage] = await Promise.all([
+    apiGet('/cinema/ci-film/loadMore?apiStatus=3&lastIndex=0&count=5&sortType=5&sortDir=1&apiCityId=50'),
+    apiGet('/cinema/ci-cinema/loadMore?t='+Date.now()+'&lastIndex=0&count=5&sortType=5&sortDir=2&cineplex=6&apiCityId=50')
+  ]);
+  if (!filmPage.Items.length || !cinemaPage.Items.length) throw new Error('Upstream probe returned empty directory');
+  console.log('Upstream probe passed: '+filmPage.Items.length+' film records, '+cinemaPage.Items.length+' cinema records.');
+  process.exit(0);
+}
 const [now,soon] = await Promise.all([pages('film',3),pages('film',2)]);
 const movieIds = new Set(), movies = [];
 for (const [items,status] of [[now,'now'],[soon,'soon']]) {
