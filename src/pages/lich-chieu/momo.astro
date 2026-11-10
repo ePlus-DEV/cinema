@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import DatePicker from '../../components/DatePicker.astro';
 import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
 
 ---
@@ -10,15 +9,9 @@ import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
     <span class="eyebrow">KHÁM PHÁ SUẤT CHIẾU THEO RẠP</span><h1>Lịch chiếu phim<span class="title-spark"> ✳</span></h1>
     <p>Chọn ngày, tìm rạp bạn thích và chạm vào giờ chiếu để xem sơ đồ ghế ngay trên ePlus Cinema. Dữ liệu được cập nhật từ nguồn MoMo; website chưa hỗ trợ giữ ghế hoặc thanh toán.</p>
   </div></section>
-  <section class="container section schedule-page">
-    <aside class="schedule-aside">
-      <div class="schedule-aside__card"><span class="eyebrow">KHU VỰC ĐANG XEM</span><h2>⌖ TP. Hồ Chí Minh</h2><p>Chọn ngày ở phía trên, tìm rạp theo tên hoặc lọc theo hệ thống rạp. Giờ chiếu sẽ hiển thị bên cạnh rạp đã chọn.</p></div>
-      <div class="schedule-aside__tip"><strong>✦ Xem ghế ngay tại ePlus</strong><p>Bấm một khung giờ để mở sơ đồ ghế. Trạng thái ghế mang tính tham khảo; không giữ ghế hoặc đặt vé.</p></div>
-      <p class="schedule-aside__source">Nguồn dữ liệu: MoMo Cinema · Không chuyển hướng sang website khác.</p>
-    </aside>
+  <section class="container section schedule-page schedule-page--explorer">
     <div class="schedule-main"><div class="schedule-shell">
       <div class="schedule-shell__top"><div><strong>Suất chiếu theo ngày</strong><span>Chọn rạp bên dưới, sau đó bấm giờ chiếu để xem ghế</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
-      <DatePicker />
       <MomoShowtimeList />
     </div></div>
   </section>
