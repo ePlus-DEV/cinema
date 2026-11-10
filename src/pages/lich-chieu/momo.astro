@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DatePicker from '../../components/DatePicker.astro';
+import MomoShowtimeList from '../../components/MomoShowtimeList.astro';
+
+const sourceUrl = 'https://www.momo.vn/cinema/lich-chieu';
+---
+<BaseLayout title="Lịch chiếu trực tiếp từ MoMo | ePlus Cinema" active="schedule">
+  <section class="page-hero page-hero--schedule"><div class="container">
+    <div class="breadcrumbs"><a href="/">Trang chủ</a><span>/</span><a href="/lich-chieu">Lịch chiếu</a><span>/</span><span>Dữ liệu MoMo</span></div>
+    <span class="eyebrow">LỊCH CHIẾU TRỰC TIẾP · NGUỒN MOMO</span><h1>Lịch chiếu phim<span class="title-spark"> ✳</span></h1>
+    <p>Danh sách suất chiếu tại TP. Hồ Chí Minh được tải trực tiếp từ API mà trang MoMo Cinema sử dụng, ngay khi bạn mở trang (qua CORS proxy đã cấu hình). Trang này vẫn để noindex — bấm vào giờ chiếu để xem sơ đồ ghế và chọn ghế ngay tại đây.</p>
+  </div></section>
+  <section class="container section schedule-page">
+    <aside class="schedule-aside">
+      <div class="schedule-aside__card"><span class="eyebrow">KHU VỰC ĐANG XEM</span><h2>⌖ TP. Hồ Chí Minh</h2><p>Chọn một rạp ở danh sách bên phải để xem các phim và giờ chiếu của rạp đó trong ngày đã chọn. Đổi ngày bằng bộ chọn phía trên.</p></div>
+      <div class="schedule-aside__tip"><strong>✦ Cách hoạt động</strong><p>Trình duyệt của bạn gọi API MoMo thông qua CORS proxy (biến môi trường <code>PUBLIC_MOMO_CORS_PROXY</code>) và ký mỗi yêu cầu giống ứng dụng web của MoMo — không có dữ liệu đóng cứng trên trang.</p></div>
+      <a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="schedule-aside__link">Nguồn: MoMo Cinema ↗</a>
+    </aside>
+    <div class="schedule-main"><div class="schedule-shell">
+      <div class="schedule-shell__top"><div><strong>Suất chiếu theo ngày</strong><span>Dữ liệu trực tiếp từ MoMo · Bấm giờ chiếu để chọn ghế</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
+      <DatePicker />
+      <MomoShowtimeList />
+    </div></div>
+  </section>
+</BaseLayout>

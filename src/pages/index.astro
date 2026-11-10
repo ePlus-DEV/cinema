@@ -1,11 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import MovieCard from '../components/MovieCard.astro';
 import DatePicker from '../components/DatePicker.astro';
-import ShowtimeList from '../components/ShowtimeList.astro';
-import { movies, cinemas } from '../data/catalog';
-const now = movies.filter((movie) => movie.status === 'now');
-const soon = movies.filter((movie) => movie.status === 'soon');
+import LiveMovieGrid from '../components/LiveMovieGrid.astro';
+import LiveCinemaGrid from '../components/LiveCinemaGrid.astro';
+import MomoShowtimeList from '../components/MomoShowtimeList.astro';
 ---
 <BaseLayout active="home">
   <section class="hero">
@@ -21,7 +19,7 @@ const soon = movies.filter((movie) => movie.status === 'soon');
           <button type="submit">Tìm phim <span aria-hidden="true">↗</span></button>
         </form>
         <div class="hero__shortcuts"><span>Khám phá nhanh:</span><a href="/phim-dang-chieu">Đang chiếu</a><a href="/phim-sap-chieu">Sắp chiếu</a><a href="/rap">Tìm rạp</a></div>
-        <div class="hero__notice"><span>●</span> Bản demo giao diện · Chưa có lịch chiếu trực tiếp</div>
+        <div class="hero__notice"><span>●</span> Lịch chiếu trực tiếp từ MoMo · Tải mới mỗi lần mở trang</div>
       </div>
       <div class="hero__visual" aria-label="Minh họa thiết kế poster phim">
         <div class="hero__halo"></div>
@@ -57,20 +55,20 @@ const soon = movies.filter((movie) => movie.status === 'soon');
       <div><span class="eyebrow">ĐANG CÓ GÌ HAY?</span><h2>Phim đang chiếu <span class="title-spark">✳</span></h2><p>Những câu chuyện đáng để dành một buổi tối.</p></div>
       <a class="section-link" href="/phim-dang-chieu">Xem tất cả <span>↗</span></a>
     </div>
-    <div class="movie-grid">{now.map((movie) => <MovieCard movie={movie} />)}</div>
+    <LiveMovieGrid status="now" limit={12} />
   </section>
 
   <section class="section section--tinted" id="lich-chieu">
     <div class="container">
       <div class="section-heading">
-        <div><span class="eyebrow">LÊN KẾ HOẠCH XEM PHIM</span><h2>Khung giờ dành cho bạn</h2><p>Chọn ngày để xem cách lịch chiếu sẽ được hiển thị.</p></div>
-        <a class="section-link" href="/lich-chieu">Tra cứu đầy đủ <span>↗</span></a>
+        <div><span class="eyebrow">LÊN KẾ HOẠCH XEM PHIM</span><h2>Khung giờ dành cho bạn</h2><p>Chọn ngày và rạp để xem suất chiếu thật, tải trực tiếp từ MoMo.</p></div>
+        <a class="section-link" href="/lich-chieu/momo">Tra cứu đầy đủ <span>↗</span></a>
       </div>
       <div class="schedule-shell">
-        <div class="schedule-shell__top"><div><strong>Lịch chiếu tại TP. Hồ Chí Minh</strong><span>Suất chiếu mẫu · Chưa thể đặt vé</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
+        <div class="schedule-shell__top"><div><strong>Lịch chiếu tại TP. Hồ Chí Minh</strong><span>Dữ liệu trực tiếp từ MoMo · Bấm giờ chiếu để chọn ghế</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
         <DatePicker />
-        <ShowtimeList limit={2} />
-        <div class="schedule-shell__footer"><a href="/lich-chieu" class="button button--outline">Xem các rạp và suất chiếu khác <span>↗</span></a></div>
+        <MomoShowtimeList />
+        <div class="schedule-shell__footer"><a href="/lich-chieu/momo" class="button button--outline">Mở trang lịch chiếu MoMo <span>↗</span></a></div>
       </div>
     </div>
   </section>
@@ -80,25 +78,20 @@ const soon = movies.filter((movie) => movie.status === 'soon');
       <div><span class="eyebrow">DÀNH CHO NGƯỜI MÊ PHIM</span><h2>Sắp ra rạp</h2><p>Thêm vài bộ phim vào danh sách mong chờ.</p></div>
       <a class="section-link" href="/phim-sap-chieu">Khám phá thêm <span>↗</span></a>
     </div>
-    <div class="movie-grid movie-grid--three">{soon.map((movie) => <MovieCard movie={movie} />)}</div>
+    <LiveMovieGrid status="soon" limit={6} />
   </section>
 
   <section class="section section--theaters">
     <div class="container">
       <div class="section-heading">
-        <div><span class="eyebrow">THẾ GIỚI RẠP CHIẾU</span><h2>Khám phá cụm rạp</h2><p>Những cụm rạp minh họa cho bản dựng giao diện.</p></div>
-        <a class="section-link" href="/rap">Xem tất cả rạp <span>↗</span></a>
+        <div><span class="eyebrow">THẾ GIỚI RẠP CHIẾU</span><h2>Khám phá cụm rạp</h2><p>Các cụm rạp tại TP. Hồ Chí Minh — dữ liệu trực tiếp từ MoMo.</p></div>
+        <a class="section-link" href="/lich-chieu/momo">Xem lịch theo rạp <span>↗</span></a>
       </div>
-      <div class="cinema-grid">{cinemas.map((cinema, index) =>
-        <a class="cinema-tile" href={'/rap/' + cinema.slug}>
-          <span class:list={['cinema-tile__symbol', 'cinema-tile__symbol--' + index]}>{cinema.chain.slice(0, 1)}</span>
-          <span class="cinema-tile__body"><strong>{cinema.name}</strong><small>{cinema.district} · {cinema.chain}</small></span><span class="cinema-tile__arrow">↗</span>
-        </a>
-      )}</div>
+      <LiveCinemaGrid limit={8} />
     </div>
   </section>
 
   <section class="container section">
-    <div class="closing-cta"><div><span class="eyebrow eyebrow--light">YOUR NEXT MOVIE NIGHT</span><h2>Tối nay, mình đi xem phim nhé?</h2><p>Khám phá bộ giao diện tra cứu lịch chiếu được thiết kế riêng cho ePlus.</p><a href="/lich-chieu" class="button button--light">Khám phá lịch chiếu <span>↗</span></a></div><span class="closing-cta__art" aria-hidden="true">✳</span></div>
+    <div class="closing-cta"><div><span class="eyebrow eyebrow--light">YOUR NEXT MOVIE NIGHT</span><h2>Tối nay, mình đi xem phim nhé?</h2><p>Khám phá bộ giao diện tra cứu lịch chiếu được thiết kế riêng cho ePlus.</p><a href="/lich-chieu/momo" class="button button--light">Khám phá lịch chiếu <span>↗</span></a></div><span class="closing-cta__art" aria-hidden="true">✳</span></div>
   </section>
 </BaseLayout>

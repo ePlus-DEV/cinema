@@ -25,6 +25,9 @@ jobs:
       PAGES_ROOT_PATH: '/'
       PAGES_SITE_ORIGIN: 'https://cinema.eplus.dev'
       PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+      # CORS proxy for the live MoMo showtimes page; override with the
+      # PUBLIC_MOMO_CORS_PROXY repository variable if the proxy moves.
+      PUBLIC_MOMO_CORS_PROXY: ${{ vars.PUBLIC_MOMO_CORS_PROXY || 'https://cors-eplus-bba6d8ad0ca6.herokuapp.com' }}
     steps:
       - name: Checkout website source
         uses: actions/checkout@v4

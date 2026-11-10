@@ -1,0 +1,72 @@
+---
+// Live movie grid for the homepage: films are fetched in the browser from the
+// MoMo Cinema API (see src/lib/momo-client.js). Skeleton cards show while
+// loading; nothing here uses the fixture catalog.
+interface Props { status: 'now' | 'soon'; limit?: number }
+const { status, limit = 12 } = Astro.props;
+---
+
+<div class="movie-grid" data-live-movies data-status={status} data-limit={limit} aria-busy="true">
+  {Array.from({ length: limit }).map(() => (
+    <div class="movie-card skeleton" aria-hidden="true">
+      <div class="skeleton__poster"></div>
+      <div class="skeleton__line"></div>
+      <div class="skeleton__line skeleton__line--short"></div>
+    </div>
+  ))}
+</div>
+
+<script>
+  import { MOMO_CITY_ID, momoGet } from '../lib/momo-client.js';
+
+  const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]
+  ));
+
+  async function fillGrid(grid) {
+    const status = grid.dataset.status === 'soon' ? 'soon' : 'now';
+    const apiStatus = status === 'soon' ? 2 : 3;
+    const limit = Number(grid.dataset.limit || 12);
+    try {
+      const data = await momoGet(
+        `/cinema/ci-film/loadMore?apiStatus=${apiStatus}&lastIndex=0&count=30&sortType=5&sortDir=1&apiCityId=${MOMO_CITY_ID}`
+      );
+      const films = (data.Items || []).slice(0, limit);
+      if (!films.length) throw new Error('MoMo chưa có phim trong mục này');
+      grid.innerHTML = films.map((film) => {
+        const poster = film.GraphicUrl || film.ImageUrl || '';
+        const meta = [film.ApiGenreName, film.Duration ? `${film.Duration} phút` : ''].filter(Boolean).join(' · ');
+        const release = film.ApiReleaseDate
+          ? new Date(`${String(film.ApiReleaseDate).slice(0, 10)}T00:00:00+07:00`)
+              .toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
+          : '';
+        const statusLine = status === 'now'
+          ? 'Đang chiếu · Xem lịch & chọn ghế'
+          : release ? `Khởi chiếu ${release}` : 'Sắp chiếu';
+        return `<a class="movie-card" href="/lich-chieu/momo/" aria-label="${esc('Xem lịch chiếu phim ' + film.Title)}">
+          <div class="live-poster">${poster ? `<img src="${esc(poster)}" alt="" loading="lazy" />` : ''}</div>
+          <div class="movie-card__info">
+            <div class="movie-card__head"><h3>${esc(film.Title)}</h3>${film.ApiRatingFormat ? `<span class="age-badge">${esc(film.ApiRatingFormat)}</span>` : ''}</div>
+            <p>${esc(meta)}</p>
+            <span class="movie-card__status">${esc(statusLine)}</span>
+          </div>
+        </a>`;
+      }).join('');
+      grid.setAttribute('aria-busy', 'false');
+    } catch (error) {
+      grid.innerHTML = '';
+      const p = document.createElement('p');
+      p.className = 'live-status';
+      p.textContent = `Không tải được danh sách phim từ MoMo (${error.message}).`;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = 'Thử lại';
+      button.addEventListener('click', () => location.reload());
+      p.append(button);
+      grid.append(p);
+      grid.setAttribute('aria-busy', 'false');
+    }
+  }
+
+  document.querySelectorAll('[data-live-movies]').forEach((grid) => fillGrid(grid));
+</script>

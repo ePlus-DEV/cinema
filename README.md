@@ -108,6 +108,36 @@ scripts/
   pages-publish.yml # Official GitHub Pages deployment
 ```
 
+## Real showtime data from MoMo (experimental)
+
+The page `/lich-chieu/momo/` loads showtimes **live in the visitor's browser**
+from the same API the public MoMo Cinema schedule page
+(<https://www.momo.vn/cinema/lich-chieu>) uses:
+
+- Client: `src/lib/momo-client.js`, driven by `src/components/MomoShowtimeList.astro`.
+  It lists cinemas (`GET /cinema/ci-cinema/loadMore`), then loads one cinema's
+  sessions for the selected date (`POST /v2/cinema/session` →
+  `Films[].VersionsCaptions[].ShowTimes[]`).
+- API base: `https://aws.momo.vn/momovn-cinema/public`, signed per request with
+  the same `X-Client-Token` scheme the web app uses (AES-256-CBC + MD5 of the
+  body, computed with Web Crypto in the browser).
+- MoMo only sends CORS headers for its own origin, so requests go through a
+  CORS proxy configured by the **`PUBLIC_MOMO_CORS_PROXY`** env variable
+  (see `.env.example`; the Pages workflow sets it from the repository variable
+  of the same name, defaulting to the ePlus cors-anywhere instance on Heroku).
+- The page is still `noindex`, sells no tickets, and showtime links go to MoMo.
+
+An offline snapshot path also exists for development:
+`scripts/fetch-momo-showtimes.mjs` makes the same calls from Node and writes
+`src/data/momo-showtimes.json`:
+
+```bash
+npm run fetch:showtimes -- [--city=50] [--cineplex=6] [--days=3] [--date=YYYY-MM-DD]
+```
+
+- This is an **undocumented public web API, not a licensed partner feed** — keep
+  the attribution and the `noindex` rule until a licensed source is confirmed.
+
 ## Next phase: real showtime data
 
 1. Confirm a licensed partner/source API for movie and screening data (public MoMo pages are not an API license).

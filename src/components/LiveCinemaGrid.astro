@@ -1,0 +1,39 @@
+---
+// Live cinema tiles for the homepage: cinema names/chains come from the MoMo
+// Cinema API in the browser (shared, memoized load in src/lib/momo-client.js).
+// Tiles link to the live showtime page where the visitor picks a cinema.
+interface Props { limit?: number }
+const { limit = 8 } = Astro.props;
+---
+
+<div class="cinema-grid" data-live-cinemas data-limit={limit} aria-busy="true">
+  {Array.from({ length: limit }).map(() => <div class="skeleton__tile skeleton" aria-hidden="true"></div>)}
+</div>
+
+<script>
+  import { CHAINS, loadAllCinemas } from '../lib/momo-client.js';
+
+  const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]
+  ));
+
+  document.querySelectorAll('[data-live-cinemas]').forEach(async (grid) => {
+    const limit = Number(grid.dataset.limit || 8);
+    try {
+      const cinemas = await loadAllCinemas();
+      if (!cinemas.length) throw new Error('MoMo không trả về rạp nào');
+      grid.innerHTML = cinemas.slice(0, limit).map((cinema, index) => {
+        const chain = CHAINS[cinema.chainId] || 'Rạp';
+        return `<a class="cinema-tile" href="/lich-chieu/momo/">
+          <span class="cinema-tile__symbol cinema-tile__symbol--${index % 4}">${esc(chain.slice(0, 1))}</span>
+          <span class="cinema-tile__body"><strong>${esc(cinema.name)}</strong><small>${esc(chain)} · TP. Hồ Chí Minh</small></span>
+          <span class="cinema-tile__arrow">↗</span>
+        </a>`;
+      }).join('');
+      grid.setAttribute('aria-busy', 'false');
+    } catch (error) {
+      grid.innerHTML = `<p class="live-status">Không tải được danh sách rạp từ MoMo (${esc(error.message)}).</p>`;
+      grid.setAttribute('aria-busy', 'false');
+    }
+  });
+</script>
