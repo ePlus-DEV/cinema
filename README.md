@@ -139,17 +139,17 @@ Two workflows work together:
    - `workflow_dispatch`: manually rebuild production from `main`.
    - Builds run with `persist-credentials: false`; the publish step receives the scoped `GITHUB_TOKEN` separately.
 2. **Publish GitHub Pages** (`.github/workflows/pages-publish.yml`):
-   - Runs from the repository's **default branch** after the staging workflow succeeds.
+   - Runs from the repository's **default branch** only when staging pushes a **real change** to `gh-pages` and dispatches the publisher.
    - Checks out the complete `gh-pages` branch, uploads one Pages artifact and deploys it with GitHub's official `actions/deploy-pages`.
    - Does not execute PR source code and avoids deploying directly from a PR context.
 
-This staging/deployment split is necessary because public GitHub Pages does not offer native isolated PR preview deployments, and commits made by `GITHUB_TOKEN` alone do **not** reliably trigger a Pages publish. Our preview folders are part of the same complete GitHub Pages site.
+This staging/deployment split is necessary because public GitHub Pages does not offer native isolated PR preview deployments. Commits made by `GITHUB_TOKEN` do not trigger normal push workflows, so staging explicitly sends one `workflow_dispatch` after each changed `gh-pages` commit. A no-op staging run sends none. Preview folders are part of the same complete Pages site.
 
 ### One-time GitHub setup (required)
 
 1. Merge the deployment PR so both workflow files are on `main`.
 2. Visit **Repository → Settings → Pages** and set **Build and deployment → Source → GitHub Actions**. Do **not** select `Deploy from a branch` for this configuration.
-3. In **Settings → Actions → General**, ensure workflows can use the repository-scoped `GITHUB_TOKEN` with the requested `contents: write` permission. If your organization restricts writable workflow tokens, an administrator must allow the necessary policy.
+3. In **Settings → Actions → General**, ensure workflows can use the scoped `GITHUB_TOKEN` with `contents: write` and `actions: write` as requested. If the organization restricts writable workflow tokens, an administrator must adjust the repository policy.
 4. Under **Settings → Environments → github-pages**, allow default-branch deployments. The trusted publishing workflow runs from `main`.
 5. Trigger **Actions → Build and stage GitHub Pages → Run workflow** on `main` for the first production release (or use the automatic `main` push).
 6. Check **Actions → Publish GitHub Pages** for successful deployment.
@@ -206,7 +206,7 @@ scripts/
 .github/workflows/
   ci.yml            # Pull-request static build
   pages-stage.yml   # Build and stage production / previews
-  pages-publish.yml # Official GitHub Pages deployment
+  pages-publish.yml # Dispatch-only GitHub Pages deployment
 ```
 
 ## Real showtime data from MoMo (experimental)
