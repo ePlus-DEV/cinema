@@ -52,9 +52,9 @@ const isPrPreview = /\/previews\/pr-\d+\//.test(import.meta.env.BASE_URL || '/')
     <footer class="footer">
       <div class="container footer__inner">
         <div>
-          <a href="/" class="footer__brand"><span class="brand__icon">✦</span> ePlus <strong>Cinema</strong></a>
+          <a href="/" class="footer__brand" aria-label="ePlus Cinema - Trang chủ"><span class="brand__icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 9h16v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9Z" fill="currentColor" opacity=".95"/><path d="M4 5.5 18.2 2l1.3 5.1L4 11V5.5Z" fill="currentColor"/><path d="m8 4.6 2.4 4.5M14.3 3.1l2.4 4.5" stroke="#101827" stroke-width="2"/><path d="m11 12.3 4.7 3.2-4.7 3.1v-6.3Z" fill="#101827"/></svg></span> ePlus <strong>Cinema</strong></a>
           <p>Khám phá phim và tìm lịch chiếu theo cách đơn giản hơn.</p>
-          <span class="footer__notice">Bản thiết kế demo · Không nhận đặt vé</span>
+          <span class="footer__notice">Dữ liệu tham khảo · Không hỗ trợ đặt vé</span>
         </div>
         <div class="footer__links">
           <div><strong>Khám phá</strong><a href="/phim-dang-chieu">Phim đang chiếu</a><a href="/phim-sap-chieu">Phim sắp chiếu</a></div>
@@ -62,7 +62,7 @@ const isPrPreview = /\/previews\/pr-\d+\//.test(import.meta.env.BASE_URL || '/')
           <div><strong>ePlus</strong><a href="https://eplus.dev/" target="_blank" rel="noopener noreferrer">ePlus DEV ↗</a><a href="https://github.com/ePlus-DEV/cinema" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div>
         </div>
       </div>
-      <div class="container footer__bottom"><span>© {new Date().getFullYear()} ePlus Cinema. Giao diện thử nghiệm.</span><span>Made for movie lovers ✦</span></div>
+      <div class="container footer__bottom"><span>© {new Date().getFullYear()} ePlus Cinema.</span><span>Made for movie lovers ✦</span></div>
     </footer>
   </body>
 </html>
