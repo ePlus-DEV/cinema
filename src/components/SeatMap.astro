@@ -22,7 +22,9 @@
   </div>
 </div>
 
-<style>
+<style is:global>
+  /* Global on purpose: the seat grid is injected via innerHTML after the API
+     responds, and Astro's scoped styles never reach injected nodes. */
   .seatmap { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; }
   .seatmap[hidden] { display: none; }
   .seatmap__backdrop { position: absolute; inset: 0; background: rgba(13, 20, 36, .62); }

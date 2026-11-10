@@ -34,7 +34,9 @@ import SeatMap from './SeatMap.astro';
 </div>
 <SeatMap />
 
-<style>
+<style is:global>
+  /* Global on purpose: most of this UI is injected via innerHTML after the
+     API responds, and Astro's scoped styles never reach injected nodes. */
   .momo-live__toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 16px; }
   .momo-live__search {
     flex: 1 1 220px; padding: 10px 14px; border: 1px solid var(--border);
