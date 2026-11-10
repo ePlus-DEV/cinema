@@ -63,7 +63,7 @@ assert.ok(explorer.includes('data-momo-district'), 'Missing functional location/
 assert.ok(explorer.includes('data-momo-chips'), 'Missing cinema chain filters');
 assert.ok(explorer.includes('data-momo-cinemas'), 'Missing cinema selector');
 assert.ok(explorer.includes('data-momo-selected-cinema'), 'Missing selected venue title');
-assert.equal((explorer.match(/data-date-picker/g) || []).length, 1, 'Exactly one date picker should appear in explorer');
+assert.equal((explorer.match(/<div[^>]*\bdata-date-picker(?=\s|>)/g) || []).length, 1, 'Exactly one date picker DOM element should appear in explorer');
 assert.ok(explorer.includes('seatmap__eyebrow'), 'Seat map should explain the preview-only flow');
 assert.ok(existsSync('src/lib/cinema-logos.js'), 'Theater logos helper is missing');
 const logos = readFileSync('src/lib/cinema-logos.js', 'utf8');
