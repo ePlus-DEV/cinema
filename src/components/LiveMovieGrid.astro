@@ -97,6 +97,13 @@ const { status, limit = 12, searchable = false } = Astro.props;
 
     async function load() {
       grid.setAttribute('aria-busy', 'true');
+      if (!grid.querySelector('.skeleton')) {
+        grid.innerHTML = Array.from({ length: Math.min(max, 12) }, () =>
+          '<div class="movie-card skeleton" aria-hidden="true"><div class="skeleton__poster"><span class="skeleton__poster-badge"></span></div><div class="skeleton__line" style="width:88%"></div><div class="skeleton__line skeleton__line--short"></div></div>'
+        ).join('');
+      }
+      if (empty) empty.hidden = true;
+      if (count) count.textContent = 'Đang tải phim…';
       try {
         const films = (await loadAllFilms(status)).slice(0, max);
         if (!films.length) throw new Error('Nguồn dữ liệu chưa có phim ở trạng thái này');
