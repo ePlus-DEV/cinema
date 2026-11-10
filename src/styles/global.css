@@ -633,3 +633,66 @@ h1, h2, h3, p { margin-top: 0; }
     animation: none;
   }
 }
+
+/* Responsive layout repair: keep document order, avoid footer-before-content.
+   The layout also renders its Astro slot explicitly inside #main-content. */
+#main-content { display: block; min-height: 55vh; }
+#main-content > :first-child { margin-top: 0; }
+.menu-backdrop[hidden] { display: none !important; }
+.menu-backdrop { display: none; }
+.title-spark { color: #d8a141; font-family: inherit; }
+.footer__brand { letter-spacing: -.04em; }
+.footer__links a { line-height: 1.5; }
+@media (max-width: 860px) {
+  body.mobile-menu-open { overflow: hidden; }
+  .site-header { z-index: 150; }
+  .main-nav {
+    display: flex; visibility: hidden; opacity: 0;
+    position: fixed; top: 69px; right: 0; left: auto;
+    width: min(340px, 88vw); height: calc(100dvh - 69px);
+    overflow-y: auto; transform: translateX(100%);
+    padding: 25px 18px; flex-direction: column; align-items: stretch;
+    box-shadow: -18px 12px 60px rgba(10,20,37,.19);
+    background: white; z-index: 4; transition: opacity .2s ease, transform .2s ease, visibility .2s;
+  }
+  .main-nav.is-open { visibility: visible; opacity: 1; transform: translateX(0); }
+  .main-nav__link { min-height: 52px; height: auto; padding: 14px 12px; font-size: 14px; border-bottom: 1px solid #edf0f5; }
+  .menu-backdrop:not([hidden]) {
+    display: block; position: fixed; z-index: 2; top: 69px; inset-inline: 0; bottom: 0;
+    border: 0; background: rgba(13,21,36,.56); cursor: pointer;
+  }
+}
+@media (max-width: 600px) {
+  .site-header { height: 58px; }
+  .site-header__inner { gap: 8px; }
+  .brand { font-size: 15px; letter-spacing: -.06em; gap: 7px; }
+  .brand__icon { width: 34px; height: 34px; border-radius: 10px; }
+  .brand__icon svg { width: 21px; height: 21px; }
+  .site-header__right { gap: 5px; }
+  .header-action { font-size: 11px; padding: 10px 11px; border-radius: 9px; gap: 6px; }
+  .header-action span { display: inline; }
+  .header-action span:last-child { display: none; }
+  .menu-toggle { display: inline-flex; padding: 7px; align-items: center; justify-content: center; }
+  .menu-toggle svg { width: 22px; height: 22px; }
+  .main-nav { top: 58px; height: calc(100dvh - 58px); }
+  .menu-backdrop:not([hidden]) { top: 58px; }
+  .preview-banner { padding: 5px 14px; min-height: 0; font-size: 10px; line-height: 1.45; }
+  .section--featured { padding-top: 25px; }
+  .section-heading--featured { margin-bottom: 20px; }
+  .section-heading--featured h1 { font-size: clamp(27px, 7vw, 34px); line-height: 1.25; letter-spacing: -.045em; }
+  .section-heading p { line-height: 1.6; }
+  .section-link { white-space: nowrap; }
+  .footer { padding-top: 32px; }
+  .footer__inner { gap: 25px; padding-bottom: 26px; }
+  .footer__brand { font-size: 17px; }
+  .footer__inner p { max-width: 32ch; line-height: 1.6; margin: 12px 0; }
+  .footer__links { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 24px; column-gap: 20px; }
+  .footer__links > div { gap: 10px; }
+  .footer__links strong { font-size: 12px; margin-bottom: 2px; }
+  .footer__links a { font-size: 12px; }
+  .footer__bottom { gap: 6px; min-height: 0; padding: 18px 0 22px; line-height: 1.6; }
+  .footer__bottom span { display: inline-block; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .main-nav { transition: none; }
+}
