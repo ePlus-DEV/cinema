@@ -25,5 +25,7 @@ assert.match(component, /button\.classList\.remove\('seat--selected'\)/, 'Desele
 assert.match(component, /button\.setAttribute\('aria-pressed', 'true'\)/, 'Selected seat must remain accessible');
 assert.match(style, /\.seatmap \.seat\.seat--selected[\s\S]*?background: #19b3a8 !important/, 'Teal must always override provider type color');
 assert.ok(!component.includes('Mua vé'), 'Preview cannot imply it purchases tickets');
+assert.match(component, /\.filter\(\(row\) => row\.some\(\(seat\) => seat\.id\)\)/,
+  'Fully-empty MoMo spacer rows must not render as phantom seat rows');
 
 console.log('PASS: seat map zoom, selection color, central zone geometry and mobile modal precedence');
