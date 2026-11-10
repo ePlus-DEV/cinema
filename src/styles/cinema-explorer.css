@@ -184,3 +184,13 @@
 .momo-live[data-cinema-only="true"] .momo-live__location-note { display: none; }
 .chain-logo { width: 48px; height: 48px; }
 @media (max-width: 760px) { .schedule-page--explorer { padding-top: 22px; } }
+
+/* Keep chain logo and the cinema name/address as two stable columns. */
+.momo-live .momo-live__cinema-info { display: block; flex: 1; min-width: 0; }
+.momo-live .momo-live__cinema-info strong { display: block; font-size: 12px; line-height: 1.45; }
+.momo-live .momo-live__cinema-info small {
+  display: -webkit-box; color: #8794a6; font-size: 10px; line-height: 1.5;
+  margin-top: 5px; max-height: 3em; overflow: hidden;
+  -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
+}
+.momo-live .momo-live__cinema::after { flex: none; }
