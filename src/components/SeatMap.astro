@@ -78,6 +78,7 @@ import '../styles/seatmap-redesign.css';
     .seatmap__footer { padding: 12px 14px; }
   }
   .seatmap__row { display: flex; gap: 5px; align-items: center; }
+  .seatmap__row--spacer { height: 18px; }
   .seatmap__row-label { width: 18px; flex: none; text-align: center; color: var(--muted); font-size: .72rem; font-weight: 700; }
   .seat {
     width: 27px; height: 27px; flex: none; border-radius: 8px 8px 3px 3px;
@@ -249,14 +250,25 @@ import '../styles/seatmap-redesign.css';
       let unknownType = false;
       let free = 0;
       let taken = 0;
-      // MoMo's grid can contain fully-empty spacer rows (no seat cells at
-      // all — e.g. 10 blank rows between row H and the Sweetbox row S at
-      // CGV Aeon Bình Tân). MoMo's own seat page does not render them as
-      // seat rows, so skip any row without a single real seat; rendering
-      // them would open a phantom gap in the middle of the map.
-      const rowsHtml = (info.Seats || [])
-        .filter((row) => row.some((seat) => seat.id))
-        .map((row) => {
+      // MoMo's grid can contain fully-empty rows (no seat cells at all —
+      // e.g. 10 blank rows between row H and the Sweetbox row S at CGV Aeon
+      // Bình Tân, where a walkway separates the back bank). Rendering them
+      // all opens a phantom void in the map, but dropping them entirely
+      // would glue the detached back bank onto the main block. Collapse any
+      // run of empty rows into ONE slim walkway spacer: the map stays
+      // compact and the physical separation (which the center-zone estimate
+      // relies on) is preserved. Leading/trailing empty rows are dropped.
+      const renderRows = [];
+      let pendingSpacer = false;
+      for (const row of info.Seats || []) {
+        if (row.some((seat) => seat.id)) {
+          if (pendingSpacer && renderRows.length) renderRows.push(null);
+          renderRows.push(row);
+          pendingSpacer = false;
+        } else if (renderRows.length) pendingSpacer = true;
+      }
+      const rowsHtml = renderRows.map((row) => {
+        if (!row) return '<div class="seatmap__row seatmap__row--spacer" aria-hidden="true"></div>';
         const label = row.find((seat) => seat.nameRow)?.nameRow || '';
         const cells = row.map((seat) => {
           if (!seat.id) return '<span class="seat seat--gap" aria-hidden="true"></span>';
