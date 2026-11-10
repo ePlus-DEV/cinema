@@ -1,0 +1,64 @@
+---
+import data from '../data/momo-showtimes.json';
+
+interface Props { limit?: number }
+const { limit } = Astro.props;
+const movieBySlug = new Map(data.movies.map((m) => [m.slug, m]));
+const groups = data.cinemas
+  .map((cinema) => ({ cinema, slots: data.showtimes.filter((s) => s.cinemaSlug === cinema.slug) }))
+  .filter((g) => g.slots.length > 0)
+  .slice(0, limit || data.cinemas.length);
+---
+<div class="showtime-list" data-showtime-list>
+  {groups.map(({ cinema, slots }) =>
+    <article class="theater-showtime" data-theater-showtime>
+      <div class="theater-showtime__heading">
+        <div class="theater-monogram">{cinema.chain.slice(0, 1)}</div>
+        <div>
+          <h3><a href={cinema.momoLink} target="_blank" rel="noopener noreferrer">{cinema.name}</a></h3>
+          <p>{cinema.chain} <span class="meta-dot">·</span> {cinema.address}</p>
+        </div>
+        <a class="text-link theater-showtime__more" href={cinema.momoLink} target="_blank" rel="noopener noreferrer">Trên MoMo ↗</a>
+      </div>
+      <div class="theater-showtime__programs">
+        {slots.map((slot) => {
+          const movie = movieBySlug.get(slot.movieSlug);
+          return <div class="program" data-program data-day={slot.dayOffset} hidden={slot.dayOffset !== 0}>
+            <div class="program__movie"><a href={movie?.momoLink} target="_blank" rel="noopener noreferrer">{movie?.title}</a><span class="age-badge">{movie?.age}</span></div>
+            <div class="program__schedule">
+              <span class="program__format">{slot.format}</span>
+              <div class="program__times">
+                {slot.times.map((time) => <a href={movie?.momoLink} target="_blank" rel="noopener noreferrer" title="Xem / đặt vé trên MoMo">{time}</a>)}
+              </div>
+            </div>
+          </div>;
+        })}
+      </div>
+    </article>
+  )}
+  <div class="showtime-empty" data-showtime-empty hidden>
+    <span aria-hidden="true">🎟️</span>
+    <strong>Chưa có suất chiếu cho ngày này trong dữ liệu đã tải</strong>
+    <p>Chạy lại <code>node scripts/fetch-momo-showtimes.mjs</code> để cập nhật lịch mới.</p>
+  </div>
+</div>
+<script>
+  const refreshMomo = (offset: number) => {
+    document.querySelectorAll<HTMLElement>('[data-showtime-list]').forEach((list) => {
+      let hasAny = false;
+      list.querySelectorAll<HTMLElement>('[data-theater-showtime]').forEach((theater) => {
+        let hasTheaterProgram = false;
+        theater.querySelectorAll<HTMLElement>('[data-program]').forEach((program) => {
+          const visible = Number(program.dataset.day) === offset;
+          program.hidden = !visible;
+          if (visible) hasTheaterProgram = true;
+        });
+        theater.hidden = !hasTheaterProgram;
+        if (hasTheaterProgram) hasAny = true;
+      });
+      const empty = list.querySelector<HTMLElement>('[data-showtime-empty]');
+      if (empty) empty.hidden = hasAny;
+    });
+  };
+  window.addEventListener('cinema:day', (event) => refreshMomo((event as CustomEvent<number>).detail));
+</script>
