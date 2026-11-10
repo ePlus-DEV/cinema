@@ -72,7 +72,7 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
         const cinema = cinemas.find((item) => item.key === key);
         if (!cinema) { showError('Không tìm thấy cụm rạp trong danh sách cập nhật.'); return; }
         const chain = CHAINS[cinema.chainId] || 'Hệ thống rạp';
-        root.querySelector('[data-cinema-chain]').textContent = chain + ' · TP. Hồ Chí Minh';
+        root.querySelector('[data-cinema-chain]').textContent = chain;
         root.querySelector('[data-cinema-title]').textContent = cinema.name;
         root.querySelector('[data-cinema-address]').textContent = cinema.address || 'Chưa có thông tin địa chỉ';
         schedule.querySelector('[data-cinema-schedule-name]').textContent = 'Suất chiếu tại ' + cinema.name;
