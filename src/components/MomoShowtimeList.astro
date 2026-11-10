@@ -18,18 +18,28 @@ const { cinemaOnly = false } = Astro.props;
       aria-label="Tìm rạp"
       data-momo-search
     />
-    <div class="momo-live__chips" data-momo-chips role="group" aria-label="Hệ thống rạp"></div>
+    <div class="momo-live__chips" data-momo-chips role="group" aria-label="Hệ thống rạp">
+      {[0,1,2,3].map(() => <span class="momo-live__chip-placeholder skeleton" aria-hidden="true"></span>)}
+    </div>
   </div>
   <div class="momo-live__layout">
     <div class="momo-live__cinemas" data-momo-cinemas aria-label="Danh sách rạp" aria-busy="true">
-      {Array.from({ length: 6 }).map(() => <div class="skeleton__row skeleton" aria-hidden="true"></div>)}
+      {Array.from({ length: 5 }).map(() => <div class="momo-live__cinema-placeholder skeleton" aria-hidden="true">
+        <span class="skeleton__line" style="width:73%"></span>
+        <span class="skeleton__line skeleton__line--short"></span>
+      </div>)}
     </div>
     <div class="momo-live__results" data-momo-results aria-live="polite" aria-busy="true">
-      <div class="skeleton__block skeleton" aria-hidden="true">
-        <div class="skeleton__line" style="width:45%"></div>
-        <div class="skeleton__line"></div>
-        <div class="skeleton__line"></div>
-        <div class="skeleton__line skeleton__line--short"></div>
+      <div class="momo-live__loading-head skeleton" aria-hidden="true"><span class="skeleton__line" style="width:54%"></span><span class="skeleton__line skeleton__line--short"></span></div>
+      <div class="momo-live__loading-programs" aria-hidden="true">
+        {[0,1].map(() => <div class="momo-live__loading-program skeleton">
+          <span class="momo-live__loading-poster"></span>
+          <div class="momo-live__loading-content">
+            <span class="skeleton__line" style="width:75%"></span>
+            <span class="skeleton__line skeleton__line--short"></span>
+            <div class="momo-live__loading-times">{[0,1,2,3].map(() => <span class="momo-live__loading-time"></span>)}</div>
+          </div>
+        </div>)}
       </div>
       <p class="momo-live__status">Đang tải dữ liệu trực tiếp từ MoMo…</p>
     </div>
@@ -41,6 +51,19 @@ const { cinemaOnly = false } = Astro.props;
   /* Global on purpose: most of this UI is injected via innerHTML after the
      API responds, and Astro's scoped styles never reach injected nodes. */
   .momo-live__toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 16px; }
+  .momo-live__chip-placeholder { width: 82px; height: 35px; border-radius: 10px; background: #eef1f6; }
+  .momo-live__cinema-placeholder { border-radius: 12px; min-height: 74px; border: 1px solid #e9edf3; background: #f4f6f9; padding: 16px 14px; }
+  .momo-live__cinema-placeholder .skeleton__line { margin-top: 0; height: 11px; }
+  .momo-live__cinema-placeholder .skeleton__line + .skeleton__line { margin-top: 11px; }
+  .momo-live__loading-head { padding: 15px 0 21px; border-bottom: 1px solid #edf0f4; }
+  .momo-live__loading-programs { display: grid; gap: 12px; padding-top: 15px; }
+  .momo-live__loading-program { display: flex; align-items: flex-start; gap: 14px; border: 1px solid #e8edf3; background: #fbfcfe; border-radius: 14px; padding: 17px; }
+  .momo-live__loading-poster { flex: 0 0 57px; height: 80px; border-radius: 9px; background: #e1e7ef; }
+  .momo-live__loading-content { flex: 1; min-width: 0; }
+  .momo-live__loading-content > .skeleton__line { margin: 0 0 11px; }
+  .momo-live__loading-times { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 13px; }
+  .momo-live__loading-time { width: 58px; height: 34px; background: #e3e9f1; border-radius: 8px; }
+  @media (max-width: 600px) { .momo-live__loading-program { padding: 12px; gap: 10px; } .momo-live__loading-poster { flex-basis: 46px; height: 68px; } .momo-live__loading-time { width: 54px; } }
   .momo-live__search {
     flex: 1 1 220px; padding: 10px 14px; border: 1px solid var(--border);
     border-radius: 999px; font: inherit; background: #fff; color: var(--ink);
@@ -128,11 +151,21 @@ const { cinemaOnly = false } = Astro.props;
     }
 
     function skeletonResults(message) {
-      resultsEl.innerHTML = `<div class="skeleton__block skeleton" aria-hidden="true">
-          <div class="skeleton__line" style="width:45%"></div>
-          <div class="skeleton__line"></div>
-          <div class="skeleton__line"></div>
-          <div class="skeleton__line skeleton__line--short"></div>
+      resultsEl.innerHTML = `<div class="momo-live__loading-head skeleton" aria-hidden="true">
+          <span class="skeleton__line" style="width:54%"></span>
+          <span class="skeleton__line skeleton__line--short"></span>
+        </div>
+        <div class="momo-live__loading-programs" aria-hidden="true">
+          ${Array.from({ length: 2 }, () => `<div class="momo-live__loading-program skeleton">
+            <span class="momo-live__loading-poster"></span>
+            <div class="momo-live__loading-content">
+              <span class="skeleton__line" style="width:75%"></span>
+              <span class="skeleton__line skeleton__line--short"></span>
+              <div class="momo-live__loading-times">
+                ${Array.from({ length: 4 }, () => '<span class="momo-live__loading-time"></span>').join('')}
+              </div>
+            </div>
+          </div>`).join('')}
         </div>
         <p class="momo-live__status">${esc(message)}</p>`;
       resultsEl.setAttribute('aria-busy', 'true');
@@ -267,6 +300,7 @@ const { cinemaOnly = false } = Astro.props;
         cinemasEl.setAttribute('aria-busy', 'false');
         if (!state.cinemas.length) {
           cinemasEl.innerHTML = '';
+          chipsEl.replaceChildren();
           status('MoMo không trả về rạp nào cho TP. Hồ Chí Minh.', init);
           return;
         }
@@ -285,6 +319,8 @@ const { cinemaOnly = false } = Astro.props;
         loadSession();
       } catch (error) {
         cinemasEl.innerHTML = '';
+        chipsEl.replaceChildren();
+        cinemasEl.setAttribute('aria-busy', 'false');
         status(`Không tải được danh sách rạp từ MoMo (${error.message}).`, init);
       }
     }
