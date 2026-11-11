@@ -27,8 +27,10 @@ assert.doesNotMatch(publish, /workflow_run:/, 'Publisher must not run on no-op s
 assert.match(publish, /group: cinema-pages-publish/, 'Publisher needs serial deployment');
 assert.match(publish, /preview_pr:/, 'Publisher should accept a PR number from staging');
 assert.match(publish, /preview_sha:/, 'Publisher should accept the exact preview commit');
-assert.match(publish, /issues: write/, 'Trusted publisher needs permission to post issue comments');
-assert.match(publish, /pull-requests: read/, 'Notifier must be able to fetch PR metadata before commenting');
+assert.match(publish, /issues: write/, 'Trusted notifier needs permission to post issue comments');
+assert.match(publish, /pull-requests: write/, 'Notifier must be authorized to write PR comments');
+assert.match(publish, /notify:\s*\n/, 'A separate notification job must exist');
+assert.match(publish, /needs: deploy/, 'Notifier must wait for successful Pages deployment');
 assert.match(publish, /if: inputs\.preview_pr != ''/, 'Only preview deployments should notify PRs');
 assert.ok(publish.indexOf('Post or update PR preview link') > publish.indexOf('uses: actions/deploy-pages@v4'), 'Never notify before Pages successfully deploys');
 assert.match(publish, /bash automation\/scripts\/post-preview-link\.sh/, 'Notifier must come from the trusted branch');
@@ -44,6 +46,8 @@ assert.match(previewNotifier, /\.head\.repo\.full_name/, 'Notifier must refuse e
 assert.match(previewNotifier, /github-actions\[bot\]/, 'Only marked bot comments may be updated');
 assert.match(previewNotifier, /--method PATCH/, 'Notifier should update previous bot comments');
 assert.match(previewNotifier, /--method POST/, 'Notifier should create one bot comment when absent');
+assert.match(previewNotifier, /Preview notifier: checking PR/, 'Notifier must identify the failing API stage in logs');
+assert.match(previewNotifier, /Preview notifier: creating bot comment/, 'Comment creation stage must be observable');
 
 assert.match(daily, /group: cinema-catalog-daily/, 'Catalog refresh concurrency missing');
 assert.match(daily, /steps\.due\.outputs\.due == 'true'/, 'Same-day refresh guard missing');

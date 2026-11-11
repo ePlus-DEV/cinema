@@ -163,7 +163,7 @@ https://cinema.eplus.dev/
 
 https://cinema.eplus.dev/previews/pr-3/
 
-Each PR preview URL appears in the staging workflow run Summary. After **Publish GitHub Pages** succeeds, the trusted default-branch publisher also posts/updates a single `github-actions[bot]` comment on the PR with the link `https://cinema.eplus.dev/previews/pr-N/` (using `issues: write` on the built-in `GITHUB_TOKEN`, no PAT). Re-runs update the same marked comment, not a new one. If organization policy blocks bot comments, the publishing run reports that error, and the staging Summary remains available. URLs are live only after successful Pages deployment; closing a PR removes its preview path.
+Each PR preview URL appears in the staging workflow run Summary. After **Publish GitHub Pages** succeeds, a separate trusted default-branch notification job (with `issues: write` and `pull-requests: write`) posts/updates a single `github-actions[bot]` comment on the PR with the link `https://cinema.eplus.dev/previews/pr-N/` (using `issues: write` on the built-in `GITHUB_TOKEN`, no PAT). Re-runs update the same marked comment, not a new one. If organization policy blocks bot comments, the publishing run reports that error, and the staging Summary remains available. URLs are live only after successful Pages deployment; closing a PR removes its preview path.
 
 ### Custom domain: cinema.eplus.dev
 
