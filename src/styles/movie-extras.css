@@ -43,7 +43,11 @@
 .momo-review__tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
 .momo-review__tags span { background: #f5f7fa; color: #42506a; border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 600; }
 .momo-review__main p { margin: 6px 0 0; color: #33405a; font-size: 12px; line-height: 1.65; }
+.momo-review__images { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.momo-review__images img { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; display: block; background: #f0f3f7; }
 .movie-extras__momo-note { display: block; color: #8b98a9; font-size: 10px; line-height: 1.6; padding: 4px 0 14px; }
+.movie-extras__more { display: inline-block; margin: 0 0 16px; color: var(--navy); font-weight: 700; font-size: .86rem; text-decoration: none; }
+.movie-extras__more:hover { text-decoration: underline; }
 .movie-extras__articles { padding: 0 20px 16px; }
 .movie-extras__article { display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid #e9edf3; padding: 14px; border-radius: 12px; margin-bottom: 10px; text-decoration: none; color: #26344a; }
 .movie-extras__article:hover { border-color: #dcb16d; background: #fffdf7; }

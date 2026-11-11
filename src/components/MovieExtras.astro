@@ -65,9 +65,11 @@ const reviewDate = (value?: string) => value ? value.slice(0, 10).split('-').rev
               </div>
               {item.tags?.length ? <div class="momo-review__tags">{item.tags.map(tag => <span>{tag}</span>)}</div> : null}
               {item.desc && <p>{item.desc}</p>}
+              {item.images?.length ? <div class="momo-review__images">{item.images.map(url => <a href={url} target="_blank" rel="noopener noreferrer"><img src={url} alt="Ảnh do khán giả đăng cùng đánh giá" loading="lazy" decoding="async" /></a>)}</div> : null}
             </div>
           </article>)}
           <small class="movie-extras__momo-note">Các đánh giá nổi bật từ khán giả đã xem phim, cập nhật cùng dữ liệu phim hằng ngày.</small>
+          <a class="movie-extras__more" href={import.meta.env.BASE_URL + 'danh-gia/'}>Xem thêm đánh giá của khán giả →</a>
         </>}
       </div>
       <div class="movie-extras__articles" data-movie-articles>
@@ -155,7 +157,7 @@ const reviewDate = (value?: string) => value ? value.slice(0, 10).split('-').rev
       } catch { status.textContent = 'Trình duyệt không thể đọc đánh giá đã lưu.'; }
     }
     const momoPanel = root.querySelector<HTMLElement>('[data-momo-reviews]');
-    interface MomoReviewInput { name?:string; avatar?:string; point?:number|null; desc?:string; tags?:string[]; createdTime?:string }
+    interface MomoReviewInput { name?:string; avatar?:string; point?:number|null; desc?:string; tags?:string[]; images?:string[]; createdTime?:string }
     function renderMomoReviews(movie: {ratingPoint?:number|null;ratingTotal?:number;momoReviews?:MomoReviewInput[]}) {
       if (!momoPanel) return;
       momoPanel.replaceChildren();
@@ -223,6 +225,24 @@ const reviewDate = (value?: string) => value ? value.slice(0, 10).split('-').rev
           desc.textContent = item.desc;
           main.append(desc);
         }
+        if (item.images?.length) {
+          const images = document.createElement('div');
+          images.className = 'momo-review__images';
+          for (const url of item.images) {
+            if (!/^https:\/\//.test(url)) continue;
+            const link = document.createElement('a');
+            link.href = url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = 'Ảnh do khán giả đăng cùng đánh giá';
+            img.loading = 'lazy';
+            link.append(img);
+            images.append(link);
+          }
+          if (images.childElementCount) main.append(images);
+        }
         card.append(main);
         momoPanel.append(card);
       }
@@ -230,6 +250,11 @@ const reviewDate = (value?: string) => value ? value.slice(0, 10).split('-').rev
       note.className = 'movie-extras__momo-note';
       note.textContent = 'Các đánh giá nổi bật từ khán giả đã xem phim, cập nhật cùng dữ liệu phim.';
       momoPanel.append(note);
+      const more = document.createElement('a');
+      more.className = 'movie-extras__more';
+      more.href = import.meta.env.BASE_URL + 'danh-gia/';
+      more.textContent = 'Xem thêm đánh giá của khán giả →';
+      momoPanel.append(more);
     }
     function showReviews(movie: {title:string;titleEn?:string;ratingPoint?:number|null;ratingTotal?:number;momoReviews?:MomoReviewInput[]}) {
       filmTitle = movie.title;

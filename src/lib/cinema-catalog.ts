@@ -25,6 +25,7 @@ const momoReviewsOf = (row: unknown) => {
       point: typeof item.point === 'number' ? item.point : null,
       desc: strings(item.desc),
       tags: (Array.isArray(item.tags) ? item.tags : []).map((tag) => strings(tag)).filter(Boolean),
+      images: (Array.isArray(item.images) ? item.images : []).map((url) => strings(url)).filter((url) => url.startsWith('https://')),
       createdTime: strings(item.createdTime)
     };
   }).filter((review) => review.desc || review.point !== null);
