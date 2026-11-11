@@ -19,10 +19,23 @@ const links = [
       {links.map((link) => <a class:list={['main-nav__link', { 'is-active': active === link.id }]} href={link.href}>{link.label}</a>)}
     </nav>
     <div class="site-header__right">
-      <a class="location-chip" href="/lich-chieu" title="Khu vực đang xem — đổi thành phố trong mục Lịch chiếu">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-        <span data-city-name>TP. Hồ Chí Minh</span>
-      </a>
+      <div class="site-city-picker" data-site-city-picker>
+        <button class="location-chip site-city-picker__trigger" type="button"
+          aria-haspopup="true" aria-expanded="false" aria-controls="site-city-options"
+          aria-label="Đổi tỉnh hoặc thành phố" data-city-trigger>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          <span data-city-name>TP. Hồ Chí Minh</span><span aria-hidden="true" class="site-city-picker__caret">⌄</span>
+        </button>
+        <div class="site-city-picker__panel" data-city-panel hidden>
+          <strong>Chọn tỉnh / thành phố</strong>
+          <label class="site-city-picker__search-label">
+            <span class="sr-only">Tìm tỉnh hoặc thành phố</span>
+            <input type="search" placeholder="Tìm tỉnh, thành phố..." aria-label="Tìm tỉnh hoặc thành phố" data-city-search />
+          </label>
+          <div id="site-city-options" class="site-city-picker__options" data-city-options role="group" aria-label="Chọn địa điểm tra cứu"></div>
+          <p class="site-city-picker__note">Áp dụng cho danh sách rạp và lịch chiếu. Tên khu vực theo danh mục của nguồn cung cấp.</p>
+        </div>
+      </div>
       <a class="header-action" href="/lich-chieu"><span class="header-action__label">Lịch chiếu</span><span aria-hidden="true">↗</span></a>
       <button class="menu-toggle" type="button" aria-label="Mở menu" aria-controls="primary-nav" aria-expanded="false" data-menu-toggle>
         <svg width="23" height="23" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
@@ -32,17 +45,83 @@ const links = [
   <button type="button" class="menu-backdrop" data-menu-backdrop aria-label="Đóng menu điều hướng" hidden></button>
 </header>
 <script>
-  import { cityDisplayName } from '../lib/cities.js';
-  // Reflect the visitor's chosen city (set in the schedule explorer) in the
-  // header chip and any other [data-city-name] label on the page.
-  try {
-    const savedCity = Number(window.localStorage.getItem('eplus-cinema:city'));
-    if (savedCity) {
-      document.querySelectorAll('[data-city-name]').forEach((el) => {
-        el.textContent = cityDisplayName(savedCity);
+  import { CITIES, cityDisplayName } from '../lib/cities.js';
+  import { getCityId, setCityId } from '../lib/momo-client.js';
+  const picker = document.querySelector<HTMLElement>('[data-site-city-picker]');
+  if (picker) {
+    const trigger = picker.querySelector<HTMLButtonElement>('[data-city-trigger]');
+    const panel = picker.querySelector<HTMLElement>('[data-city-panel]');
+    const search = picker.querySelector<HTMLInputElement>('[data-city-search]');
+    const options = picker.querySelector<HTMLElement>('[data-city-options]');
+    if (trigger && panel && search && options) {
+      const normalize = (value: string) => value.normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+      const updateLabels = () => {
+        const current = getCityId();
+        document.querySelectorAll<HTMLElement>('[data-city-name]').forEach((el) => {
+          el.textContent = cityDisplayName(current);
+        });
+        options.querySelectorAll<HTMLButtonElement>('[data-city-id]').forEach((button) => {
+          const selected = Number(button.dataset.cityId) === current;
+          button.setAttribute('aria-pressed', String(selected));
+        });
+      };
+      const close = () => {
+        panel.hidden = true;
+        trigger.setAttribute('aria-expanded', 'false');
+      };
+      const open = () => {
+        panel.hidden = false;
+        trigger.setAttribute('aria-expanded', 'true');
+        search.value = '';
+        filterCities();
+        search.focus();
+      };
+      const filterCities = () => {
+        const term = normalize(search.value);
+        options.querySelectorAll<HTMLButtonElement>('[data-city-id]').forEach((button) => {
+          button.hidden = !!term && !normalize(button.textContent || '').includes(term);
+        });
+      };
+      for (const city of CITIES) {
+        const option = document.createElement('button');
+        option.type = 'button';
+        option.className = 'site-city-picker__option';
+        option.dataset.cityId = String(city.id);
+        option.textContent = cityDisplayName(city.id);
+        option.addEventListener('click', () => {
+          const previous = getCityId();
+          setCityId(city.id);
+          updateLabels();
+          close();
+          trigger.focus();
+          if (previous !== city.id) {
+            window.dispatchEvent(new CustomEvent('cinema:city-change', { detail: { cityId: city.id } }));
+          }
+        });
+        options.append(option);
+      }
+      updateLabels();
+      trigger.addEventListener('click', () => panel.hidden ? open() : close());
+      search.addEventListener('input', filterCities);
+      document.addEventListener('pointerdown', (event) => {
+        if (!picker.contains(event.target as Node)) close();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !panel.hidden) { close(); trigger.focus(); }
+      });
+      window.addEventListener('cinema:city-change', updateLabels);
+      window.addEventListener('storage', (event) => {
+        if (event.key !== 'eplus-cinema:city') return;
+        const id = Number(event.newValue);
+        if (CITIES.some((city) => city.id === id)) {
+          setCityId(id);
+          updateLabels();
+          window.dispatchEvent(new CustomEvent('cinema:city-change', { detail: { cityId: id } }));
+        }
       });
     }
-  } catch { /* storage unavailable */ }
+  }
 </script>
 <script>
   const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
@@ -72,3 +151,54 @@ const links = [
     });
   }
 </script>
+
+<style is:global>
+  .site-city-picker { position: relative; flex: none; }
+  .site-city-picker .location-chip {
+    display: flex; align-items: center; gap: 7px; padding: 7px 6px;
+    background: transparent; border: 0; border-radius: 9px;
+    font: inherit; font-size: 11px; font-weight: 700; color: #586272;
+    white-space: nowrap; cursor: pointer;
+  }
+  .site-city-picker .location-chip:hover,
+  .site-city-picker .location-chip[aria-expanded="true"] { background: #f2f5fa; color: #1b2943; }
+  .site-city-picker__caret { color: #8b95a6; font-size: 15px; }
+  .site-city-picker__panel {
+    position: absolute; right: 0; top: calc(100% + 10px); z-index: 180;
+    width: min(340px, calc(100vw - 24px)); max-width: none;
+    padding: 14px; border: 1px solid #dde5ee; border-radius: 15px;
+    background: #fff; box-shadow: 0 16px 46px rgba(18,34,58,.19);
+  }
+  .site-city-picker__panel[hidden] { display: none !important; }
+  .site-city-picker__panel > strong { display: block; font-size: 13px; color: #182a45; margin-bottom: 11px; }
+  .site-city-picker__search-label { display: block; }
+  .site-city-picker__search-label input {
+    display: block; width: 100%; padding: 11px 12px; border: 1px solid #dfe6ee;
+    border-radius: 10px; outline-offset: 2px; font: inherit; font-size: 12px;
+  }
+  .site-city-picker__options {
+    display: grid; gap: 3px; max-height: 274px; overflow-y: auto;
+    margin-top: 10px; padding-right: 3px; overscroll-behavior: contain;
+  }
+  .site-city-picker__option {
+    text-align: left; padding: 10px 11px; border: 0; border-radius: 8px;
+    background: transparent; color: #3e4f67; font: inherit; font-size: 12px;
+    cursor: pointer;
+  }
+  .site-city-picker__option:hover { background: #f3f5f9; }
+  .site-city-picker__option[aria-pressed="true"] {
+    background: #fdf2d9; color: #64471b; font-weight: 800;
+  }
+  .site-city-picker__option[hidden] { display: none; }
+  .site-city-picker__note { color: #77849a; font-size: 10px; line-height: 1.55; margin: 10px 0 0; }
+  .site-city-picker :is(button,input):focus-visible { outline: 2px solid #c39230; outline-offset: 2px; }
+  @media (max-width: 1200px) {
+    .site-header .site-city-picker .location-chip { display: flex; }
+    .site-city-picker .location-chip span[data-city-name], .site-city-picker__caret { display: none; }
+    .site-city-picker .location-chip { padding: 8px; }
+    .site-city-picker .location-chip svg { width: 21px; height: 21px; }
+  }
+  @media (max-width: 380px) {
+    .site-header__right .header-action { display: none; }
+  }
+</style>

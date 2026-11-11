@@ -150,3 +150,12 @@ const cinemaGroupsSrc = readFileSync('src/components/LiveCinemaGrid.astro','utf8
 assert.match(cinemaGroupsSrc, /search\?\.addEventListener\('input', render\)/, 'Grouped cinema search must remain interactive');
 assert.match(cinemaGroupsSrc, /chainFilter = button\.dataset\.chainFilter/, 'Cinema filters must select chain groups');
 assert.match(cinemaGroupsSrc, /section\.dataset\.expanded/, 'Cinema groups must expand and collapse');
+
+const siteHeaderSrc = readFileSync('src/components/SiteHeader.astro','utf8');
+const citySyncSrc = readFileSync('src/components/MomoShowtimeList.astro','utf8');
+assert.match(siteHeaderSrc, /data-city-trigger/, 'Header needs interactive city picker');
+assert.match(siteHeaderSrc, /data-city-search/, 'Province selector needs search');
+assert.match(siteHeaderSrc, /cinema:city-change/, 'Header selection must broadcast city change');
+assert.match(siteHeaderSrc, /setCityId\(city\.id\)/, 'Shared city preference must persist');
+assert.match(citySyncSrc, /window\.addEventListener\('cinema:city-change'/, 'Schedule must respond to global city selection');
+assert.match(citySyncSrc, /params\.get\('city'\)/, 'Direct links from non-HCM theater directory must support city query');
