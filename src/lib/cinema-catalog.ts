@@ -41,6 +41,7 @@ export const movies = uniqueBy((source.movies || []).map((row) => ({
   age: strings(row.age),
   synopsis: strings(row.synopsis),
   posterUrl: strings(row.posterUrl),
+  bannerUrl: strings(loose(row).bannerUrl),
   trailerUrl: strings(row.trailerUrl),
   autoplayTrailer: strings(loose(row).autoplayTrailer),
   ratingPoint: typeof loose(row).ratingPoint === 'number' ? (loose(row).ratingPoint as number) : null,
