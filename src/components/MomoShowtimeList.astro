@@ -195,6 +195,11 @@ const initialChips = [
     const cinemaTitleEl = root.querySelector('[data-momo-selected-cinema]');
     const cinemaAddressEl = root.querySelector('[data-momo-selected-address]');
     const params = new URLSearchParams(window.location.search);
+    const requestedCity = Number(params.get('city'));
+    if (CITIES.some((city) => city.id === requestedCity) && requestedCity !== getCityId()) {
+      setCityId(requestedCity);
+      window.dispatchEvent(new CustomEvent('cinema:city-change', { detail: { cityId: requestedCity } }));
+    }
     const isCinemaOnly = root.dataset.cinemaOnly === 'true';
     const isMovieDetail = window.location.pathname.includes('/phim/chi-tiet/');
     const requestedFilm = root.dataset.movieId || params.get('movie') || (isMovieDetail ? params.get('id') : null);
@@ -705,13 +710,26 @@ const initialChips = [
         new Option(city.id === 50 ? 'TP. ' + city.name : city.name, String(city.id))));
       cityEl.value = String(getCityId());
       cityEl.addEventListener('change', () => {
-        setCityId(Number(cityEl.value));
+        const id = Number(cityEl.value);
+        setCityId(id);
         state.district = '';
         if (districtEl) districtEl.value = '';
         applyCityLabels();
         init();
+        window.dispatchEvent(new CustomEvent('cinema:city-change', { detail: { cityId: id } }));
       });
     }
+    window.addEventListener('cinema:city-change', (event) => {
+      const cityId = Number((event as CustomEvent<{ cityId: number }>).detail?.cityId);
+      if (!CITIES.some((city) => city.id === cityId)) return;
+      if (cityEl && Number(cityEl.value) === cityId) return;
+      setCityId(cityId);
+      if (cityEl) cityEl.value = String(cityId);
+      state.district = '';
+      if (districtEl) districtEl.value = '';
+      applyCityLabels();
+      init();
+    });
     applyCityLabels();
 
     init();

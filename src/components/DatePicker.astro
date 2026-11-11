@@ -1,31 +1,90 @@
-<div class="date-picker" aria-label="Chọn ngày tra lịch chiếu" data-date-picker>
-  {[0, 1, 2, 3, 4].map((day) =>
-    <button type="button" class:list={['date-picker__day', { 'is-selected': day === 0 }]} aria-pressed={day === 0 ? 'true' : 'false'} data-day-offset={day}>
-      <span data-weekday>{day === 0 ? 'Hôm nay' : day === 1 ? 'Ngày mai' : 'Ngày'}</span>
-      <strong data-day-number>--</strong>
-    </button>
-  )}
+---
+const days = Array.from({ length: 9 }, (_, offset) => offset);
+---
+<div class="date-picker" data-date-picker aria-label="Chọn ngày chiếu phim">
+  <button type="button" class="date-picker__nav" data-date-prev aria-label="Các ngày trước" disabled><span aria-hidden="true">‹</span></button>
+  <div class="date-picker__viewport" data-date-viewport>
+    <div class="date-picker__days" data-date-days role="group" aria-label="Ngày chiếu">
+      {days.map((offset) =>
+        <button type="button" class:list={['date-picker__day', { 'is-selected': offset === 0 }]}
+          data-day-offset={offset} aria-pressed={offset === 0 ? 'true' : 'false'}>
+          <strong data-day-number>--</strong>
+          <span data-weekday>{offset === 0 ? 'Hôm nay' : offset === 1 ? 'Ngày mai' : 'Ngày'}</span>
+        </button>
+      )}
+    </div>
+  </div>
+  <button type="button" class="date-picker__nav" data-date-next aria-label="Các ngày tiếp theo"><span aria-hidden="true">›</span></button>
+  <span class="sr-only" data-date-range aria-live="polite"></span>
 </div>
 <script>
-  const formatterDay = new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', day: '2-digit', month: '2-digit' });
-  const formatterWeek = new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', weekday: 'short' });
+  // Generate selectable future days locally, NOT from the MoMo API response.
+  // Match saigonDate(offset) using Vietnam's current calendar day (UTC+7).
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Ho_Chi_Minh', day: '2-digit', month: '2-digit', year: 'numeric'
+  }).formatToParts(new Date());
+  const dayParts = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  const today = Date.UTC(+dayParts.year, +dayParts.month - 1, +dayParts.day);
+  const dateAt = (offset: number) => new Date(today + offset * 86400000);
+  const numberFmt = new Intl.DateTimeFormat('vi-VN', { timeZone: 'UTC', day: 'numeric' });
+  const weekdayFmt = new Intl.DateTimeFormat('vi-VN', { timeZone: 'UTC', weekday: 'long' });
+  const rangeFmt = new Intl.DateTimeFormat('vi-VN', { timeZone: 'UTC', day: 'numeric', month: 'numeric' });
+  const fullFmt = new Intl.DateTimeFormat('vi-VN', {
+    timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  });
+
   document.querySelectorAll<HTMLElement>('[data-date-picker]').forEach((picker) => {
-    const buttons = [...picker.querySelectorAll<HTMLButtonElement>('[data-day-offset]')];
-    buttons.forEach((button) => {
-      const offset = Number(button.dataset.dayOffset || 0);
-      const date = new Date(Date.now() + offset * 86400000);
-      const num = button.querySelector('[data-day-number]');
-      const label = button.querySelector('[data-weekday]');
-      if (num) num.textContent = formatterDay.format(date);
-      if (label && offset > 1) label.textContent = formatterWeek.format(date);
-      button.addEventListener('click', () => {
-        buttons.forEach((item) => {
-          const selected = item === button;
-          item.classList.toggle('is-selected', selected);
-          item.setAttribute('aria-pressed', String(selected));
-        });
-        window.dispatchEvent(new CustomEvent('cinema:day', { detail: offset }));
+    const viewport = picker.querySelector<HTMLElement>('[data-date-viewport]');
+    const days = picker.querySelector<HTMLElement>('[data-date-days]');
+    const prev = picker.querySelector<HTMLButtonElement>('[data-date-prev]');
+    const next = picker.querySelector<HTMLButtonElement>('[data-date-next]');
+    const range = picker.querySelector<HTMLElement>('[data-date-range]');
+    if (!viewport || !days || !prev || !next) return;
+    const buttons = [...days.querySelectorAll<HTMLButtonElement>('[data-day-offset]')];
+    let start = 0, selected = 0;
+
+    const render = () => {
+      buttons.forEach((button, index) => {
+        const offset = start + index;
+        const date = dateAt(offset);
+        const active = offset === selected;
+        button.dataset.dayOffset = String(offset);
+        button.querySelector<HTMLElement>('[data-day-number]')!.textContent = numberFmt.format(date);
+        button.querySelector<HTMLElement>('[data-weekday]')!.textContent =
+          offset === 0 ? 'Hôm nay' : offset === 1 ? 'Ngày mai' : weekdayFmt.format(date);
+        button.classList.toggle('is-selected', active);
+        button.setAttribute('aria-pressed', String(active));
+        button.setAttribute('aria-label', (offset === 0 ? 'Hôm nay, ' : offset === 1 ? 'Ngày mai, ' : '') + fullFmt.format(date));
+        button.title = fullFmt.format(date);
       });
+      prev.disabled = start === 0;
+      if (range) range.textContent =
+        'Từ ' + rangeFmt.format(dateAt(start)) + ' đến ' + rangeFmt.format(dateAt(start + buttons.length - 1));
+      viewport.scrollLeft = 0;
+    };
+    // On phones shift only the number of cards visible, so no dates are
+    // skipped by the next/previous arrows; rail also supports touch scrolling.
+    const pageStep = () => {
+      const width = buttons[0]?.offsetWidth || 64;
+      const gap = Number.parseFloat(getComputedStyle(days).gap) || 6;
+      return Math.max(1, Math.min(buttons.length, Math.floor((viewport.clientWidth + gap) / (width + gap))));
+    };
+    prev.addEventListener('click', () => { start = Math.max(0, start - pageStep()); render(); });
+    next.addEventListener('click', () => { start += pageStep(); render(); });
+    days.addEventListener('click', (event) => {
+      if (!(event.target instanceof Element)) return;
+      const button = event.target.closest<HTMLButtonElement>('[data-day-offset]');
+      if (!button) return;
+      const offset = Number(button.dataset.dayOffset);
+      if (!Number.isSafeInteger(offset) || offset < 0) return;
+      selected = offset;
+      buttons.forEach((item) => {
+        const active = Number(item.dataset.dayOffset) === selected;
+        item.classList.toggle('is-selected', active);
+        item.setAttribute('aria-pressed', String(active));
+      });
+      window.dispatchEvent(new CustomEvent('cinema:day', { detail: { offset } }));
     });
+    render();
   });
 </script>
