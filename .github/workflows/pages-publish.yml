@@ -55,7 +55,9 @@ jobs:
   notify:
     name: Post PR preview link
     needs: deploy
-    if: inputs.preview_pr != ''
+    # Also notify already-open PRs with matching gh-pages markers after a
+    # production deployment, so users don't need dummy PR commits.
+    if: needs.deploy.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:

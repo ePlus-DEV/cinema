@@ -31,7 +31,7 @@ assert.match(publish, /issues: write/, 'Trusted notifier needs permission to pos
 assert.match(publish, /pull-requests: write/, 'Notifier must be authorized to write PR comments');
 assert.match(publish, /notify:\s*\n/, 'A separate notification job must exist');
 assert.match(publish, /needs: deploy/, 'Notifier must wait for successful Pages deployment');
-assert.match(publish, /if: inputs\.preview_pr != ''/, 'Only preview deployments should notify PRs');
+assert.match(publish, /needs\.deploy\.result == 'success'/, 'Notifier must not run after failed Pages deployment');
 assert.ok(publish.indexOf('Post or update PR preview link') > publish.indexOf('uses: actions/deploy-pages@v4'), 'Never notify before Pages successfully deploys');
 assert.match(publish, /bash automation\/scripts\/post-preview-link\.sh/, 'Notifier must come from the trusted branch');
 
@@ -48,6 +48,8 @@ assert.match(previewNotifier, /--method PATCH/, 'Notifier should update previous
 assert.match(previewNotifier, /--method POST/, 'Notifier should create one bot comment when absent');
 assert.match(previewNotifier, /Preview notifier: checking PR/, 'Notifier must identify the failing API stage in logs');
 assert.match(previewNotifier, /Preview notifier: creating bot comment/, 'Comment creation stage must be observable');
+assert.match(previewNotifier, /discovering open PRs for idempotent backfill/, 'Production publish should backfill current open PR previews');
+assert.match(previewNotifier, /\.head\.sha/, 'Backfill must use current PR head');
 
 assert.match(daily, /group: cinema-catalog-daily/, 'Catalog refresh concurrency missing');
 assert.match(daily, /steps\.due\.outputs\.due == 'true'/, 'Same-day refresh guard missing');
