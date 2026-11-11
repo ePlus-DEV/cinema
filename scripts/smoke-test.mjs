@@ -159,3 +159,12 @@ assert.match(siteHeaderSrc, /cinema:city-change/, 'Header selection must broadca
 assert.match(siteHeaderSrc, /setCityId\(city\.id\)/, 'Shared city preference must persist');
 assert.match(citySyncSrc, /window\.addEventListener\('cinema:city-change'/, 'Schedule must respond to global city selection');
 assert.match(citySyncSrc, /params\.get\('city'\)/, 'Direct links from non-HCM theater directory must support city query');
+
+const cityGroupedPage = readFileSync('dist/rap/index.html','utf8');
+assert.ok(cityGroupedPage.includes('data-city-directories='), 'Group directory must embed daily per-city seeds');
+assert.ok(cityGroupedPage.includes('data-rap-city-copy'), 'Province selection must update the theater page description');
+const cityGroupedSrc = readFileSync('src/components/LiveCinemaGrid.astro','utf8');
+assert.match(cityGroupedSrc, /cinema:city-change/, 'Cinema catalog must react to header selection');
+assert.match(cityGroupedSrc, /loadAllCinemas\(\)/, 'Unsnapshotted provinces must have live fallback');
+assert.match(cityGroupedSrc, /requestToken/, 'Stale provider responses must not replace another city');
+assert.match(cityGroupedSrc, /CITY_CACHE_PREFIX/, 'Previously visited provinces should render without another network call');
