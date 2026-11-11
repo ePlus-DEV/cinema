@@ -6,6 +6,7 @@
 import SeatMap from './SeatMap.astro';
 import DatePicker from './DatePicker.astro';
 import '../styles/cinema-explorer.css';
+import '../styles/cinema-compact.css';
 import { movies, cinemas } from '../lib/cinema-catalog';
 interface Props { cinemaOnly?: boolean; movieId?: string; cinemaKey?: string; }
 const { cinemaOnly = false, movieId = '', cinemaKey = '' } = Astro.props;
@@ -220,7 +221,7 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
         chips.push([chainId, `${CHAINS[chainId] || 'Rạp'} (${count})`]);
       }
       chipsEl.innerHTML = chips.map(([id, label]) =>
-        `<button type="button" class="momo-live__chip" data-chain="${id}" aria-pressed="${state.chain === id}">${esc(label)}</button>`
+        `<button type="button" class="momo-live__chip" data-chain="${id}" aria-pressed="${state.chain === id}"><span class="momo-live__chip-name" title="${esc(label)}">${esc(label)}</span></button>`
       ).join('');
       chipsEl.querySelectorAll('[data-chain]').forEach((button) => {
         const id = Number(button.dataset.chain);

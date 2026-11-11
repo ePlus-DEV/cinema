@@ -75,6 +75,13 @@ assert.ok(explorer.includes('schedule-page--explorer'), 'Standalone schedule mus
 assert.ok(explorer.includes('data-momo-district'), 'Missing functional location/district selector');
 assert.ok(explorer.includes('data-momo-chips'), 'Missing cinema chain filters');
 assert.ok(explorer.includes('data-momo-cinemas'), 'Missing cinema selector');
+assert.ok(existsSync('src/styles/cinema-compact.css'), 'Compact cinema explorer stylesheet missing');
+const compactScheduleCss = readFileSync('src/styles/cinema-compact.css', 'utf8');
+assert.ok(compactScheduleCss.includes('#lich-chieu .schedule-shell__top { display: none; }'), 'Homepage schedule must remove redundant title row');
+assert.ok(compactScheduleCss.includes('.momo-live__chip-name'), 'Compact chain labels must fit one line');
+assert.ok(compactScheduleCss.includes('.momo-live__viewer-head { display: none; }'), 'Compact schedule must avoid repeating selected cinema header');
+assert.ok(compactScheduleCss.includes('@media (max-width: 760px)'), 'Compact schedule must support small screens');
+
 assert.ok(explorer.includes('data-momo-selected-cinema'), 'Missing selected venue title');
 assert.equal((explorer.match(/<div[^>]*\bdata-date-picker(?=\s|>)/g) || []).length, 1, 'Exactly one date picker DOM element should appear in explorer');
 assert.ok(explorer.includes('seatmap__eyebrow'), 'Seat map should explain the preview-only flow');
