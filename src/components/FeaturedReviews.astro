@@ -27,7 +27,9 @@ const featured = [...moviesNow, ...moviesSoon]
           <span class="featured-review__score">★ {String(movie.ratingPoint).replace('.', ',')}<small> · {vnd.format(movie.ratingTotal || 0)} lượt đánh giá</small></span>
         </div>
         <div class="featured-review__person">
-          {review.avatar && <img src={review.avatar} alt="" loading="lazy" decoding="async" />}
+          {review.avatar
+            ? <img src={review.avatar} alt="" loading="lazy" decoding="async" />
+            : <span class="featured-review__avatar-fallback" aria-hidden="true">{(review.name || 'K').trim().charAt(0)}</span>}
           <strong>{review.name}</strong>
           {review.point != null && <span class="momo-review__point">★ {review.point}/10</span>}
           {review.createdTime && <span class="featured-review__date">{reviewDate(review.createdTime)}</span>}
@@ -54,6 +56,9 @@ const featured = [...moviesNow, ...moviesSoon]
   .featured-review__score small { color: var(--muted); font-weight: 600; }
   .featured-review__person { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .featured-review__person img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: #f0f3f7; }
+  .featured-review__avatar-fallback { width: 30px; height: 30px; border-radius: 50%; background: var(--navy); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex: none; }
+  .featured-review .momo-review__tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .featured-review .momo-review__tags span { background: #f5f7fa; color: #42506a; border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 600; }
   .featured-review__person strong { color: #1c2b44; font-size: 12px; }
   .featured-review__date { color: var(--muted); font-size: 11px; }
   .featured-review__text { margin: 8px 0 0; color: #33405a; font-size: 12.5px; line-height: 1.7; }
