@@ -310,3 +310,15 @@
   .schedule-page--explorer .schedule-shell__top { padding: 12px; }
   .schedule-page--explorer .schedule-shell__city { display: none; }
 }
+
+/* Browser-cached showtimes are explicitly labeled until live data confirms. */
+.schedule-shell .momo-live__cached-note {
+  margin: 11px 0 2px;
+  padding: 9px 11px;
+  border: 1px solid #ead0a1;
+  border-radius: 8px;
+  background: #fff9ed;
+  color: #80581e;
+  font-size: 11px;
+  line-height: 1.5;
+}

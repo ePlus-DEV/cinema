@@ -257,6 +257,41 @@ const initialChips = [
       } catch { /* unavailable or quota exceeded: keep in-memory list */ }
     };
 
+    // Session results remain live, but a short-lived browser copy avoids
+    // skeleton flashes on revisits. Clearly mark cached times as unverified.
+    const SESSION_PREFIX = 'eplus-cinema:showtimes:v1:';
+    const sessionKey = (city, cinema, day) => SESSION_PREFIX + city + ':' + cinema + ':' + day;
+    const getCachedSession = (city, cinema, day) => {
+      try {
+        const value = JSON.parse(localStorage.getItem(sessionKey(city, cinema, day)) || 'null');
+        const age = Date.now() - Date.parse(value?.updatedAt || '');
+        return Array.isArray(value?.films) && Number.isFinite(age) && age >= 0 && age < 6 * 3600000
+          ? value : null;
+      } catch { return null; }
+    };
+    const storeSession = (city, cinema, day, films) => {
+      // Save only fields required for the on-page listing and live seat lookup.
+      const compact = films.map((film) => ({
+        Id:film.Id, Title:film.Title, GraphicUrl:film.GraphicUrl,
+        ImageUrl:film.ImageUrl, ApiGenreName:film.ApiGenreName,
+        Duration:film.Duration, ApiRatingFormat:film.ApiRatingFormat,
+        VersionsCaptions:(film.VersionsCaptions || []).map((version) => ({
+          VersionType:version.VersionType, VersionName:version.VersionName,
+          CaptionType:version.CaptionType, CaptionName:version.CaptionName,
+          ShowTimes:(version.ShowTimes || []).map((show) => ({
+            ShowTime:show.ShowTime, ShowTimeDuration:show.ShowTimeDuration,
+            ApiCinemaId:show.ApiCinemaId, Cineplex:show.Cineplex,
+            SessionId:show.SessionId, ScreenName:show.ScreenName,
+            ScreenNumber:show.ScreenNumber, ShowDateTime:show.ShowDateTime
+          }))
+        }))
+      }));
+      try {
+        localStorage.setItem(sessionKey(city, cinema, day),
+          JSON.stringify({ updatedAt:new Date().toISOString(), films:compact }));
+      } catch { /* browser storage is optional */ }
+    };
+
     const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => (
       { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]
     ));
@@ -398,7 +433,7 @@ const initialChips = [
 
     let currentShows = [];
 
-    function renderSession(cinema, date, films) {
+    function renderSession(cinema, date, films, cachedAt = '') {
       if (!films.length) {
         currentShows = [];
         status(movieId ? `Phim này chưa có suất chiếu tại ${cinema.name} ngày ${date.split('-').reverse().join('/')}. Hãy thử rạp hoặc ngày khác.` : `${cinema.name} chưa có suất chiếu ngày ${date.split('-').reverse().join('/')}.`);
@@ -447,6 +482,15 @@ const initialChips = [
       </article>`;
       const heading = resultsEl.querySelector('.theater-showtime__header');
       if (heading) heading.prepend(createChainLogo(cinema.chainId, CHAINS[cinema.chainId], 'momo-live__head-logo'));
+      if (cachedAt) {
+        const time = new Intl.DateTimeFormat('vi-VN', {
+          timeZone: 'Asia/Ho_Chi_Minh', hour:'2-digit', minute:'2-digit'
+        }).format(new Date(cachedAt));
+        const note = document.createElement('p');
+        note.className = 'momo-live__cached-note';
+        note.textContent = 'Giờ chiếu tham khảo lưu lúc ' + time + ' · đang kiểm tra dữ liệu mới…';
+        resultsEl.prepend(note);
+      }
     }
 
     async function loadSession() {
@@ -456,7 +500,17 @@ const initialChips = [
       const date = saigonDate(state.dayOffset);
       if (cinemaTitleEl) cinemaTitleEl.textContent = cinema.name;
       if (cinemaAddressEl) cinemaAddressEl.textContent = cinema.address || 'TP. Hồ Chí Minh';
-      skeletonResults(`Đang tải suất chiếu của ${cinema.name} ngày ${date.split('-').reverse().join('/')}…`);
+      const cached = getCachedSession(getCityId(), cinema.key, date);
+      if (cached?.films?.length) {
+        const rows = cached.films.map((film) => ({
+          ...film, poster:film.GraphicUrl || film.ImageUrl || ''
+        }));
+        const filtered = movieId ? rows.filter((film) => String(film.Id) === movieId) : rows;
+        if (filtered.length) renderSession(cinema, date, filtered, cached.updatedAt);
+        else skeletonResults('Đang tải suất chiếu mới…');
+      } else {
+        skeletonResults(`Đang tải suất chiếu của ${cinema.name} ngày ${date.split('-').reverse().join('/')}…`);
+      }
       try {
         const data = await momoPost('/v2/cinema/session', {
           Cineplex: cinema.chainId,
@@ -465,6 +519,7 @@ const initialChips = [
           RecaptchaToken: ''
         });
         if (token !== state.sessionToken) return; // a newer selection won
+        if ((data.Films || []).length) storeSession(getCityId(), cinema.key, date, data.Films);
         for (const film of data.Films || []) {
           film.poster = film.GraphicUrl || film.ImageUrl || '';
         }
@@ -472,7 +527,13 @@ const initialChips = [
         renderSession(cinema, date, films);
       } catch (error) {
         if (token !== state.sessionToken) return;
-        status(`Không tải được suất chiếu (${error.message}).`, loadSession);
+        if (cached?.films?.length) {
+          const note = resultsEl.querySelector('.momo-live__cached-note');
+          if (note) note.textContent = 'Giờ chiếu tham khảo đã lưu · không thể xác minh dữ liệu mới. Thử lại khi kết nối ổn định.';
+          resultsEl.setAttribute('aria-busy', 'false');
+        } else {
+          status(`Không tải được suất chiếu (${error.message}).`, loadSession);
+        }
       }
     }
 

@@ -80,6 +80,11 @@ assert.ok(homeDirectory, 'Daily cinema snapshot must provide a ready SSR theater
 assert.ok((home.match(/class="momo-live__cinema" data-cinema=/g) || []).length >= 10, 'Homepage must pre-render theater names before API calls');
 assert.ok(home.includes('data-directory-seeds='), 'Listing must embed per-city cached directory data for client hydration');
 assert.ok(home.includes('momo-live__loading-program'), 'Live session loading must remain visible separately');
+const scheduleSrc = readFileSync('src/components/MomoShowtimeList.astro', 'utf8');
+assert.match(scheduleSrc, /getCachedSession\(/, 'Cached showtime read must work without a live response');
+assert.match(scheduleSrc, /storeSession\(/, 'Fresh showtime results must refresh browser cache');
+assert.match(scheduleSrc, /momo-live__cached-note/, 'Unverified cached times must be visibly labeled');
+
 assert.ok(explorer.includes('data-directory-seeds='), 'Standalone schedule must reuse the daily city directory seed');
 assert.ok(existsSync('src/styles/cinema-compact.css'), 'Compact cinema explorer stylesheet missing');
 const compactScheduleCss = readFileSync('src/styles/cinema-compact.css', 'utf8');
