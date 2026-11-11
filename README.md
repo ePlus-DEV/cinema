@@ -72,6 +72,14 @@ npm run preview
   showtime sessions or seat maps.
 - The output `src/data/cinema-snapshot.json` is validated before being
   committed. Empty/partial/errors do not replace a previously good snapshot.
+- The same daily job also caches **cinema directories only** for Đồng Nai,
+  Hà Nội, Đà Nẵng, Bình Dương and Bà Rịa–Vũng Tàu as
+  `cinemasByCity` with individual `fetchedAt` timestamps. Failed or partial
+  extra-city refreshes retain the previous good entry and do **not** block the
+  primary TP.HCM refresh. The schedule explorer renders available directory
+  seeds immediately and persists other selected cities in per-city browser
+  cache. **Session times and seat availability are never cached**; they are
+  fetched live only after selecting a cinema/date.
   Until the initial success, the existing `momo-showtimes.json` inventory
   seeds actual pre-rendered pages; its old showtime entries are not served.
 - Pages and directories render from the catalog at **build time**, not from
