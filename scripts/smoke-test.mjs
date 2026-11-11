@@ -192,3 +192,11 @@ assert.match(cityGroupedSrc, /cinema:city-change/, 'Cinema catalog must react to
 assert.match(cityGroupedSrc, /loadAllCinemas\(\)/, 'Unsnapshotted provinces must have live fallback');
 assert.match(cityGroupedSrc, /requestToken/, 'Stale provider responses must not replace another city');
 assert.match(cityGroupedSrc, /CITY_CACHE_PREFIX/, 'Previously visited provinces should render without another network call');
+
+const groupedLogoCss = readFileSync('src/components/LiveCinemaGrid.astro','utf8');
+const showtimeLogoCss = readFileSync('src/styles/cinema-compact.css','utf8');
+assert.match(groupedLogoCss, /flex:\s*0 0 44px/, 'Grouped cinema brand slots must use a uniform 44px canvas');
+assert.match(groupedLogoCss, /width:\s*34px;[\s\S]*?height:\s*34px;/, 'Grouped cinema artwork must fit identical inner boxes');
+assert.match(groupedLogoCss, /object-fit:\s*contain/, 'Do not crop provider logos to make them appear uniform');
+assert.match(groupedLogoCss, /object-position:\s*center;[\s\S]*?padding:\s*0;/, 'No double padding that shrinks brand marks');
+assert.match(showtimeLogoCss, /Consistent cinema-chain logo artwork/, 'Compact showtimes must use unified logo artwork too');

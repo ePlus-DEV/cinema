@@ -382,12 +382,52 @@ for (const [city, entry] of Object.entries(cityDirectories)) {
   .live-cinema-catalog[data-grouped="true"] .cinema-group__heading {
     display: flex; align-items: center; gap: 13px; margin-bottom: 18px;
   }
-  .live-cinema-catalog[data-grouped="true"] .cinema-group__logo {
-    display: grid; place-items: center; width: 50px; height: 50px;
-    flex: 0 0 50px; border: 1px solid #e6ebf2;
-    border-radius: 12px; background: #fff;
+  /* Use one 44px artwork slot for group headers and every cinema card.
+     Previous group headers had a 50px slot with a 36px image AND inherited
+     image padding, so several brand marks looked half the size of others. */
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__logo,
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__grid .chain-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 44px;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    border: 1px solid #e6ebf2;
+    border-radius: 11px;
+    background: #fff;
+    overflow: hidden;
   }
-  .live-cinema-catalog[data-grouped="true"] .cinema-group__logo img { max-width: 36px; max-height: 36px; object-fit: contain; }
+  /* A fixed inner box and no inherited padding prevents inconsistent logo
+     scale. 'contain' preserves portrait/landscape brand proportions. */
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__logo img,
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__grid .chain-logo img {
+    display: block;
+    flex: none;
+    box-sizing: border-box;
+    width: 34px;
+    min-width: 34px;
+    max-width: 34px;
+    height: 34px;
+    min-height: 34px;
+    max-height: 34px;
+    object-fit: contain;
+    object-position: center;
+    padding: 0;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__logo .chain-logo__fallback,
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__grid .chain-logo__fallback {
+    display: grid;
+    place-items: center;
+    max-width: 100%;
+    max-height: 100%;
+    padding: 3px;
+    font-size: 9px;
+    line-height: 1.1;
+    text-align: center;
+    overflow: hidden;
+  }
   .live-cinema-catalog[data-grouped="true"] .cinema-group__heading-text { flex: 1; min-width: 0; }
   .live-cinema-catalog[data-grouped="true"] .cinema-group__heading-text h2 {
     margin: 0 0 4px; font-size: 17px; line-height: 1.3; color: #1c2c44;
@@ -414,6 +454,6 @@ for (const [city, entry] of Object.entries(cityDirectories)) {
     .live-cinema-catalog[data-grouped="true"] .cinema-group__grid { grid-template-columns: 1fr; }
     .live-cinema-catalog[data-grouped="true"] .cinema-group__heading { gap: 10px; }
     .live-cinema-catalog[data-grouped="true"] .cinema-group__heading-text h2 { font-size: 15px; }
-    .live-cinema-catalog[data-grouped="true"] .cinema-group__logo { width: 42px; height: 42px; flex-basis: 42px; }
+    /* Preserve identical logo sizing at every breakpoint. */
   }
 </style>
