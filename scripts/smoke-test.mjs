@@ -138,3 +138,15 @@ for (const [directory,id] of [['phim',filmIds[0]], ['rap',theaterIds[0]]]) {
   assert.ok(main >= 0 && close > main && footer > close, 'Incorrect detail DOM layout');
 }
 console.log('PASS: real prerendered routes and document ordering (' + filmIds.length + ' films, ' + theaterIds.length + ' cinemas)');
+
+// Grouped cinema directory must remain fully prerendered for SEO and fast UI.
+const cinemaListPage = readFileSync('dist/rap/index.html', 'utf8');
+assert.ok(cinemaListPage.includes('data-grouped="true"'), 'Cinema catalog must group theaters by chain');
+assert.ok(cinemaListPage.includes('data-chain-filter="all"'), 'Cinema group filter must include all theaters');
+assert.ok((cinemaListPage.match(/data-chain-group="/g) || []).length >= 3, 'Cinema directory must prerender multiple chain groups');
+assert.ok((cinemaListPage.match(/data-group-index="/g) || []).length >= 20, 'Cinema directory must retain venue links even when sections collapse');
+assert.ok(cinemaListPage.includes('data-chain-toggle'), 'Large cinema groups need a show-all control');
+const cinemaGroupsSrc = readFileSync('src/components/LiveCinemaGrid.astro','utf8');
+assert.match(cinemaGroupsSrc, /search\?\.addEventListener\('input', render\)/, 'Grouped cinema search must remain interactive');
+assert.match(cinemaGroupsSrc, /chainFilter = button\.dataset\.chainFilter/, 'Cinema filters must select chain groups');
+assert.match(cinemaGroupsSrc, /section\.dataset\.expanded/, 'Cinema groups must expand and collapse');

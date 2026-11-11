@@ -1,14 +1,22 @@
 ---
 import { cinemas, routeForCinema } from '../lib/cinema-catalog';
 import { CHAIN_LOGOS, CHAIN_SHORT_LABELS } from '../lib/cinema-logos.js';
-interface Props { limit?: number; searchable?: boolean; }
-const { limit = 8, searchable = false } = Astro.props;
+interface Props { limit?: number; searchable?: boolean; grouped?: boolean; }
+const { limit = 8, searchable = false, grouped = false } = Astro.props;
 const rows = cinemas.slice(0, limit);
 const base = import.meta.env.BASE_URL;
 const normalize = (text: string) => text.normalize('NFD')
   .replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const groups = [...rows.reduce((map, cinema) => {
+  const existing = map.get(cinema.chainId) ?? { id: cinema.chainId, name: cinema.chain || 'Rạp chiếu', rows: [] as typeof rows };
+  existing.rows.push(cinema);
+  map.set(cinema.chainId, existing);
+  return map;
+}, new Map<number, { id: number; name: string; rows: typeof rows }>()).values()]
+  .sort((a,b) => b.rows.length - a.rows.length || a.name.localeCompare(b.name, 'vi'));
+const previewCount = 4;
 ---
-<div class="live-cinema-catalog" data-live-cinema-catalog>
+<div class="live-cinema-catalog" data-live-cinema-catalog data-grouped={grouped ? 'true' : 'false'}>
   {searchable && <div class="live-catalog__tools">
     <label class="catalog__search">
       <span aria-hidden="true">⌕</span>
@@ -16,7 +24,58 @@ const normalize = (text: string) => text.normalize('NFD')
     </label>
     <span class="live-catalog__count" data-live-cinema-count aria-live="polite">{rows.length} cụm rạp</span>
   </div>}
-  <div class="cinema-grid" data-live-cinemas aria-busy="false">
+  {grouped ? <>
+    <nav class="cinema-chain-nav" aria-label="Lọc rạp theo hệ thống" data-chain-nav>
+      <button type="button" class="cinema-chain-nav__button" data-chain-filter="all" aria-pressed="true">
+        Tất cả <span>{rows.length}</span>
+      </button>
+      {groups.map((group) =>
+        <button type="button" class="cinema-chain-nav__button" data-chain-filter={group.id} aria-pressed="false">
+          {group.name} <span>{group.rows.length}</span>
+        </button>
+      )}
+    </nav>
+    <div class="cinema-groups" data-live-cinemas aria-busy="false">
+      {groups.map((group) =>
+        <section class="cinema-group" data-chain-group={group.id} aria-label={'Hệ thống ' + group.name}>
+          <header class="cinema-group__heading">
+            <span class="chain-logo cinema-group__logo">
+              {CHAIN_LOGOS[group.id] && <img src={CHAIN_LOGOS[group.id]} alt="" loading="lazy" decoding="async" />}
+              <span class="chain-logo__fallback">{CHAIN_SHORT_LABELS[group.id] || group.name}</span>
+            </span>
+            <div class="cinema-group__heading-text">
+              <h2>{group.name}</h2>
+              <span data-chain-count>{group.rows.length} cụm rạp</span>
+            </div>
+            <button type="button" class="cinema-group__toggle" data-chain-toggle
+              aria-expanded="false" hidden={group.rows.length <= previewCount}>
+              Xem tất cả <span aria-hidden="true">⌄</span>
+            </button>
+          </header>
+          <div class="cinema-grid cinema-group__grid">
+            {group.rows.map((cinema, index) =>
+              <a class="cinema-tile cinema-tile--live"
+                href={routeForCinema(cinema, base)}
+                aria-label={'Xem chi tiết rạp ' + cinema.name}
+                data-search={normalize(cinema.name + ' ' + cinema.chain + ' ' + cinema.address)}
+                data-group-index={index}
+                hidden={index >= previewCount}>
+                <span class="chain-logo">
+                  {CHAIN_LOGOS[cinema.chainId] && <img src={CHAIN_LOGOS[cinema.chainId]} alt="" loading="lazy" decoding="async" />}
+                  <span class="chain-logo__fallback">{CHAIN_SHORT_LABELS[cinema.chainId] || cinema.chain || 'RẠP'}</span>
+                </span>
+                <span class="cinema-tile__body">
+                  <strong>{cinema.name}</strong>
+                  <small>{cinema.address || 'TP. Hồ Chí Minh'}</small>
+                </span>
+                <span class="cinema-tile__arrow" aria-hidden="true">↗</span>
+              </a>
+            )}
+          </div>
+        </section>
+      )}
+    </div>
+  </> : <div class="cinema-grid" data-live-cinemas aria-busy="false">
     {rows.map((cinema) => <a
       class="cinema-tile cinema-tile--live"
       href={routeForCinema(cinema, base)}
@@ -46,25 +105,127 @@ const normalize = (text: string) => text.normalize('NFD')
     const count = root.querySelector<HTMLElement>('[data-live-cinema-count]');
     const empty = root.querySelector<HTMLElement>('[data-live-cinema-empty]');
     if (!grid) return;
-    // The wordmark is readable when CDN assets fail.
-    grid.querySelectorAll<HTMLImageElement>('.chain-logo img').forEach((image) => {
+    // Keep the brand text visible when logos cannot be retrieved.
+    root.querySelectorAll<HTMLImageElement>('.chain-logo img').forEach((image) => {
       const fallback = image.nextElementSibling as HTMLElement | null;
       image.addEventListener('load', () => { if (fallback) fallback.hidden = true; });
       image.addEventListener('error', () => image.remove());
       if (image.complete && image.naturalWidth) { if (fallback) fallback.hidden = true; }
     });
-    const filter = () => {
-      const q = normalize(search?.value || '');
-      let visible = 0;
-      const cards = grid.querySelectorAll<HTMLElement>('.cinema-tile--live');
-      cards.forEach((card) => {
-        card.hidden = !!q && !(card.dataset.search || '').includes(q);
-        if (!card.hidden) visible++;
-      });
-      if (count) count.textContent = visible + ' cụm rạp';
-      if (empty) empty.hidden = visible > 0 || cards.length === 0;
+
+    const groupNodes = [...grid.querySelectorAll<HTMLElement>('[data-chain-group]')];
+    const filters = [...root.querySelectorAll<HTMLButtonElement>('[data-chain-filter]')];
+    let chainFilter = 'all';
+    const render = () => {
+      const query = normalize(search?.value || '');
+      let matchedTotal = 0;
+      if (groupNodes.length) {
+        groupNodes.forEach((section) => {
+          const allowed = chainFilter === 'all' || chainFilter === section.dataset.chainGroup;
+          const cards = [...section.querySelectorAll<HTMLElement>('.cinema-tile--live')];
+          const matches = cards.filter((card) => !query || (card.dataset.search || '').includes(query));
+          section.hidden = !allowed || matches.length === 0;
+          if (!allowed) return;
+          matchedTotal += matches.length;
+          const expanded = section.dataset.expanded === 'true';
+          cards.forEach((card) => {
+            const matched = !query || (card.dataset.search || '').includes(query);
+            const index = Number(card.dataset.groupIndex) || 0;
+            card.hidden = !matched || (!query && !expanded && index >= 4);
+          });
+          const badge = section.querySelector<HTMLElement>('[data-chain-count]');
+          if (badge) badge.textContent = matches.length + (query ? ' rạp phù hợp' : ' cụm rạp');
+          const toggle = section.querySelector<HTMLButtonElement>('[data-chain-toggle]');
+          if (toggle) {
+            toggle.hidden = !!query || matches.length <= 4;
+            toggle.setAttribute('aria-expanded', String(expanded));
+            toggle.innerHTML = expanded ? 'Thu gọn <span aria-hidden="true">⌃</span>' : 'Xem tất cả <span aria-hidden="true">⌄</span>';
+          }
+        });
+      } else {
+        grid.querySelectorAll<HTMLElement>('.cinema-tile--live').forEach((card) => {
+          card.hidden = !!query && !(card.dataset.search || '').includes(query);
+          if (!card.hidden) matchedTotal++;
+        });
+      }
+      if (count) count.textContent = matchedTotal + ' cụm rạp';
+      if (empty) empty.hidden = matchedTotal !== 0 || grid.querySelectorAll('.cinema-tile--live').length === 0;
+      filters.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.chainFilter === chainFilter)));
     };
-    search?.addEventListener('input', filter);
-    filter();
+    filters.forEach((button) => button.addEventListener('click', () => {
+      chainFilter = button.dataset.chainFilter || 'all';
+      render();
+    }));
+    groupNodes.forEach((section) => {
+      section.querySelector<HTMLButtonElement>('[data-chain-toggle]')?.addEventListener('click', () => {
+        section.dataset.expanded = String(section.dataset.expanded !== 'true');
+        render();
+      });
+    });
+    search?.addEventListener('input', render);
+    render();
   });
 </script>
+<style is:global>
+  .live-cinema-catalog[data-grouped="true"] .cinema-chain-nav {
+    display: flex; flex-wrap: nowrap; gap: 8px; overflow-x: auto;
+    padding: 3px 0 17px; margin-bottom: 18px;
+    scrollbar-width: thin; overscroll-behavior-inline: contain;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-chain-nav__button {
+    display: inline-flex; align-items: center; gap: 8px; flex: 0 0 auto;
+    min-height: 38px; padding: 8px 13px; border: 1px solid #e1e6ee;
+    border-radius: 10px; background: #fff; color: #44546b;
+    font: inherit; font-size: 12px; font-weight: 700; cursor: pointer;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-chain-nav__button span {
+    color: #8794a6; font-size: 11px;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-chain-nav__button[aria-pressed="true"] {
+    background: #14233c; border-color: #14233c; color: #fff;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-chain-nav__button[aria-pressed="true"] span { color: #f6c878; }
+  .live-cinema-catalog[data-grouped="true"] .cinema-groups { display: grid; gap: 24px; }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group {
+    padding: 21px; border-radius: 18px; border: 1px solid #e5eaf2;
+    background: #fff; box-shadow: 0 11px 30px rgba(16,30,51,.035);
+    scroll-margin-top: 96px;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__heading {
+    display: flex; align-items: center; gap: 13px; margin-bottom: 18px;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__logo {
+    display: grid; place-items: center; width: 50px; height: 50px;
+    flex: 0 0 50px; border: 1px solid #e6ebf2;
+    border-radius: 12px; background: #fff;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__logo img { max-width: 36px; max-height: 36px; object-fit: contain; }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__heading-text { flex: 1; min-width: 0; }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__heading-text h2 {
+    margin: 0 0 4px; font-size: 17px; line-height: 1.3; color: #1c2c44;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__heading-text > span { color: #718096; font-size: 11px; }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__toggle {
+    padding: 9px 12px; flex: none; border-radius: 9px; border: 1px solid #dfe5ed;
+    background: #fff; color: #334864; font-size: 11px; font-weight: 800;
+    cursor: pointer; white-space: nowrap;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__toggle:hover { background: #fff8e9; border-color: #dfbb7d; }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__grid .cinema-tile--live {
+    min-height: 85px; padding: 13px; border-radius: 12px;
+    box-shadow: none;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__grid .cinema-tile__body strong { font-size: 12px; }
+  .live-cinema-catalog[data-grouped="true"] [hidden] { display: none !important; }
+  .live-cinema-catalog[data-grouped="true"] :is(button,a):focus-visible {
+    outline: 3px solid #d6aa52; outline-offset: 2px;
+  }
+  @media (max-width: 720px) {
+    .live-cinema-catalog[data-grouped="true"] .cinema-group { padding: 15px; border-radius: 14px; }
+    .live-cinema-catalog[data-grouped="true"] .cinema-group__grid { grid-template-columns: 1fr; }
+    .live-cinema-catalog[data-grouped="true"] .cinema-group__heading { gap: 10px; }
+    .live-cinema-catalog[data-grouped="true"] .cinema-group__heading-text h2 { font-size: 15px; }
+    .live-cinema-catalog[data-grouped="true"] .cinema-group__logo { width: 42px; height: 42px; flex-basis: 42px; }
+  }
+</style>
