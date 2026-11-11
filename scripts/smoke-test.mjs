@@ -78,6 +78,7 @@ assert.ok(explorer.includes('data-momo-cinemas'), 'Missing cinema selector');
 assert.ok(existsSync('src/styles/cinema-compact.css'), 'Compact cinema explorer stylesheet missing');
 const compactScheduleCss = readFileSync('src/styles/cinema-compact.css', 'utf8');
 assert.ok(compactScheduleCss.includes('#lich-chieu .schedule-shell__top { display: none; }'), 'Homepage schedule must remove redundant title row');
+assert.match(compactScheduleCss, /#lich-chieu \.schedule-shell\s*\{[^}]*width:\s*100%;[^}]*max-width:\s*none;[^}]*margin-inline:\s*0;/s, 'Homepage schedule shell must align with the full-width section container');
 assert.ok(compactScheduleCss.includes('.momo-live__chip-name'), 'Compact chain labels must fit one line');
 assert.ok(compactScheduleCss.includes('.momo-live__viewer-head { display: none; }'), 'Compact schedule must avoid repeating selected cinema header');
 assert.ok(compactScheduleCss.includes('@media (max-width: 760px)'), 'Compact schedule must support small screens');

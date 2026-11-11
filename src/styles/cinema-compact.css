@@ -2,8 +2,10 @@
    Scoped to list mode inside .schedule-shell: movie/cinema detail explorers
    and their live session/seat behavior remain unchanged. */
 #lich-chieu .schedule-shell {
-  max-width: 1100px;
-  margin-inline: auto;
+  /* Align schedule edges with the section heading's shared container. */
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
 }
 
 /* The homepage already has a section heading; repeating another title and
