@@ -31,7 +31,8 @@ for (const route of routes) {
 }
 const home = readFileSync('dist/index.html', 'utf8');
 assert.ok(home.includes('href="' + base + 'phim-dang-chieu'), 'Movie navigation not Pages-base-aware');
-assert.ok(home.includes('data-live-movie-catalog'), 'Live film discovery missing on homepage');
+assert.ok(home.includes('data-movie-rail'), 'Film discovery rails missing on homepage');
+assert.ok(home.includes('data-home-hero'), 'Homepage spotlight hero missing');
 assert.ok(home.includes('href="' + base + 'favicon.svg'), 'Favicon not Pages-base-aware');
 assert.ok(home.includes('href="' + base + '_astro/') || home.includes('src="' + base + '_astro/'), 'Astro assets not Pages-base-aware');
 assert.ok(existsSync('dist/_astro'), 'Astro assets directory missing');
@@ -41,8 +42,8 @@ const movieDetail = readFileSync('dist/phim/chi-tiet/index.html', 'utf8');
 const cinemaDetail = readFileSync('dist/rap/chi-tiet/index.html', 'utf8');
 assert.ok(movieDetail.includes('data-film-content'), 'Movie detail shell missing');
 assert.ok(cinemaDetail.includes('data-cinema-content'), 'Cinema detail shell missing');
-assert.ok(home.includes('section--featured'), 'Now-showing must be the first home section');
-assert.ok(!home.includes('class="hero"'), 'Redundant homepage hero must stay removed');
+assert.ok(home.includes('section--dark'), 'Now-showing rail must sit on the dark section');
+assert.ok(!home.includes('class="hero"'), 'Legacy fixture hero must stay removed');
 console.log('PASS: real detail routes and movie-first homepage');
 
 const filmPage = readFileSync('dist/phim/chi-tiet/index.html', 'utf8');
@@ -72,14 +73,14 @@ console.log('PASS: location selector, theater logos, internal date rail and seat
 
 const mainStart = home.indexOf('<main id="main-content"');
 const mainEnd = home.indexOf('</main>', mainStart);
-const featured = home.indexOf('class="section section--featured', mainStart);
+const featured = home.indexOf('data-home-hero', mainStart);
 const footer = home.indexOf('<footer class="footer"');
 console.log('DOM order diagnostics:', JSON.stringify({mainStart,mainEnd,featured,footer,mainTag:home.slice(mainStart,mainStart+260),featuredTag:home.slice(featured,featured+170)}));
 assert.ok(mainStart >= 0 && mainStart < featured && featured < mainEnd && mainEnd < footer,
   'Home content must be INSIDE <main> and BEFORE the footer, not appended after </html>');
 assert.ok(home.indexOf('</html>') > footer, 'HTML document closes before footer');
 assert.ok(!home.includes('Đây là bản xem trước giao diện.'), 'Preview-only warning leaked to production');
-assert.match(home, /data-live-movies[^>]*aria-busy="false"/, 'Movie cards should be prerendered, not API-blocked');
+assert.ok(home.includes('data-rail-track') && home.includes('movie-rail__card'), 'Movie cards should be prerendered, not API-blocked');
 
 const filmIds = readdirSync('dist/phim').filter(name => /^[1-9][0-9]*$/.test(name));
 const theaterIds = readdirSync('dist/rap').filter(name => /^[1-9][0-9]*-[a-zA-Z0-9_-]+$/.test(name));

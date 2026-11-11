@@ -125,6 +125,7 @@ for (const [items,status] of [[now,'now'],[soon,'soon']]) {
       genre:String(f.ApiGenreName || ''), duration:Number(f.Duration)||0,
       age:String(f.ApiRatingFormat || f.ApiRating || ''),
       posterUrl:String(f.GraphicUrl || f.ImageUrl || ''),
+      bannerUrl:String(f.BannerUrl || ''),
       // Trailer URL is optional and must be validated before rendering.
       trailerUrl:String(f.TrailerUrl || f.Trailer || f.YoutubeTrailerUrl || f.YoutubeUrl || f.VideoUrl || ''),
       // MoMo's own trailer clip (direct mp4 on MoMo's CDN) — validated before rendering.
