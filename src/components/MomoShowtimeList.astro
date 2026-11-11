@@ -501,13 +501,16 @@ const initialChips = [
       if (cinemaTitleEl) cinemaTitleEl.textContent = cinema.name;
       if (cinemaAddressEl) cinemaAddressEl.textContent = cinema.address || 'TP. Hồ Chí Minh';
       const cached = getCachedSession(getCityId(), cinema.key, date);
+      let hasCachedView = false;
       if (cached?.films?.length) {
         const rows = cached.films.map((film) => ({
           ...film, poster:film.GraphicUrl || film.ImageUrl || ''
         }));
         const filtered = movieId ? rows.filter((film) => String(film.Id) === movieId) : rows;
-        if (filtered.length) renderSession(cinema, date, filtered, cached.updatedAt);
-        else skeletonResults('Đang tải suất chiếu mới…');
+        if (filtered.length) {
+          renderSession(cinema, date, filtered, cached.updatedAt);
+          hasCachedView = true;
+        } else skeletonResults('Đang tải suất chiếu mới…');
       } else {
         skeletonResults(`Đang tải suất chiếu của ${cinema.name} ngày ${date.split('-').reverse().join('/')}…`);
       }
@@ -519,7 +522,11 @@ const initialChips = [
           RecaptchaToken: ''
         });
         if (token !== state.sessionToken) return; // a newer selection won
-        if ((data.Films || []).length) storeSession(getCityId(), cinema.key, date, data.Films);
+        if ((data.Films || []).length) {
+          storeSession(getCityId(), cinema.key, date, data.Films);
+        } else {
+          try { localStorage.removeItem(sessionKey(getCityId(), cinema.key, date)); } catch { /* ignore */ }
+        }
         for (const film of data.Films || []) {
           film.poster = film.GraphicUrl || film.ImageUrl || '';
         }
@@ -527,7 +534,7 @@ const initialChips = [
         renderSession(cinema, date, films);
       } catch (error) {
         if (token !== state.sessionToken) return;
-        if (cached?.films?.length) {
+        if (hasCachedView) {
           const note = resultsEl.querySelector('.momo-live__cached-note');
           if (note) note.textContent = 'Giờ chiếu tham khảo đã lưu · không thể xác minh dữ liệu mới. Thử lại khi kết nối ổn định.';
           resultsEl.setAttribute('aria-busy', 'false');
