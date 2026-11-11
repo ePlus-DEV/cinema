@@ -193,7 +193,17 @@ async function momoFetch(method, path, bodyObject) {
   });
   if (!response.ok) throw new Error(`MoMo API HTTP ${response.status}`);
   const payload = await response.json();
-  if (payload.Result !== true) throw new Error(payload.MessageStatus || 'MoMo API returned an error');
+  if (payload.Result !== true) {
+    // The session endpoint often responds with Result=false and no message
+    // when a future date has no published sessions. That is a valid empty
+    // schedule, not an application error. Other endpoints retain strict errors.
+    if (path === '/v2/cinema/session' && !payload.MessageStatus &&
+        (payload.Data == null || (typeof payload.Data === 'object' && !Array.isArray(payload.Data) &&
+          !Array.isArray(payload.Data.Films)))) {
+      return { Films: [] };
+    }
+    throw new Error(payload.MessageStatus || 'MoMo API returned an error');
+  }
   return payload.Data;
 }
 

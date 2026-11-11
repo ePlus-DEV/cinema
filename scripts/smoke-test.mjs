@@ -138,3 +138,10 @@ for (const [directory,id] of [['phim',filmIds[0]], ['rap',theaterIds[0]]]) {
   assert.ok(main >= 0 && close > main && footer > close, 'Incorrect detail DOM layout');
 }
 console.log('PASS: real prerendered routes and document ordering (' + filmIds.length + ' films, ' + theaterIds.length + ' cinemas)');
+
+const sessionClientSrc = readFileSync('src/lib/momo-client.js', 'utf8');
+const scheduleErrorSrc = readFileSync('src/components/MomoShowtimeList.astro', 'utf8');
+assert.match(sessionClientSrc, /path === '\/v2\/cinema\/session' && !payload\.MessageStatus/, 'No-data session response should become an empty showtime list');
+assert.match(sessionClientSrc, /return \{ Films: \[\] \}/, 'Empty session should be classified without throwing');
+assert.match(scheduleErrorSrc, /Chưa thể cập nhật suất chiếu cho ngày đã chọn/, 'Transport failures should show friendly Vietnamese error');
+assert.ok(!scheduleErrorSrc.includes('Không tải được suất chiếu (${error.message})'), 'Provider error internals must not be shown');
