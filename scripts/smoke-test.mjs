@@ -214,3 +214,10 @@ const mobileHeaderCss = readFileSync('src/styles/global.css', 'utf8');
 assert.match(mobileHeaderCss, /\.header-action span:last-child \{ font-size: 18px; \}/, 'Large header icon font must apply only to the arrow');
 assert.ok(!mobileHeaderCss.includes('.header-action span { font-size: 18px; }'), 'Mobile schedule CTA label must not inherit oversized 18px font');
 assert.match(mobileHeaderCss, /\.site-header \.header-action \.header-action__label \{\s*font-size: 11px;/, 'Mobile schedule CTA label must remain compact');
+
+const sessionClientSrc = readFileSync('src/lib/momo-client.js', 'utf8');
+const scheduleErrorSrc = readFileSync('src/components/MomoShowtimeList.astro', 'utf8');
+assert.match(sessionClientSrc, /path === '\/v2\/cinema\/session' && !payload\.MessageStatus/, 'No-data session response should become an empty showtime list');
+assert.match(sessionClientSrc, /return \{ Films: \[\] \}/, 'Empty session should be classified without throwing');
+assert.match(scheduleErrorSrc, /Chưa thể cập nhật suất chiếu cho ngày đã chọn/, 'Transport failures should show friendly Vietnamese error');
+assert.ok(!scheduleErrorSrc.includes('Không tải được suất chiếu (${error.message})'), 'Provider error internals must not be shown');

@@ -566,10 +566,14 @@ const initialChips = [
         if (token !== state.sessionToken) return;
         if (hasCachedView) {
           const note = resultsEl.querySelector('.momo-live__cached-note');
-          if (note) note.textContent = 'Giờ chiếu tham khảo đã lưu · không thể xác minh dữ liệu mới. Thử lại khi kết nối ổn định.';
+          if (note) note.textContent = 'Giờ chiếu tham khảo đã lưu · chưa thể xác minh dữ liệu mới.';
           resultsEl.setAttribute('aria-busy', 'false');
         } else {
-          status(`Không tải được suất chiếu (${error.message}).`, loadSession);
+          // Never expose provider internals/HTTP messages in the UI.
+          // Missing session data is handled above as an empty Films list.
+          // For genuine network/provider failures, avoid claiming that
+          // there are no sessions when the source could not be checked.
+          status('Chưa thể cập nhật suất chiếu cho ngày đã chọn. Vui lòng thử lại sau.', loadSession);
         }
       }
     }
