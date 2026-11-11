@@ -31,6 +31,9 @@ assert.match(publish, /issues: write/, 'Trusted notifier needs permission to pos
 assert.match(publish, /pull-requests: write/, 'Notifier must be authorized to write PR comments');
 assert.match(publish, /notify:\s*\n/, 'A separate notification job must exist');
 assert.match(publish, /needs: deploy/, 'Notifier must wait for successful Pages deployment');
+assert.match(publish, /name: github-pages-\$\{\{ github\.run_attempt \}\}/, 'Publisher must give each retry a distinct artifact name');
+assert.match(publish, /artifact_name: github-pages-\$\{\{ github\.run_attempt \}\}/, 'Deploy must target the artifact from its own attempt');
+assert.match(publish, /Wait for Pages artifact metadata/, 'Publisher must wait for artifact indexing before deployment');
 assert.match(publish, /needs\.deploy\.result == 'success'/, 'Notifier must not run after failed Pages deployment');
 assert.ok(publish.indexOf('Post or update PR preview link') > publish.indexOf('uses: actions/deploy-pages@v4'), 'Never notify before Pages successfully deploys');
 assert.match(publish, /bash automation\/scripts\/post-preview-link\.sh/, 'Notifier must come from the trusted branch');
