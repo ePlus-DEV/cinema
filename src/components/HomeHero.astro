@@ -1,6 +1,6 @@
 ---
-// Homepage spotlight: rotating featured films (top audience-rated now-showing
-// titles with a wide banner). Server-rendered slides; a small script rotates
+// Homepage spotlight: rotating featured films — the first now-showing titles
+// in the source list's own order that have a wide banner. Server-rendered slides; a small script rotates
 // them, pauses on hover/focus, and wires thumbnails + arrows. Trailer buttons
 // reuse the shared TrailerModal via data-play-trailer.
 import { moviesNow } from '../lib/cinema-catalog';
@@ -15,10 +15,7 @@ const momoClip = (raw?: string) => {
   } catch { return ''; }
 };
 const base = import.meta.env.BASE_URL;
-const slides = [...moviesNow]
-  .filter((movie) => movie.bannerUrl)
-  .sort((a, b) => (b.ratingTotal || 0) - (a.ratingTotal || 0))
-  .slice(0, 5);
+const slides = moviesNow.filter((movie) => movie.bannerUrl).slice(0, 5);
 const vnd = new Intl.NumberFormat('vi-VN');
 ---
 
