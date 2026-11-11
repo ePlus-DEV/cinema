@@ -14,6 +14,23 @@ const momoClip = (raw?: string) => {
     return url.protocol === 'https:' && /(^|\.)momocdn\.net$/.test(url.hostname) ? raw : '';
   } catch { return ''; }
 };
+// MoMo's daily snapshot includes a medium-size CDN variant (?size=M).
+// Use the original URL for the full-width hero; keep the medium variant as
+// a runtime fallback if the CDN does not expose an unresized image.
+const largeBannerUrl = (raw: string) => {
+  try {
+    const url = new URL(raw);
+    if (url.protocol !== 'https:') return raw;
+    if (url.hostname === 'image.tmdb.org' && /^\/t\/p\/w\d+\//.test(url.pathname)) {
+      url.pathname = url.pathname.replace(/^\/t\/p\/w\d+\//, '/t/p/original/');
+    } else if (url.hostname === 'image-fworker.momocdn.net' ||
+               url.hostname === 'cinema.momocdn.net' ||
+               url.hostname === 'homepage.momocdn.net') {
+      if (/^(SM|M|S)$/i.test(url.searchParams.get('size') || '')) url.searchParams.delete('size');
+    }
+    return url.toString();
+  } catch { return raw; }
+};
 const base = import.meta.env.BASE_URL;
 const slides = moviesNow.filter((movie) => movie.bannerUrl).slice(0, 5);
 const vnd = new Intl.NumberFormat('vi-VN');
@@ -26,7 +43,7 @@ const vnd = new Intl.NumberFormat('vi-VN');
     const ytId = youtubeVideoId(movie.trailerUrl) || '';
     return (
     <article class:list={['home-hero__slide', { 'is-active': index === 0 }]} data-hero-slide aria-hidden={index !== 0}>
-      <img class="home-hero__bg" src={movie.bannerUrl} alt="" loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
+      <img class="home-hero__bg" data-hero-banner data-banner-fallback={movie.bannerUrl} src={largeBannerUrl(movie.bannerUrl)} alt="" loading={index === 0 ? 'eager' : 'lazy'} decoding="async" fetchpriority={index === 0 ? 'high' : undefined} />
       <div class="home-hero__shade" aria-hidden="true"></div>
       <div class="container home-hero__inner">
         <div class="home-hero__content">
@@ -109,6 +126,17 @@ const vnd = new Intl.NumberFormat('vi-VN');
 <script>
   const hero = document.querySelector<HTMLElement>('[data-home-hero]');
   if (hero) {
+    // Retry the provider's known medium variant only when the original fails.
+    // This keeps thumbnails unchanged and avoids hiding the entire slider.
+    hero.querySelectorAll<HTMLImageElement>('[data-hero-banner]').forEach((image) => {
+      const fallback = image.dataset.bannerFallback;
+      if (!fallback || image.src === fallback) return;
+      const tryFallback = () => {
+        if (image.src !== fallback) image.src = fallback;
+      };
+      image.addEventListener('error', tryFallback, { once: true });
+      if (image.complete && image.naturalWidth === 0) tryFallback();
+    });
     const slides = [...hero.querySelectorAll<HTMLElement>('[data-hero-slide]')];
     const thumbs = [...hero.querySelectorAll<HTMLElement>('[data-hero-thumb]')];
     let current = 0;

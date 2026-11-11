@@ -25,7 +25,11 @@ for (const route of routes) {
   assert.match(html, /<html\s+lang="vi">/, 'Missing Vietnamese language declaration: ' + route);
   assert.match(html, /noindex,\s*nofollow/, 'Demo page must stay noindex: ' + route);
   assert.ok(html.includes('<title>'), 'Missing title: ' + route);
-  assert.ok(html.includes('data-page-skeleton'), 'Missing full-page skeleton: ' + route);
+  if (route === '/') {
+    assert.ok(!html.includes('data-page-skeleton'), 'Prerendered homepage must never be blocked by a full-page skeleton');
+  } else {
+    assert.ok(html.includes('data-page-skeleton'), 'Missing full-page skeleton: ' + route);
+  }
   assert.ok(html.includes('page-skeleton-done'), 'Missing skeleton timeout safeguard: ' + route);
   console.log('PASS: ' + route);
 }
@@ -33,6 +37,12 @@ const home = readFileSync('dist/index.html', 'utf8');
 assert.ok(home.includes('href="' + base + 'phim-dang-chieu'), 'Movie navigation not Pages-base-aware');
 assert.ok(home.includes('data-movie-rail'), 'Film discovery rails missing on homepage');
 assert.ok(home.includes('data-home-hero'), 'Homepage spotlight hero missing');
+assert.ok(home.includes('data-hero-banner'), 'Hero background must be separate from the small thumb image');
+assert.ok(home.includes('data-banner-fallback='), 'Large hero banner must retain a provider fallback');
+const heroBackgrounds = [...home.matchAll(/<img[^>]*class="home-hero__bg"[^>]*>/g)].map(match => match[0]);
+assert.ok(heroBackgrounds.length > 0, 'Expected SSR hero banners');
+assert.ok(heroBackgrounds.every(tag => !/src="[^"]*\?size=M"/.test(tag)), 'Full-screen hero must not use the medium thumbnail variant');
+
 assert.ok(home.includes('href="' + base + 'favicon.svg'), 'Favicon not Pages-base-aware');
 assert.ok(home.includes('href="' + base + '_astro/') || home.includes('src="' + base + '_astro/'), 'Astro assets not Pages-base-aware');
 assert.ok(existsSync('dist/_astro'), 'Astro assets directory missing');
@@ -55,13 +65,42 @@ for (const [route, html] of [['phim/chi-tiet', filmPage], ['rap/chi-tiet', cinem
 }
 assert.ok(home.includes('live-poster__badge'), 'Pre-rendered movie cards missing');
 assert.ok(home.includes('momo-live__loading-program'), 'Live showtime card skeletons missing');
-console.log('PASS: full-page and per-section loading states');
+assert.ok(!home.includes('class="page-skeleton"'), 'Homepage contains a blocking loading overlay despite SSR movie data');
+const preRenderedMovieCards = (home.match(/movie-rail__card/g) || []).length;
+assert.ok(preRenderedMovieCards >= 8, 'Homepage must include server-rendered movie cards independent of API');
+console.log('PASS: homepage SSR first paint, full-page fallback on dynamic routes and local schedule loading');
 
 const explorer = readFileSync('dist/lich-chieu/index.html', 'utf8');
 assert.ok(explorer.includes('schedule-page--explorer'), 'Standalone schedule must use full-width explorer');
 assert.ok(explorer.includes('data-momo-district'), 'Missing functional location/district selector');
 assert.ok(explorer.includes('data-momo-chips'), 'Missing cinema chain filters');
 assert.ok(explorer.includes('data-momo-cinemas'), 'Missing cinema selector');
+const homeDirectory = home.match(/data-momo-cinemas[^>]*aria-busy="false"/);
+assert.ok(homeDirectory, 'Daily cinema snapshot must provide a ready SSR theater list on homepage');
+assert.ok((home.match(/class="momo-live__cinema" data-cinema=/g) || []).length >= 10, 'Homepage must pre-render theater names before API calls');
+assert.ok(home.includes('data-directory-seeds='), 'Listing must embed per-city cached directory data for client hydration');
+assert.ok(home.includes('momo-live__loading-program'), 'Live session loading must remain visible separately');
+const scheduleSrc = readFileSync('src/components/MomoShowtimeList.astro', 'utf8');
+assert.match(scheduleSrc, /getCachedSession\(/, 'Cached showtime read must work without a live response');
+assert.match(scheduleSrc, /storeSession\(/, 'Fresh showtime results must refresh browser cache');
+assert.match(scheduleSrc, /momo-live__cached-note/, 'Unverified cached times must be visibly labeled');
+
+assert.ok(explorer.includes('data-directory-seeds='), 'Standalone schedule must reuse the daily city directory seed');
+const cinemaExplorerSource = readFileSync('src/components/MomoShowtimeList.astro', 'utf8');
+assert.match(cinemaExplorerSource, /function skeletonDirectory\(cityId\)/, 'Selecting an uncached city must render directory skeletons');
+assert.match(cinemaExplorerSource, /momo-live__cinema-placeholder skeleton/, 'Directory loading must show cinema-row skeletons');
+assert.match(cinemaExplorerSource, /momo-live__chip-placeholder skeleton/, 'Directory loading must show chain-filter skeletons');
+assert.match(cinemaExplorerSource, /skeletonDirectory\(cityId\);/, 'Uncached city initialization must invoke skeletonDirectory');
+assert.match(cinemaExplorerSource, /districtEl\.disabled = false/, 'District selection must be restored after directory loading');
+
+assert.ok(existsSync('src/styles/cinema-compact.css'), 'Compact cinema explorer stylesheet missing');
+const compactScheduleCss = readFileSync('src/styles/cinema-compact.css', 'utf8');
+assert.ok(compactScheduleCss.includes('#lich-chieu .schedule-shell__top { display: none; }'), 'Homepage schedule must remove redundant title row');
+assert.match(compactScheduleCss, /#lich-chieu \.schedule-shell\s*\{[^}]*width:\s*100%;[^}]*max-width:\s*none;[^}]*margin-inline:\s*0;/s, 'Homepage schedule shell must align with the full-width section container');
+assert.ok(compactScheduleCss.includes('.momo-live__chip-name'), 'Compact chain labels must fit one line');
+assert.ok(compactScheduleCss.includes('.momo-live__viewer-head { display: none; }'), 'Compact schedule must avoid repeating selected cinema header');
+assert.ok(compactScheduleCss.includes('@media (max-width: 760px)'), 'Compact schedule must support small screens');
+
 assert.ok(explorer.includes('data-momo-selected-cinema'), 'Missing selected venue title');
 assert.equal((explorer.match(/<div[^>]*\bdata-date-picker(?=\s|>)/g) || []).length, 1, 'Exactly one date picker DOM element should appear in explorer');
 assert.ok(explorer.includes('seatmap__eyebrow'), 'Seat map should explain the preview-only flow');

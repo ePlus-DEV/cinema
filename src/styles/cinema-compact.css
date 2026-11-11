@@ -1,0 +1,324 @@
+/* Compact schedule explorer — presentation only.
+   Scoped to list mode inside .schedule-shell: movie/cinema detail explorers
+   and their live session/seat behavior remain unchanged. */
+#lich-chieu .schedule-shell {
+  /* Align schedule edges with the section heading's shared container. */
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+
+/* The homepage already has a section heading; repeating another title and
+   city chip inside the shell wastes a whole row. Keep the full heading on the
+   dedicated /lich-chieu page, but make that row concise too. */
+#lich-chieu .schedule-shell__top { display: none; }
+.schedule-page--explorer .schedule-shell__top {
+  padding: 12px 18px;
+  min-height: 52px;
+  gap: 12px;
+}
+.schedule-page--explorer .schedule-shell__top strong { font-size: 14px; }
+.schedule-page--explorer .schedule-shell__top span:not(.schedule-shell__city) { margin-top: 3px; font-size: 11px; }
+.schedule-page--explorer .schedule-shell__city { padding: 7px 10px; }
+
+/* Single practical filter row: editable city + district, without duplicating
+   the city name and an informational note beside the same selectors. */
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__location {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  padding: 10px 16px;
+  background: #fff;
+  min-height: 55px;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__place,
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__location-note { display: none; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__district-label {
+  margin: 0;
+  gap: 9px;
+  font-size: 11px;
+  min-width: 0;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__district-label select {
+  min-width: 0;
+  width: clamp(130px, 15vw, 190px);
+  max-width: 100%;
+  min-height: 36px;
+  padding: 7px 28px 7px 10px;
+  font-size: 11px;
+  border-radius: 8px;
+}
+
+/* Provider filters: icon + a single-line label, with full name still
+   available via title on the text span for truncated names. */
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__toolbar {
+  display: block;
+  margin: 0;
+  padding: 8px 12px 9px;
+  background: #fff;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__chips {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  overflow-x: auto;
+  gap: 6px;
+  padding: 2px 2px 6px;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__chip {
+  flex: 0 0 73px;
+  min-width: 0;
+  width: 73px;
+  min-height: 70px;
+  padding: 7px 5px 6px;
+  gap: 5px;
+  border-radius: 9px;
+  font-size: 10px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  scroll-snap-align: start;
+}
+.schedule-shell .momo-live__chip-name {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 10px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__chain-logo,
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__chain-all {
+  width: 35px;
+  height: 34px;
+  border-radius: 8px;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__chain-all { font-size: 19px; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__chain-logo img { padding: 3px; }
+.schedule-shell .momo-live__chain-logo__fallback { font-size: 8px; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__chip-placeholder {
+  flex: 0 0 73px;
+  height: 70px;
+  border-radius: 9px;
+}
+
+/* Two panes like the provider: a slim scrollable cinema index and the movie
+   times with no second selected-cinema title stacked above the result. */
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 30%) minmax(0,1fr);
+  min-height: 410px;
+  gap: 0;
+  padding: 0;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__cinema-pane {
+  background: #fff;
+  border-right: 1px solid #e5eaf1;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__search-wrap { margin: 9px 10px; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__search {
+  min-height: 37px;
+  font-size: 11px;
+  padding: 8px 29px 8px 11px;
+  border-radius: 8px;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__cinemas {
+  max-height: 510px;
+  gap: 0;
+  padding: 0;
+  overflow-y: auto;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__cinema {
+  min-height: 54px;
+  padding: 9px 10px;
+  gap: 8px;
+  border-radius: 0;
+  border: 0;
+  border-bottom: 1px solid #edf0f5;
+  background: #fff;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__cinema[aria-current="true"] {
+  background: #fff7e9;
+  box-shadow: inset 3px 0 #d5a347;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__list-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 7px;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__list-logo img { padding: 3px; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__cinema::after {
+  font-size: 18px;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__cinema-info strong {
+  font-size: 11px;
+  line-height: 1.35;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__cinema-info small {
+  margin-top: 2px;
+  font-size: 9px;
+  line-height: 1.35;
+  max-height: 2.7em;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__viewer-head { display: none; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__datebar .date-picker {
+  display: flex;
+  padding: 9px 12px;
+  gap: 6px;
+  border-bottom: 1px solid #e7ebf2;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__datebar .date-picker__day {
+  min-width: 61px;
+  min-height: 53px;
+  padding: 7px 9px;
+  border-radius: 7px;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .date-picker__day span { font-size: 10px; line-height: 1.3; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .date-picker__day strong {
+  font-size: 13px;
+  margin-top: 4px;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__results {
+  max-height: 505px;
+  padding: 0 14px 13px;
+  overflow-y: auto;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .theater-showtime__header {
+  align-items: center;
+  padding: 10px 0;
+  margin: 0;
+  gap: 9px;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__head-logo {
+  width: 35px;
+  height: 35px;
+  border-radius: 8px;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .theater-showtime__header h3 { font-size: 12px; line-height: 1.35; margin: 0 0 2px; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .theater-showtime__header p { font-size: 10px; line-height: 1.35; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__cinema-link { display: inline-block; margin-top: 3px; font-size: 10px; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .date-label { font-size: 10px; padding: 6px 8px; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .program {
+  padding: 11px 0 13px;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .program:first-child { padding-top: 12px; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__program-head { gap: 11px; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__poster { width: 71px; height: 101px; border-radius: 8px; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .program__movie h3 { font-size: 13px; line-height: 1.35; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .program__movie p { font-size: 10px; line-height: 1.45; margin-top: 3px; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .program__format { margin-top: 7px; gap: 8px; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .program__format-label { font-size: 10px; padding-top: 7px; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .showtime-row { gap: 6px; }
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .showtime {
+  min-width: 64px;
+  min-height: 38px;
+  padding: 8px 9px;
+  border-radius: 7px;
+  font-size: 11px;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__loading-program {
+  padding: 12px;
+  gap: 11px;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__loading-head { padding: 10px 0; }
+#lich-chieu .schedule-shell__footer { padding: 12px; }
+
+/* Tablets and phones: filters stay reachable, cinema selection becomes a
+   horizontal rail, and the movie content uses the full available width. */
+@media (max-width: 760px) {
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__cinema-pane {
+    border-right: 0;
+    border-bottom: 1px solid #e5eaf1;
+  }
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__cinemas {
+    flex-direction: row;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 7px;
+    padding: 1px 10px 9px;
+    scroll-snap-type: x proximity;
+  }
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__cinema {
+    flex: 0 0 min(68vw, 230px);
+    min-height: 55px;
+    border: 1px solid #e5eaf1;
+    border-radius: 8px;
+    scroll-snap-align: start;
+  }
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__cinema[aria-current="true"] {
+    box-shadow: inset 0 3px #d5a347;
+  }
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__results {
+    max-height: none;
+    overflow: visible;
+  }
+}
+@media (max-width: 600px) {
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__location {
+    gap: 7px 10px;
+    padding: 10px;
+  }
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__district-label {
+    flex: 1 1 140px;
+    justify-content: flex-start;
+    width: auto;
+    gap: 6px;
+    font-size: 10px;
+  }
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__district-label select {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    font-size: 10px;
+    padding-inline: 6px 22px;
+  }
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__toolbar {
+    padding: 7px 9px;
+  }
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__chip {
+    flex-basis: 68px;
+    width: 68px;
+    min-height: 65px;
+  }
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__chain-logo,
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__chain-all {
+    width: 32px;
+    height: 32px;
+  }
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__datebar .date-picker {
+    padding: 8px 9px;
+  }
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__results {
+    padding: 0 10px 12px;
+  }
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__poster { width: 64px; height: 91px; }
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .showtime { min-height: 40px; }
+  .schedule-page--explorer .schedule-shell__top { padding: 12px; }
+  .schedule-page--explorer .schedule-shell__city { display: none; }
+}
+
+/* Browser-cached showtimes are explicitly labeled until live data confirms. */
+.schedule-shell .momo-live__cached-note {
+  margin: 11px 0 2px;
+  padding: 9px 11px;
+  border: 1px solid #ead0a1;
+  border-radius: 8px;
+  background: #fff9ed;
+  color: #80581e;
+  font-size: 11px;
+  line-height: 1.5;
+}

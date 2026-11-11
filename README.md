@@ -65,13 +65,28 @@ npm run preview
   each day at **01:10 Asia/Ho_Chi_Minh (18:10 UTC)**, plus an optional manual
   `workflow_dispatch`. A one-time `push` bootstrap also runs automatically
   when the workflow is first merged to `main` (or when that workflow file
-  itself changes). Normal source commits do not re-fetch the catalog.
+  itself changes, or the catalog sync script changes to bootstrap new city
+  directories). Normal unrelated source commits do not re-fetch the catalog.
 - Downloads **only film and cinema directory data** for TP. Hồ Chí Minh
   (`apiCityId=50`) using the same unsigned/public-web API access pattern
   already in this repository. It does **not** download ticket availability,
   showtime sessions or seat maps.
 - The output `src/data/cinema-snapshot.json` is validated before being
   committed. Empty/partial/errors do not replace a previously good snapshot.
+- The same daily job also caches **cinema directories only** for Đồng Nai,
+  Hà Nội, Đà Nẵng, Bình Dương and Bà Rịa–Vũng Tàu as
+  `cinemasByCity` with individual `fetchedAt` timestamps. Failed or partial
+  extra-city refreshes retain the previous good entry and do **not** block the
+  primary TP.HCM refresh. The first merge of the upgraded sync script triggers
+  a one-time refresh even if the HCM snapshot already ran that day, so Đồng
+  Nai can be populated without waiting for the next cron run. The schedule
+  explorer renders available directory seeds immediately and persists other
+  selected cities in per-city browser cache.
+- **The daily job never stores showtimes or seat availability.** The browser
+  may show previously viewed session times for the same city/cinema/date from
+  a cache valid up to six hours, clearly labeled **unverified reference data**
+  while it fetches fresh showtimes. An empty live response clears the old
+  session cache. Seat maps always require a fresh API call.
   Until the initial success, the existing `momo-showtimes.json` inventory
   seeds actual pre-rendered pages; its old showtime entries are not served.
 - Pages and directories render from the catalog at **build time**, not from

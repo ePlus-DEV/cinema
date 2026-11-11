@@ -47,7 +47,10 @@ const isPrPreview = /\/previews\/pr-\d+\//.test(import.meta.env.BASE_URL || '/')
       Bản xem trước của ePlus Cinema · Thông tin phim/rạp tải từ bản cập nhật hằng ngày; lịch chiếu được tra cứu trực tiếp.
     </div>}
     <SiteHeader active={active} />
-    <PageSkeleton active={active} />
+    {/* Homepage movie data is pre-rendered from the daily snapshot, so a
+        full-page loading overlay would hide finished content unnecessarily.
+        The live showtime section still manages its own loading skeleton. */}
+    {active !== 'home' && <PageSkeleton active={active} />}
     <main id="main-content"><slot /></main>
     <footer class="footer">
       <div class="container footer__inner">

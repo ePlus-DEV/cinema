@@ -6,14 +6,50 @@
 import SeatMap from './SeatMap.astro';
 import DatePicker from './DatePicker.astro';
 import '../styles/cinema-explorer.css';
+import '../styles/cinema-compact.css';
 import { movies, cinemas } from '../lib/cinema-catalog';
+import snapshot from '../data/cinema-snapshot.json';
 interface Props { cinemaOnly?: boolean; movieId?: string; cinemaKey?: string; }
 const { cinemaOnly = false, movieId = '', cinemaKey = '' } = Astro.props;
 const knownMovieIds = movies.map(movie => movie.id).join(',');
 const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiCinemaId).join(',');
+
+// Daily GitHub Actions snapshot is the first-paint source for cinema directories.
+// Showtime sessions and seat availability are NOT stored in this file.
+const directoryRow = (row: { chainId: number; apiCinemaId: string; name: string; address: string }) => ({
+  key: String(row.chainId) + ':' + String(row.apiCinemaId),
+  chainId: Number(row.chainId),
+  apiCinemaId: String(row.apiCinemaId),
+  name: String(row.name),
+  address: String(row.address || '')
+});
+const hcmDirectory = cinemas.map(directoryRow);
+const firstPaintDirectory = cinemaOnly ? [] : hcmDirectory;
+const directorySeeds: Record<string, { fetchedAt: string; cinemas: ReturnType<typeof directoryRow>[] }> = {};
+if (!cinemaOnly && hcmDirectory.length) {
+  directorySeeds['50'] = { fetchedAt: String(snapshot.fetchedAt || ''), cinemas: hcmDirectory };
+  const otherCities = (snapshot as typeof snapshot & {
+    cinemasByCity?: Record<string, { fetchedAt: string; cinemas: typeof snapshot.cinemas }>
+  }).cinemasByCity || {};
+  for (const [id, entry] of Object.entries(otherCities)) {
+    if (entry?.cinemas?.length) {
+      directorySeeds[id] = { fetchedAt: entry.fetchedAt, cinemas: entry.cinemas.map(directoryRow) };
+    }
+  }
+}
+const chainCounts = new Map<number, { name: string; count: number }>();
+for (const cinema of cinemas) {
+  const current = chainCounts.get(cinema.chainId);
+  chainCounts.set(cinema.chainId, { name: cinema.chain || 'Rạp', count: (current?.count || 0) + 1 });
+}
+const initialChips = [
+  { id: 0, label: 'Tất cả (' + hcmDirectory.length + ')' },
+  ...[...chainCounts.entries()].sort((a,b) => b[1].count - a[1].count)
+    .map(([id, value]) => ({ id, label: value.name + ' (' + value.count + ')' }))
+];
 ---
 
-<div class="momo-live" data-momo-live data-cinema-only={cinemaOnly ? "true" : "false"} data-movie-id={movieId} data-cinema-key={cinemaKey} data-known-movies={knownMovieIds} data-known-cinemas={knownCinemaKeys}>
+<div class="momo-live" data-momo-live data-cinema-only={cinemaOnly ? "true" : "false"} data-movie-id={movieId} data-cinema-key={cinemaKey} data-known-movies={knownMovieIds} data-known-cinemas={knownCinemaKeys} data-directory-seeds={cinemaOnly ? undefined : JSON.stringify(directorySeeds)}>
   <div class="momo-live__location">
     <div class="momo-live__place"><span aria-hidden="true">⌖</span><div><small>Thành phố đang xem</small><strong data-momo-city-name>TP. Hồ Chí Minh</strong></div></div>
     <label class="momo-live__district-label">Thành phố
@@ -30,7 +66,12 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
   </div>
   <div class="momo-live__toolbar">
     <div class="momo-live__chips" data-momo-chips role="group" aria-label="Lọc hệ thống rạp">
-      {[0,1,2,3].map(() => <span class="momo-live__chip-placeholder skeleton" aria-hidden="true"></span>)}
+      {firstPaintDirectory.length
+        ? initialChips.map((chip) => <button type="button" class="momo-live__chip" data-chain={chip.id} aria-pressed={chip.id === 0 ? 'true' : 'false'}>
+            <span class="momo-live__chain-all" aria-hidden="true">✦</span>
+            <span class="momo-live__chip-name" title={chip.label}>{chip.label}</span>
+          </button>)
+        : [0,1,2,3].map(() => <span class="momo-live__chip-placeholder skeleton" aria-hidden="true"></span>)}
     </div>
   </div>
   <div class="momo-live__layout">
@@ -40,15 +81,22 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
         <input class="momo-live__search" type="search" placeholder="Tìm tên rạp hoặc địa chỉ…" aria-label="Tìm rạp" data-momo-search />
         <span aria-hidden="true">⌕</span>
       </label>
-      <div class="momo-live__cinemas" data-momo-cinemas aria-label="Danh sách rạp" aria-busy="true">
-        {Array.from({ length: 5 }).map(() => <div class="momo-live__cinema-placeholder skeleton" aria-hidden="true">
-          <span class="skeleton__line" style="width:73%"></span>
-          <span class="skeleton__line skeleton__line--short"></span>
-        </div>)}
+      <div class="momo-live__cinemas" data-momo-cinemas aria-label="Danh sách rạp" aria-busy={firstPaintDirectory.length ? 'false' : 'true'}>
+        {firstPaintDirectory.length
+          ? firstPaintDirectory.map((cinema, index) =>
+            <button type="button" class="momo-live__cinema" data-cinema={cinema.key} aria-current={index === 0 ? 'true' : 'false'}>
+              <span class="momo-live__cinema-info">
+                <strong>{cinema.name}</strong><small>{cinema.address}</small>
+              </span>
+            </button>)
+          : Array.from({ length: 5 }).map(() => <div class="momo-live__cinema-placeholder skeleton" aria-hidden="true">
+            <span class="skeleton__line" style="width:73%"></span>
+            <span class="skeleton__line skeleton__line--short"></span>
+          </div>)}
       </div>
     </aside>
     <div class="momo-live__viewer">
-      <div class="momo-live__viewer-head"><span data-momo-selected-cinema>Chọn rạp để xem lịch chiếu</span><small data-momo-selected-address></small></div>
+      <div class="momo-live__viewer-head"><span data-momo-selected-cinema>{firstPaintDirectory[0]?.name || 'Chọn rạp để xem lịch chiếu'}</span><small data-momo-selected-address>{firstPaintDirectory[0]?.address || ''}</small></div>
       <div class="momo-live__datebar"><DatePicker /></div>
       <div class="momo-live__results" data-momo-results aria-live="polite" aria-busy="true">
       <div class="momo-live__loading-head skeleton" aria-hidden="true"><span class="skeleton__line" style="width:54%"></span><span class="skeleton__line skeleton__line--short"></span></div>
@@ -168,7 +216,80 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
       query: '',
       selected: null,
       dayOffset: 0,
-      sessionToken: 0
+      sessionToken: 0,
+      directoryToken: 0,
+      directoryCity: null
+    };
+
+    // Seed comes from the daily snapshot, not from a live client request.
+    // Browser storage fills gaps for cities outside the scheduled snapshot.
+    const DIRECTORY_CACHE_PREFIX = 'eplus-cinema:cinemas:v2:';
+    const CACHE_MAX_AGE = 24 * 60 * 60 * 1000;
+    const seedByCity = (() => {
+      try { return JSON.parse(root.dataset.directorySeeds || '{}'); }
+      catch { return {}; }
+    })();
+    const verifiedDirectory = (candidate) => {
+      if (!candidate || !Array.isArray(candidate.cinemas) || !candidate.cinemas.length) return null;
+      const list = candidate.cinemas.filter((row) =>
+        row && Number.isInteger(Number(row.chainId)) &&
+        String(row.key) === Number(row.chainId) + ':' + String(row.apiCinemaId) &&
+        typeof row.name === 'string' && row.name.length > 0
+      );
+      if (!list.length || list.length !== candidate.cinemas.length) return null;
+      return { cinemas: list, fetchedAt: Number.isFinite(Date.parse(candidate.fetchedAt)) ? candidate.fetchedAt : '' };
+    };
+    const storedDirectory = (cityId) => {
+      try { return verifiedDirectory(JSON.parse(localStorage.getItem(DIRECTORY_CACHE_PREFIX + cityId) || 'null')); }
+      catch { return null; }
+    };
+    const bestDirectory = (cityId) => {
+      const fromJob = verifiedDirectory(seedByCity[String(cityId)]);
+      const fromBrowser = storedDirectory(cityId);
+      if (!fromJob) return fromBrowser;
+      if (!fromBrowser) return fromJob;
+      return Date.parse(fromBrowser.fetchedAt) > Date.parse(fromJob.fetchedAt) ? fromBrowser : fromJob;
+    };
+    const saveDirectory = (cityId, list) => {
+      try {
+        localStorage.setItem(DIRECTORY_CACHE_PREFIX + cityId,
+          JSON.stringify({ fetchedAt: new Date().toISOString(), cinemas: list }));
+      } catch { /* unavailable or quota exceeded: keep in-memory list */ }
+    };
+
+    // Session results remain live, but a short-lived browser copy avoids
+    // skeleton flashes on revisits. Clearly mark cached times as unverified.
+    const SESSION_PREFIX = 'eplus-cinema:showtimes:v1:';
+    const sessionKey = (city, cinema, day) => SESSION_PREFIX + city + ':' + cinema + ':' + day;
+    const getCachedSession = (city, cinema, day) => {
+      try {
+        const value = JSON.parse(localStorage.getItem(sessionKey(city, cinema, day)) || 'null');
+        const age = Date.now() - Date.parse(value?.updatedAt || '');
+        return Array.isArray(value?.films) && Number.isFinite(age) && age >= 0 && age < 6 * 3600000
+          ? value : null;
+      } catch { return null; }
+    };
+    const storeSession = (city, cinema, day, films) => {
+      // Save only fields required for the on-page listing and live seat lookup.
+      const compact = films.map((film) => ({
+        Id:film.Id, Title:film.Title, GraphicUrl:film.GraphicUrl,
+        ImageUrl:film.ImageUrl, ApiGenreName:film.ApiGenreName,
+        Duration:film.Duration, ApiRatingFormat:film.ApiRatingFormat,
+        VersionsCaptions:(film.VersionsCaptions || []).map((version) => ({
+          VersionType:version.VersionType, VersionName:version.VersionName,
+          CaptionType:version.CaptionType, CaptionName:version.CaptionName,
+          ShowTimes:(version.ShowTimes || []).map((show) => ({
+            ShowTime:show.ShowTime, ShowTimeDuration:show.ShowTimeDuration,
+            ApiCinemaId:show.ApiCinemaId, Cineplex:show.Cineplex,
+            SessionId:show.SessionId, ScreenName:show.ScreenName,
+            ScreenNumber:show.ScreenNumber, ShowDateTime:show.ShowDateTime
+          }))
+        }))
+      }));
+      try {
+        localStorage.setItem(sessionKey(city, cinema, day),
+          JSON.stringify({ updatedAt:new Date().toISOString(), films:compact }));
+      } catch { /* browser storage is optional */ }
     };
 
     const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => (
@@ -212,6 +333,30 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
       resultsEl.setAttribute('aria-busy', 'true');
     }
 
+    // Only a new city without a usable daily/browser directory needs a
+    // theater skeleton. Avoid stale names from the previous city while its
+    // directory is loading; never delay a city that already has cached rows.
+    function skeletonDirectory(cityId) {
+      if (isCinemaOnly) return;
+      cinemasEl.setAttribute('aria-busy', 'true');
+      cinemasEl.innerHTML = Array.from({ length: 5 }, () =>
+        '<div class="momo-live__cinema-placeholder skeleton" aria-hidden="true">' +
+        '<span class="skeleton__line" style="width:73%"></span>' +
+        '<span class="skeleton__line skeleton__line--short"></span></div>'
+      ).join('');
+      chipsEl.innerHTML = Array.from({ length: 4 }, () =>
+        '<span class="momo-live__chip-placeholder skeleton" aria-hidden="true"></span>'
+      ).join('');
+      if (districtEl) {
+        districtEl.disabled = true;
+        districtEl.replaceChildren(new Option('Đang tải khu vực…', ''));
+      }
+      if (cinemaTitleEl) cinemaTitleEl.textContent = 'Đang tải rạp tại ' + cityDisplayName(cityId);
+      if (cinemaAddressEl) cinemaAddressEl.textContent = '';
+      currentShows = [];
+      skeletonResults('Đang tải danh sách rạp tại ' + cityDisplayName(cityId) + '…');
+    }
+
     function renderChips() {
       const counts = new Map();
       for (const cinema of state.cinemas) counts.set(cinema.chainId, (counts.get(cinema.chainId) || 0) + 1);
@@ -220,7 +365,7 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
         chips.push([chainId, `${CHAINS[chainId] || 'Rạp'} (${count})`]);
       }
       chipsEl.innerHTML = chips.map(([id, label]) =>
-        `<button type="button" class="momo-live__chip" data-chain="${id}" aria-pressed="${state.chain === id}">${esc(label)}</button>`
+        `<button type="button" class="momo-live__chip" data-chain="${id}" aria-pressed="${state.chain === id}"><span class="momo-live__chip-name" title="${esc(label)}">${esc(label)}</span></button>`
       ).join('');
       chipsEl.querySelectorAll('[data-chain]').forEach((button) => {
         const id = Number(button.dataset.chain);
@@ -273,6 +418,7 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
     }
     function renderDistricts() {
       if (!districtEl || isCinemaOnly) return;
+      districtEl.disabled = false;
       const districts = [...new Set(state.cinemas.map(districtFor).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'vi', {numeric:true}));
       districtEl.replaceChildren(new Option('Tất cả khu vực (' + state.cinemas.length + ')', ''), ...districts.map((name) => new Option(name, name)));
       if (districts.includes(state.district)) districtEl.value = state.district;
@@ -312,7 +458,7 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
 
     let currentShows = [];
 
-    function renderSession(cinema, date, films) {
+    function renderSession(cinema, date, films, cachedAt = '') {
       if (!films.length) {
         currentShows = [];
         status(movieId ? `Phim này chưa có suất chiếu tại ${cinema.name} ngày ${date.split('-').reverse().join('/')}. Hãy thử rạp hoặc ngày khác.` : `${cinema.name} chưa có suất chiếu ngày ${date.split('-').reverse().join('/')}.`);
@@ -361,6 +507,15 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
       </article>`;
       const heading = resultsEl.querySelector('.theater-showtime__header');
       if (heading) heading.prepend(createChainLogo(cinema.chainId, CHAINS[cinema.chainId], 'momo-live__head-logo'));
+      if (cachedAt) {
+        const time = new Intl.DateTimeFormat('vi-VN', {
+          timeZone: 'Asia/Ho_Chi_Minh', hour:'2-digit', minute:'2-digit'
+        }).format(new Date(cachedAt));
+        const note = document.createElement('p');
+        note.className = 'momo-live__cached-note';
+        note.textContent = 'Giờ chiếu tham khảo lưu lúc ' + time + ' · đang kiểm tra dữ liệu mới…';
+        resultsEl.prepend(note);
+      }
     }
 
     async function loadSession() {
@@ -370,7 +525,20 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
       const date = saigonDate(state.dayOffset);
       if (cinemaTitleEl) cinemaTitleEl.textContent = cinema.name;
       if (cinemaAddressEl) cinemaAddressEl.textContent = cinema.address || 'TP. Hồ Chí Minh';
-      skeletonResults(`Đang tải suất chiếu của ${cinema.name} ngày ${date.split('-').reverse().join('/')}…`);
+      const cached = getCachedSession(getCityId(), cinema.key, date);
+      let hasCachedView = false;
+      if (cached?.films?.length) {
+        const rows = cached.films.map((film) => ({
+          ...film, poster:film.GraphicUrl || film.ImageUrl || ''
+        }));
+        const filtered = movieId ? rows.filter((film) => String(film.Id) === movieId) : rows;
+        if (filtered.length) {
+          renderSession(cinema, date, filtered, cached.updatedAt);
+          hasCachedView = true;
+        } else skeletonResults('Đang tải suất chiếu mới…');
+      } else {
+        skeletonResults(`Đang tải suất chiếu của ${cinema.name} ngày ${date.split('-').reverse().join('/')}…`);
+      }
       try {
         const data = await momoPost('/v2/cinema/session', {
           Cineplex: cinema.chainId,
@@ -379,6 +547,11 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
           RecaptchaToken: ''
         });
         if (token !== state.sessionToken) return; // a newer selection won
+        if ((data.Films || []).length) {
+          storeSession(getCityId(), cinema.key, date, data.Films);
+        } else {
+          try { localStorage.removeItem(sessionKey(getCityId(), cinema.key, date)); } catch { /* ignore */ }
+        }
         for (const film of data.Films || []) {
           film.poster = film.GraphicUrl || film.ImageUrl || '';
         }
@@ -386,49 +559,100 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
         renderSession(cinema, date, films);
       } catch (error) {
         if (token !== state.sessionToken) return;
-        status(`Không tải được suất chiếu (${error.message}).`, loadSession);
+        if (hasCachedView) {
+          const note = resultsEl.querySelector('.momo-live__cached-note');
+          if (note) note.textContent = 'Giờ chiếu tham khảo đã lưu · không thể xác minh dữ liệu mới. Thử lại khi kết nối ổn định.';
+          resultsEl.setAttribute('aria-busy', 'false');
+        } else {
+          status(`Không tải được suất chiếu (${error.message}).`, loadSession);
+        }
       }
     }
 
-    async function init() {
-      cinemasEl.setAttribute('aria-busy', 'true');
-      if (!isCinemaOnly) {
-        cinemasEl.innerHTML = Array.from({ length: 5 }, () =>
-          '<div class="momo-live__cinema-placeholder skeleton" aria-hidden="true"><span class="skeleton__line" style="width:73%"></span><span class="skeleton__line skeleton__line--short"></span></div>'
-        ).join('');
-        chipsEl.innerHTML = Array.from({ length: 4 }, () =>
-          '<span class="momo-live__chip-placeholder skeleton" aria-hidden="true"></span>'
-        ).join('');
+    function showDirectory(list, cityId, preferExistingSelection = false) {
+      const previousCity = state.directoryCity;
+      const previousSelection = state.selected;
+      state.cinemas = list;
+      state.directoryCity = cityId;
+      cinemasEl.setAttribute('aria-busy', 'false');
+      const requested = root.dataset.cinemaKey || params.get('cinema');
+      const foundRequested = list.find((cinema) => cinema.key === requested);
+      if (isCinemaOnly && !foundRequested) {
+        cinemasEl.innerHTML = '';
+        status('Không tìm thấy cụm rạp này tại thành phố đang chọn.');
+        return;
       }
-      skeletonResults('Đang cập nhật danh sách rạp và suất chiếu…');
+      state.selected = (preferExistingSelection && list.some(c => c.key === previousSelection))
+        ? previousSelection
+        : (foundRequested ? foundRequested.key : list[0]?.key);
+      if (!isCinemaOnly) {
+        renderDistricts();
+        renderChips();
+        renderCinemas();
+      }
+      if (state.selected && (previousCity !== cityId || previousSelection !== state.selected)) loadSession();
+    }
+
+    async function init() {
+      const token = ++state.directoryToken;
+      const cityId = getCityId();
+      ++state.sessionToken; // invalidate old-city sessions even when names match
+      state.cinemas = [];
+      state.selected = null;
+      state.directoryCity = null;
+      state.chain = 0;
+      state.district = '';
+      state.query = '';
+      if (searchEl) searchEl.value = '';
+      const cached = !isCinemaOnly ? bestDirectory(cityId) : null;
+      if (cached) {
+        // Cached or job-built theater directory: no network wait, no directory
+        // skeleton. Only current showtimes start their own API request.
+        showDirectory(cached.cinemas, cityId);
+        const age = Date.now() - Date.parse(cached.fetchedAt);
+        if (Number.isFinite(age) && age >= 0 && age < CACHE_MAX_AGE) return;
+        // Refresh stale venue names quietly while keeping visible cached rows.
+      } else {
+        // No current-city snapshot or browser cache: show localized skeletons
+        // in both cinema directory panes instead of plain text/old-city data.
+        skeletonDirectory(cityId);
+        if (isCinemaOnly) skeletonResults('Đang tải danh sách rạp để tra cứu suất chiếu…');
+      }
       try {
-        state.cinemas = await loadAllCinemas();
-        cinemasEl.setAttribute('aria-busy', 'false');
-        if (!state.cinemas.length) {
+        const fresh = await loadAllCinemas();
+        if (token !== state.directoryToken || cityId !== getCityId()) return;
+        if (!fresh.length) {
+          if (!cached) {
+            cinemasEl.innerHTML = '';
+            chipsEl.replaceChildren();
+            cinemasEl.setAttribute('aria-busy', 'false');
+            if (districtEl) {
+              districtEl.disabled = false;
+              districtEl.replaceChildren(new Option('Tất cả khu vực', ''));
+            }
+            if (cinemaTitleEl) cinemaTitleEl.textContent = 'Chưa có danh sách rạp';
+            status('Chưa tải được danh sách rạp tại ' + cityDisplayName(cityId) + '.', init);
+          }
+          return;
+        }
+        // Never replace a healthy cached directory with a suspiciously
+        // partial upstream response caused by individual chain failures.
+        if (cached && fresh.length < Math.ceil(cached.cinemas.length * .65)) return;
+        saveDirectory(cityId, fresh);
+        showDirectory(fresh, cityId, true);
+      } catch (error) {
+        if (token !== state.directoryToken || cityId !== getCityId()) return;
+        if (!cached) {
           cinemasEl.innerHTML = '';
           chipsEl.replaceChildren();
-          status('Không có rạp nào cho ' + cityDisplayName(getCityId()) + '.', init);
-          return;
+          cinemasEl.setAttribute('aria-busy', 'false');
+          if (districtEl) {
+            districtEl.disabled = false;
+            districtEl.replaceChildren(new Option('Tất cả khu vực', ''));
+          }
+          if (cinemaTitleEl) cinemaTitleEl.textContent = 'Chưa có danh sách rạp';
+          status(`Không tải được danh sách rạp (${error.message}).`, init);
         }
-        const requestedCinema = root.dataset.cinemaKey || params.get("cinema");
-        const foundCinema = state.cinemas.find((cinema) => cinema.key === requestedCinema);
-        if (isCinemaOnly && !foundCinema) {
-          cinemasEl.innerHTML = "";
-          status("Không tìm thấy cụm rạp này. Hãy quay lại danh sách rạp để chọn một cụm rạp khác.");
-          return;
-        }
-        state.selected = foundCinema ? foundCinema.key : state.cinemas[0].key;
-        if (!isCinemaOnly) {
-          renderDistricts();
-          renderChips();
-          renderCinemas();
-        }
-        loadSession();
-      } catch (error) {
-        cinemasEl.innerHTML = '';
-        chipsEl.replaceChildren();
-        cinemasEl.setAttribute('aria-busy', 'false');
-        status(`Không tải được danh sách rạp (${error.message}).`, init);
       }
     }
 
@@ -446,9 +670,18 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
     districtEl?.addEventListener('change', () => {
       state.district = districtEl.value;
       const available = visibleCinemas();
-      if (available.length && !available.some(item => item.key === state.selected)) {
+      if (!available.length) {
+        // District filters are local and synchronous. Don't animate a fake
+        // network request, but also don't leave the previous area's sessions.
+        ++state.sessionToken;
+        state.selected = null;
+        currentShows = [];
+        if (cinemaTitleEl) cinemaTitleEl.textContent = 'Không có rạp trong khu vực đã chọn';
+        if (cinemaAddressEl) cinemaAddressEl.textContent = '';
+        status('Không có rạp phù hợp tại khu vực này.');
+      } else if (!available.some(item => item.key === state.selected)) {
         state.selected = available[0].key;
-        loadSession();
+        loadSession(); // its local skeleton starts only if session is uncached
       }
       renderCinemas();
     });
