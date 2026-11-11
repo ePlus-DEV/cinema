@@ -209,3 +209,8 @@ assert.match(mobileMenuSrc, /cinema:city-picker-open/, 'Opening province selecti
 assert.match(mobileMenuSrc, /cinema:nav-open/, 'Opening the navigation drawer must close the province picker');
 assert.match(mobileMenuSrc, /matchMedia\('\(min-width: 861px\)'\)/, 'Mobile drawer must close on desktop resize');
 assert.match(mobileMenuSrc, /max-height: calc\(100dvh - var\(--mobile-header-height\) - 20px\)/, 'Province picker must fit mobile viewport');
+
+const mobileHeaderCss = readFileSync('src/styles/global.css', 'utf8');
+assert.match(mobileHeaderCss, /\.header-action span:last-child \{ font-size: 18px; \}/, 'Large header icon font must apply only to the arrow');
+assert.ok(!mobileHeaderCss.includes('.header-action span { font-size: 18px; }'), 'Mobile schedule CTA label must not inherit oversized 18px font');
+assert.match(mobileHeaderCss, /\.site-header \.header-action \.header-action__label \{\s*font-size: 11px;/, 'Mobile schedule CTA label must remain compact');
