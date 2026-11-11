@@ -25,7 +25,11 @@ for (const route of routes) {
   assert.match(html, /<html\s+lang="vi">/, 'Missing Vietnamese language declaration: ' + route);
   assert.match(html, /noindex,\s*nofollow/, 'Demo page must stay noindex: ' + route);
   assert.ok(html.includes('<title>'), 'Missing title: ' + route);
-  assert.ok(html.includes('data-page-skeleton'), 'Missing full-page skeleton: ' + route);
+  if (route === '/') {
+    assert.ok(!html.includes('data-page-skeleton'), 'Prerendered homepage must never be blocked by a full-page skeleton');
+  } else {
+    assert.ok(html.includes('data-page-skeleton'), 'Missing full-page skeleton: ' + route);
+  }
   assert.ok(html.includes('page-skeleton-done'), 'Missing skeleton timeout safeguard: ' + route);
   console.log('PASS: ' + route);
 }
@@ -55,7 +59,10 @@ for (const [route, html] of [['phim/chi-tiet', filmPage], ['rap/chi-tiet', cinem
 }
 assert.ok(home.includes('live-poster__badge'), 'Pre-rendered movie cards missing');
 assert.ok(home.includes('momo-live__loading-program'), 'Live showtime card skeletons missing');
-console.log('PASS: full-page and per-section loading states');
+assert.ok(!home.includes('class="page-skeleton"'), 'Homepage contains a blocking loading overlay despite SSR movie data');
+const preRenderedMovieCards = (home.match(/movie-rail__card/g) || []).length;
+assert.ok(preRenderedMovieCards >= 8, 'Homepage must include server-rendered movie cards independent of API');
+console.log('PASS: homepage SSR first paint, full-page fallback on dynamic routes and local schedule loading');
 
 const explorer = readFileSync('dist/lich-chieu/index.html', 'utf8');
 assert.ok(explorer.includes('schedule-page--explorer'), 'Standalone schedule must use full-width explorer');
