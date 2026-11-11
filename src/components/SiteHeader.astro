@@ -16,7 +16,7 @@ const links = [
       <span>ePlus <strong>Cinema</strong></span>
     </a>
     <nav class="main-nav" id="primary-nav" aria-label="Điều hướng chính">
-      {links.map((link) => <a class:list={['main-nav__link', { 'is-active': active === link.id }]} href={link.href}>{link.label}</a>)}
+      {links.map((link) => <a class:list={['main-nav__link', { 'is-active': active === link.id }]} href={link.href} aria-current={active === link.id ? 'page' : undefined}>{link.label}</a>)}
     </nav>
     <div class="site-header__right">
       <a class="location-chip" href="/lich-chieu" title="Khu vực đang xem — đổi thành phố trong mục Lịch chiếu">

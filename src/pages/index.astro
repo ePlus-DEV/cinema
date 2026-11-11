@@ -10,6 +10,26 @@ import MomoShowtimeList from '../components/MomoShowtimeList.astro';
 <BaseLayout active="home" title="ePlus Cinema | Phim đang chiếu, lịch chiếu và rạp tại TP.HCM" description="Khám phá phim đang chiếu, phim sắp chiếu và tra cứu lịch chiếu theo ngày, cụm rạp tại TP. Hồ Chí Minh. ePlus Cinema không bán vé." canonicalPath="/" seoIndexable />
   <HomeHero />
 
+  <nav class="home-paths" aria-label="Lối tắt khám phá phim">
+    <div class="container home-paths__inner">
+      <a href="#phim-dang-chieu" class="home-paths__item">
+        <span class="home-paths__number" aria-hidden="true">01</span>
+        <span class="home-paths__text"><strong>Phim đang chiếu</strong><small>Khám phá các bộ phim nổi bật</small></span>
+        <span class="home-paths__arrow" aria-hidden="true">↗</span>
+      </a>
+      <a href="#phim-sap-chieu" class="home-paths__item">
+        <span class="home-paths__number" aria-hidden="true">02</span>
+        <span class="home-paths__text"><strong>Phim sắp chiếu</strong><small>Khám phá phim sắp ra mắt</small></span>
+        <span class="home-paths__arrow" aria-hidden="true">↗</span>
+      </a>
+      <a href="#lich-chieu" class="home-paths__item">
+        <span class="home-paths__number" aria-hidden="true">03</span>
+        <span class="home-paths__text"><strong>Lịch chiếu</strong><small>Tìm rạp và giờ chiếu phù hợp</small></span>
+        <span class="home-paths__arrow" aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </nav>
+
   <section class="section section--dark" id="phim-dang-chieu">
     <div class="container">
       <div class="section-heading section-heading--centered section-heading--on-dark">

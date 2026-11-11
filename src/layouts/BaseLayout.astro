@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import '../styles/cinema-refresh.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import PageSkeleton from '../components/PageSkeleton.astro';
 import SeoHead from '../components/SeoHead.astro';
@@ -40,7 +41,7 @@ const isPrPreview = /\/previews\/pr-\d+\//.test(import.meta.env.BASE_URL || '/')
       window.setTimeout(() => document.documentElement.classList.add('page-skeleton-done'), 5000);
     </script>
   </head>
-  <body>
+  <body class="cinema-ui">
     <a class="skip-link" href="#main-content">Bỏ qua điều hướng</a>
     {isPrPreview && <div class="preview-banner" role="note">
       <span class="preview-banner__dot"></span>
