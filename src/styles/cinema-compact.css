@@ -322,3 +322,51 @@
   font-size: 11px;
   line-height: 1.5;
 }
+
+/* Independent rolling date rail (like MoMo, with ePlus brand colors). */
+.momo-live .date-picker {
+  display: flex; align-items: stretch; gap: 5px; padding: 9px 10px;
+  overflow: hidden; border-bottom: 1px solid #e7ebf2; min-width: 0;
+}
+.momo-live .date-picker__viewport {
+  flex: 1 1 auto; min-width: 0; overflow-x: auto;
+  scrollbar-width: thin; overscroll-behavior-inline: contain;
+}
+.momo-live .date-picker__days { display: flex; gap: 6px; width: max-content; min-width: 100%; }
+.momo-live .date-picker__day,
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__datebar .date-picker__day {
+  display: flex; flex: 0 0 64px; flex-direction: column; gap: 4px;
+  align-items: center; justify-content: center; width: 64px; min-width: 64px; min-height: 62px;
+  padding: 7px 3px; border: 1px solid #dfe4ed; border-radius: 7px;
+  color: #27364e; background: #f8fafc; cursor: pointer; text-align: center;
+}
+.momo-live .date-picker__day strong,
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .date-picker__day strong {
+  display: block; margin: 0; font-size: 17px; line-height: 1.1; font-weight: 800;
+}
+.momo-live .date-picker__day span {
+  display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+  font-size: 10px; line-height: 1.35; white-space: nowrap;
+}
+.momo-live .date-picker__day.is-selected,
+.schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__datebar .date-picker__day.is-selected {
+  background: #172b4c; border-color: #172b4c; color: #fff;
+  box-shadow: inset 0 3px #f3bb58;
+}
+.momo-live .date-picker__nav {
+  display: grid; place-items: center; flex: 0 0 29px; min-width: 29px;
+  padding: 0; border: 1px solid #e0e5ed; border-radius: 7px;
+  color: #1c304f; background: #fff; cursor: pointer; font: inherit; font-size: 26px;
+}
+.momo-live .date-picker__nav:disabled { opacity: .3; cursor: default; }
+.momo-live .date-picker__nav:hover:not(:disabled) { background: #fff8e9; border-color: #d6ae67; }
+.momo-live .date-picker__day:focus-visible,
+.momo-live .date-picker__nav:focus-visible { outline: 2px solid #c88a24; outline-offset: -2px; }
+@media (max-width: 600px) {
+  .momo-live .date-picker { padding: 8px 6px; gap: 4px; }
+  .momo-live .date-picker__nav { flex-basis: 26px; min-width: 26px; }
+  .momo-live .date-picker__day,
+  .schedule-shell .momo-live:not([data-cinema-only="true"]) .momo-live__datebar .date-picker__day {
+    flex-basis: 59px; min-width: 59px; width: 59px;
+  }
+}
