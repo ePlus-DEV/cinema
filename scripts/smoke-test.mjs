@@ -200,3 +200,12 @@ assert.match(groupedLogoCss, /width:\s*34px;[\s\S]*?height:\s*34px;/, 'Grouped c
 assert.match(groupedLogoCss, /object-fit:\s*contain/, 'Do not crop provider logos to make them appear uniform');
 assert.match(groupedLogoCss, /object-position:\s*center;[\s\S]*?padding:\s*0;/, 'No double padding that shrinks brand marks');
 assert.match(showtimeLogoCss, /Consistent cinema-chain logo artwork/, 'Compact showtimes must use unified logo artwork too');
+
+const mobileMenuSrc = readFileSync('src/components/SiteHeader.astro','utf8');
+assert.match(mobileMenuSrc, /href=\{route\(link\.href\)\}/, 'Mobile navigation must retain the deployment base path');
+assert.match(mobileMenuSrc, /href=\{route\('\/'\)\}/, 'Logo must retain the preview base path');
+assert.match(mobileMenuSrc, /data-nav-city/, 'Mobile navigation needs an accessible province selector');
+assert.match(mobileMenuSrc, /cinema:city-picker-open/, 'Opening province selection must close the mobile drawer');
+assert.match(mobileMenuSrc, /cinema:nav-open/, 'Opening the navigation drawer must close the province picker');
+assert.match(mobileMenuSrc, /matchMedia\('\(min-width: 861px\)'\)/, 'Mobile drawer must close on desktop resize');
+assert.match(mobileMenuSrc, /max-height: calc\(100dvh - var\(--mobile-header-height\) - 20px\)/, 'Province picker must fit mobile viewport');
