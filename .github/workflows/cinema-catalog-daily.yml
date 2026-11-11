@@ -10,12 +10,13 @@ on:
         description: 'Re-fetch even if the catalog was already updated today'
         type: boolean
         default: false
-  # Bootstrap the first catalog immediately when this new workflow is merged.
-  # Future regular source pushes do NOT start a fetch.
+  # Bootstrap directory schema changes immediately after their PR is merged.
+  # Unrelated source commits do NOT schedule catalog refreshes.
   push:
     branches: [main]
     paths:
       - '.github/workflows/cinema-catalog-daily.yml'
+      - 'scripts/sync-cinema-catalog.mjs'
 
 permissions:
   contents: write
@@ -47,6 +48,7 @@ jobs:
         shell: bash
         env:
           FORCE_REFRESH: ${{ inputs.force || false }}
+          SCRIPT_PUSH: ${{ github.event_name == 'push' }}
         run: |
           set -euo pipefail
           today="$(TZ=Asia/Ho_Chi_Minh date +%F)"
@@ -62,7 +64,16 @@ jobs:
               console.log(parts.year + "-" + parts.month + "-" + parts.day);
             }
           ')"
-          if [[ "$FORCE_REFRESH" != "true" && "$snapshot_day" == "$today" ]]; then
+          # A code-push that introduces the per-city schema must populate
+          # Đồng Nai at least once, even if HCM refreshed earlier today.
+          has_dong_nai="$(node --input-type=module -e '
+            import { readFileSync } from "node:fs";
+            const snap = JSON.parse(readFileSync("src/data/cinema-snapshot.json","utf8"));
+            console.log(Array.isArray(snap.cinemasByCity?.["48"]?.cinemas) &&
+              snap.cinemasByCity["48"].cinemas.length > 0 ? "true" : "false");
+          ')"
+          if [[ "$FORCE_REFRESH" != "true" && "$snapshot_day" == "$today" &&
+                ( "$SCRIPT_PUSH" != "true" || "$has_dong_nai" == "true" ) ]]; then
             echo "due=false" >> "$GITHUB_OUTPUT"
             echo "Catalog already refreshed today ($today); skip duplicate fetch/build/deploy." >> "$GITHUB_STEP_SUMMARY"
           else
