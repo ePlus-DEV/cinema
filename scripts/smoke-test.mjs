@@ -12,6 +12,7 @@ const routes = [
   '/phim-sap-chieu/',
   '/lich-chieu/',
   '/lich-chieu/momo/',
+  '/danh-gia/',
   '/phim/chi-tiet/',
   '/rap/chi-tiet/',
   '/rap/',
@@ -25,8 +26,8 @@ for (const route of routes) {
   assert.match(html, /<html\s+lang="vi">/, 'Missing Vietnamese language declaration: ' + route);
   assert.match(html, /noindex,\s*nofollow/, 'Demo page must stay noindex: ' + route);
   assert.ok(html.includes('<title>'), 'Missing title: ' + route);
-  if (route === '/') {
-    assert.ok(!html.includes('data-page-skeleton'), 'Prerendered homepage must never be blocked by a full-page skeleton');
+  if (route === '/' || route === '/danh-gia/') {
+    assert.ok(!html.includes('data-page-skeleton'), 'Homepage/reviews must not be blocked by the full-page overlay: ' + route);
   } else {
     assert.ok(html.includes('data-page-skeleton'), 'Missing full-page skeleton: ' + route);
   }
@@ -69,6 +70,19 @@ assert.ok(!home.includes('class="page-skeleton"'), 'Homepage contains a blocking
 const preRenderedMovieCards = (home.match(/movie-rail__card/g) || []).length;
 assert.ok(preRenderedMovieCards >= 8, 'Homepage must include server-rendered movie cards independent of API');
 console.log('PASS: homepage SSR first paint, full-page fallback on dynamic routes and local schedule loading');
+
+
+const reviewPage = readFileSync('dist/danh-gia/index.html', 'utf8');
+assert.ok(reviewPage.includes('data-review-hub') && reviewPage.includes('data-hub-list'), 'Review hub must exist');
+assert.ok(reviewPage.includes('data-hub-skeleton'), 'Reviews must prerender card skeletons for the live API');
+assert.ok((reviewPage.match(/review-hub__skeleton-film/g) || []).length >= 3, 'At least three review card placeholders must be visible before data loads');
+assert.ok(reviewPage.includes('data-hub-status') && reviewPage.includes('data-hub-more'), 'Review status and pagination must remain functional');
+assert.ok(!reviewPage.includes('data-page-skeleton'), 'Review card skeletons must not be covered by full-page overlay');
+const reviewSrc = readFileSync('src/components/ReviewHub.astro', 'utf8');
+assert.match(reviewSrc, /showSkeleton\(\)/, 'Loading more reviews must show review skeleton cards');
+assert.match(reviewSrc, /removeSkeleton\(\)/, 'Skeletons must be removed on API success or error');
+assert.match(reviewSrc, /renderedCards > 0/, 'Empty review cards must show an appropriate fallback');
+console.log('PASS: review card skeleton first paint and load-more states');
 
 const explorer = readFileSync('dist/lich-chieu/index.html', 'utf8');
 assert.ok(explorer.includes('schedule-page--explorer'), 'Standalone schedule must use full-width explorer');
