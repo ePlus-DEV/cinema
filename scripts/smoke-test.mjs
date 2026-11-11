@@ -172,7 +172,7 @@ assert.ok((cinemaListPage.match(/data-group-index="/g) || []).length >= 20, 'Cin
 assert.ok(cinemaListPage.includes('data-chain-toggle'), 'Large cinema groups need a show-all control');
 const cinemaGroupsSrc = readFileSync('src/components/LiveCinemaGrid.astro','utf8');
 assert.match(cinemaGroupsSrc, /search\?\.addEventListener\('input', render\)/, 'Grouped cinema search must remain interactive');
-assert.match(cinemaGroupsSrc, /chainFilter = button\.dataset\.chainFilter/, 'Cinema filters must select chain groups');
+assert.match(cinemaGroupsSrc, /selectedChain = button\.dataset\.chainFilter/, 'Cinema filters must select chain groups');
 assert.match(cinemaGroupsSrc, /section\.dataset\.expanded/, 'Cinema groups must expand and collapse');
 
 const siteHeaderSrc = readFileSync('src/components/SiteHeader.astro','utf8');
