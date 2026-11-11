@@ -103,6 +103,24 @@ import '../styles/movie-extras.css';
         desc.textContent = item.desc;
         main.append(desc);
       }
+      const images = Array.isArray(item.imageUrls) ? item.imageUrls.filter(u => /^https:\/\//.test(String(u || ''))).slice(0, 4) : [];
+      if (images.length) {
+        const wrap = document.createElement('div');
+        wrap.className = 'momo-review__images';
+        for (const url of images) {
+          const link = document.createElement('a');
+          link.href = url;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = 'Ảnh do khán giả đăng cùng đánh giá';
+          img.loading = 'lazy';
+          link.append(img);
+          wrap.append(link);
+        }
+        main.append(wrap);
+      }
       card.append(main);
       return card;
     }
