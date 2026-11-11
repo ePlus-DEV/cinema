@@ -1,0 +1,137 @@
+---
+// Homepage spotlight: rotating featured films — the first now-showing titles
+// in the source list's own order that have a wide banner. Server-rendered slides; a small script rotates
+// them, pauses on hover/focus, and wires thumbnails + arrows. Trailer buttons
+// reuse the shared TrailerModal via data-play-trailer.
+import { moviesNow } from '../lib/cinema-catalog';
+import { moviePath } from '../lib/cinema-routes.js';
+import { youtubeVideoId } from '../lib/movie-media.js';
+
+const momoClip = (raw?: string) => {
+  if (!raw) return '';
+  try {
+    const url = new URL(raw);
+    return url.protocol === 'https:' && /(^|\.)momocdn\.net$/.test(url.hostname) ? raw : '';
+  } catch { return ''; }
+};
+const base = import.meta.env.BASE_URL;
+const slides = moviesNow.filter((movie) => movie.bannerUrl).slice(0, 5);
+const vnd = new Intl.NumberFormat('vi-VN');
+---
+
+{slides.length > 0 && (
+<section class="home-hero" data-home-hero aria-label="Phim nổi bật">
+  {slides.map((movie, index) => {
+    const clip = momoClip(movie.autoplayTrailer);
+    const ytId = youtubeVideoId(movie.trailerUrl) || '';
+    return (
+    <article class:list={['home-hero__slide', { 'is-active': index === 0 }]} data-hero-slide aria-hidden={index !== 0}>
+      <img class="home-hero__bg" src={movie.bannerUrl} alt="" loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
+      <div class="home-hero__shade" aria-hidden="true"></div>
+      <div class="container home-hero__inner">
+        <div class="home-hero__content">
+          <span class="home-hero__eyebrow">★ Phim nổi bật · Đang chiếu</span>
+          <h2 class="home-hero__title">{movie.title}</h2>
+          <div class="home-hero__meta">
+            {movie.age && <span class="age-badge">{movie.age}</span>}
+            {movie.ratingPoint != null && <span class="home-hero__score">★ {String(movie.ratingPoint).replace('.', ',')}<small> · {vnd.format(movie.ratingTotal || 0)} lượt đánh giá</small></span>}
+            {movie.duration > 0 && <span>{movie.duration} phút</span>}
+            {movie.genre && <span>{movie.genre}</span>}
+          </div>
+          {movie.synopsis && <p class="home-hero__synopsis">{movie.synopsis.length > 180 ? movie.synopsis.slice(0, 180).trimEnd() + '…' : movie.synopsis}</p>}
+          <div class="home-hero__actions">
+            <a class="button home-hero__cta" href={moviePath(movie.id, base)}>Xem lịch chiếu <span aria-hidden="true">↗</span></a>
+            {(clip || ytId) && <button type="button" class="button home-hero__trailer" data-play-trailer data-clip={clip || undefined} data-youtube={ytId || undefined} data-title={movie.title}>▶ Xem trailer</button>}
+          </div>
+        </div>
+      </div>
+    </article>
+    );
+  })}
+  {slides.length > 1 && (
+  <div class="container home-hero__nav">
+    <div class="home-hero__thumbs" role="tablist" aria-label="Chọn phim nổi bật">
+      {slides.map((movie, index) => (
+        <button type="button" class:list={['home-hero__thumb', { 'is-active': index === 0 }]} data-hero-thumb={index} aria-label={'Phim nổi bật: ' + movie.title}>
+          {(movie.bannerUrl || movie.posterUrl) && <img src={movie.bannerUrl || movie.posterUrl} alt="" loading="lazy" decoding="async" />}
+          <span>{movie.title}</span>
+        </button>
+      ))}
+    </div>
+    <div class="home-hero__arrows">
+      <button type="button" data-hero-prev aria-label="Phim nổi bật trước">←</button>
+      <button type="button" data-hero-next aria-label="Phim nổi bật tiếp theo">→</button>
+    </div>
+  </div>
+  )}
+</section>
+)}
+
+<style is:global>
+  /* Global: slides/thumbs are static SSR markup, but keeping the hero styles
+     in the global sheet avoids duplication with the rail overrides below. */
+  .home-hero { position: relative; background: var(--navy); color: #fff; overflow: hidden; }
+  .home-hero__slide { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity .7s ease; }
+  .home-hero__slide:first-child { position: relative; }
+  .home-hero__slide.is-active { opacity: 1; pointer-events: auto; z-index: 1; }
+  .home-hero__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 22%; }
+  .home-hero__shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10, 16, 30, .88) 0%, rgba(10, 16, 30, .62) 46%, rgba(10, 16, 30, .12) 78%), linear-gradient(0deg, rgba(10, 16, 30, .55), transparent 42%); }
+  .home-hero__inner { position: relative; z-index: 1; display: flex; align-items: flex-end; min-height: min(74vh, 620px); padding-top: 110px; padding-bottom: 118px; }
+  .home-hero__content { max-width: 640px; }
+  .home-hero__eyebrow { display: inline-block; background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .28); backdrop-filter: blur(6px); border-radius: 999px; padding: 6px 13px; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  .home-hero__title { margin: 18px 0 12px; font-size: clamp(34px, 5.2vw, 58px); line-height: 1.06; letter-spacing: -.02em; font-weight: 800; text-shadow: 0 4px 30px rgba(0, 0, 0, .35); }
+  .home-hero__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font-size: 13px; color: #dbe4f0; font-weight: 600; }
+  .home-hero__score { color: #ffc531; font-weight: 800; }
+  .home-hero__score small { color: #dbe4f0; font-weight: 600; }
+  .home-hero__synopsis { margin: 14px 0 0; color: #c3cede; font-size: 14px; line-height: 1.75; max-width: 560px; }
+  .home-hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+  .home-hero__cta { background: #fff; color: var(--navy); border-radius: 999px; padding: 14px 24px; font-size: 12px; }
+  .home-hero__cta:hover { transform: translateY(-1px); }
+  .home-hero__trailer { background: rgba(255, 255, 255, .12); color: #fff; border: 1px solid rgba(255, 255, 255, .4); border-radius: 999px; padding: 14px 24px; font-size: 12px; cursor: pointer; backdrop-filter: blur(6px); }
+  .home-hero__trailer:hover { background: rgba(255, 255, 255, .22); }
+  .home-hero__nav { position: relative; z-index: 2; display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-top: -86px; padding-bottom: 26px; }
+  .home-hero__thumbs { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .home-hero__thumbs::-webkit-scrollbar { display: none; }
+  .home-hero__thumb { display: flex; align-items: center; gap: 9px; border: 1px solid rgba(255, 255, 255, .22); background: rgba(10, 16, 30, .45); backdrop-filter: blur(8px); color: #aeb9c9; border-radius: 12px; padding: 6px 12px 6px 6px; cursor: pointer; font: inherit; font-size: 11px; font-weight: 700; white-space: nowrap; transition: border-color .2s, color .2s, background .2s; }
+  .home-hero__thumb img { width: 52px; height: 32px; object-fit: cover; border-radius: 7px; display: block; }
+  .home-hero__thumb.is-active { border-color: #ffc531; color: #fff; background: rgba(10, 16, 30, .72); }
+  .home-hero__arrows { display: flex; gap: 8px; flex: none; }
+  .home-hero__arrows button { width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .35); background: rgba(10, 16, 30, .45); color: #fff; font-size: 16px; cursor: pointer; backdrop-filter: blur(8px); }
+  .home-hero__arrows button:hover { background: rgba(255, 255, 255, .18); }
+  @media (max-width: 720px) {
+    .home-hero__inner { min-height: 480px; padding-bottom: 108px; }
+    .home-hero__synopsis { display: none; }
+    .home-hero__thumb span { display: none; }
+    .home-hero__thumb { padding: 5px; }
+  }
+</style>
+
+<script>
+  const hero = document.querySelector<HTMLElement>('[data-home-hero]');
+  if (hero) {
+    const slides = [...hero.querySelectorAll<HTMLElement>('[data-hero-slide]')];
+    const thumbs = [...hero.querySelectorAll<HTMLElement>('[data-hero-thumb]')];
+    let current = 0;
+    let timer: number | undefined;
+    const show = (index: number) => {
+      current = (index + slides.length) % slides.length;
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('is-active', i === current);
+        slide.setAttribute('aria-hidden', String(i !== current));
+      });
+      thumbs.forEach((thumb, i) => thumb.classList.toggle('is-active', i === current));
+    };
+    const restart = () => {
+      window.clearInterval(timer);
+      timer = window.setInterval(() => show(current + 1), 6500);
+    };
+    thumbs.forEach((thumb, i) => thumb.addEventListener('click', () => { show(i); restart(); }));
+    hero.querySelector('[data-hero-prev]')?.addEventListener('click', () => { show(current - 1); restart(); });
+    hero.querySelector('[data-hero-next]')?.addEventListener('click', () => { show(current + 1); restart(); });
+    hero.addEventListener('mouseenter', () => window.clearInterval(timer));
+    hero.addEventListener('mouseleave', restart);
+    hero.addEventListener('focusin', () => window.clearInterval(timer));
+    hero.addEventListener('focusout', restart);
+    if (slides.length > 1) restart();
+  }
+</script>

@@ -1,21 +1,39 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import LiveMovieGrid from '../components/LiveMovieGrid.astro';
+import HomeHero from '../components/HomeHero.astro';
+import MovieRail from '../components/MovieRail.astro';
 import TrailerModal from '../components/TrailerModal.astro';
+import FeaturedReviews from '../components/FeaturedReviews.astro';
 import LiveCinemaGrid from '../components/LiveCinemaGrid.astro';
 import MomoShowtimeList from '../components/MomoShowtimeList.astro';
 ---
 <BaseLayout active="home" title="ePlus Cinema | Phim đang chiếu, lịch chiếu và rạp tại TP.HCM" description="Khám phá phim đang chiếu, phim sắp chiếu và tra cứu lịch chiếu theo ngày, cụm rạp tại TP. Hồ Chí Minh. ePlus Cinema không bán vé." canonicalPath="/" seoIndexable />
-  <section class="section section--featured container" id="phim-dang-chieu">
-    <div class="section-heading section-heading--featured">
-      <div>
-        <span class="eyebrow">CHỌN PHIM CHO BUỔI HẸN</span>
-        <h1>Phim đang chiếu <span class="title-spark">✦</span></h1>
-        <p>Khám phá phim mới nhất và mở trang chi tiết để tìm suất chiếu phù hợp.</p>
+  <HomeHero />
+
+  <section class="section section--dark" id="phim-dang-chieu">
+    <div class="container">
+      <div class="section-heading section-heading--centered section-heading--on-dark">
+        <div>
+          <span class="eyebrow">ĐANG CHIẾU TẠI RẠP</span>
+          <h2>Phim đang chiếu</h2>
+          <p>Những bộ phim được khán giả chấm điểm nhiều nhất, cập nhật mỗi ngày.</p>
+        </div>
       </div>
-      <a class="section-link" href="/phim-dang-chieu">Xem tất cả <span>↗</span></a>
+      <MovieRail status="now" limit={24} ranked />
+      <div class="section-cta"><a class="button button--light" href="/phim-dang-chieu">Xem tất cả phim đang chiếu <span>↗</span></a></div>
     </div>
-    <LiveMovieGrid status="now" limit={12} />
+  </section>
+
+  <section class="section container" id="phim-sap-chieu">
+    <div class="section-heading section-heading--centered">
+      <div>
+        <span class="eyebrow">DÀNH CHO NGƯỜI MÊ PHIM</span>
+        <h2>Phim sắp chiếu</h2>
+        <p>Thêm vài bộ phim vào danh sách mong chờ của bạn.</p>
+      </div>
+    </div>
+    <MovieRail status="soon" limit={24} />
+    <div class="section-cta"><a class="button button--dark" href="/phim-sap-chieu">Xem tất cả phim sắp chiếu <span>↗</span></a></div>
   </section>
 
   <section class="section section--tinted" id="lich-chieu">
@@ -32,12 +50,16 @@ import MomoShowtimeList from '../components/MomoShowtimeList.astro';
     </div>
   </section>
 
-  <section class="section container">
-    <div class="section-heading">
-      <div><span class="eyebrow">DÀNH CHO NGƯỜI MÊ PHIM</span><h2>Sắp ra rạp</h2><p>Thêm vài bộ phim vào danh sách mong chờ.</p></div>
-      <a class="section-link" href="/phim-sap-chieu">Khám phá thêm <span>↗</span></a>
+  <section class="section container" id="danh-gia-noi-bat">
+    <div class="section-heading section-heading--centered">
+      <div>
+        <span class="eyebrow">KHÁN GIẢ NÓI GÌ</span>
+        <h2>Bình luận nổi bật</h2>
+        <p>Cảm nhận thật từ khán giả đã xem phim tại rạp.</p>
+      </div>
     </div>
-    <LiveMovieGrid status="soon" limit={6} />
+    <FeaturedReviews />
+    <div class="section-cta"><a class="button button--dark" href="/danh-gia">Xem thêm đánh giá <span>↗</span></a></div>
   </section>
 
   <section class="section section--theaters">
@@ -52,3 +74,14 @@ import MomoShowtimeList from '../components/MomoShowtimeList.astro';
 
   <TrailerModal />
 </BaseLayout>
+
+<style>
+  .section--dark { background: var(--navy); }
+  .section-heading--centered { justify-content: center; text-align: center; }
+  .section-heading--centered .eyebrow { display: inline-block; }
+  .section-heading--on-dark h2 { color: #fff; }
+  .section-heading--on-dark p { color: #93a1b5; }
+  .section-cta { display: flex; justify-content: center; margin-top: 26px; }
+  .button--light { background: #fff; color: var(--navy); border-radius: 999px; padding: 14px 24px; font-size: 12px; }
+  .button--dark { background: var(--navy); color: #fff; border-radius: 999px; padding: 14px 24px; font-size: 12px; }
+</style>

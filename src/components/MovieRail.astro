@@ -1,0 +1,95 @@
+---
+// Horizontal movie rail for the homepage, modelled on professional cinema
+// homepages: scroll-snap track, edge arrow buttons, optional rank numbers
+// and the audience score on every card. Cards reuse the shared movie-card
+// markup so posters keep their trailer trigger (TrailerModal).
+import { moviesNow, moviesSoon } from '../lib/cinema-catalog';
+import { moviePath } from '../lib/cinema-routes.js';
+import { youtubeVideoId } from '../lib/movie-media.js';
+
+interface Props { status: 'now' | 'soon'; limit?: number; ranked?: boolean; }
+const { status, limit = 24, ranked = false } = Astro.props;
+const films = (status === 'soon' ? moviesSoon : moviesNow).slice(0, limit);
+const momoClip = (raw?: string) => {
+  if (!raw) return '';
+  try {
+    const url = new URL(raw);
+    return url.protocol === 'https:' && /(^|\.)momocdn\.net$/.test(url.hostname) ? raw : '';
+  } catch { return ''; }
+};
+const base = import.meta.env.BASE_URL;
+const vnd = new Intl.NumberFormat('vi-VN');
+---
+
+<div class="movie-rail" data-movie-rail>
+  <button type="button" class="movie-rail__arrow movie-rail__arrow--prev" data-rail-prev aria-label="Cuộn phim về trước">←</button>
+  <div class="movie-rail__track" data-rail-track>
+    {films.map((film, index) => {
+      const clip = momoClip(film.autoplayTrailer);
+      const ytId = youtubeVideoId(film.trailerUrl) || '';
+      return (
+      <a class="movie-card live-movie-card movie-rail__card" href={moviePath(film.id, base)} aria-label={'Xem chi tiết phim ' + film.title}>
+        <div class="live-poster">
+          <span class="live-poster__badge">{status === 'now' ? 'Đang chiếu' : 'Sắp chiếu'}</span>
+          {film.posterUrl && <img src={film.posterUrl} alt={'Poster phim ' + film.title} loading={index < 3 ? 'eager' : 'lazy'} decoding="async" />}
+          {ranked && <span class="movie-rail__rank" aria-hidden="true">{index + 1}</span>}
+          {(clip || ytId) && <span class="poster-trailer-btn" role="button" tabindex="0" data-play-trailer
+            data-clip={clip || undefined} data-youtube={ytId || undefined} data-title={film.title}
+            aria-label={'Xem trailer phim ' + film.title}>Trailer</span>}
+        </div>
+        <div class="movie-card__info">
+          <div class="movie-card__head"><h3>{film.title}</h3>{film.age && <span class="age-badge">{film.age}</span>}</div>
+          <p>{[film.genre, film.duration ? film.duration + ' phút' : ''].filter(Boolean).join(' · ')}</p>
+          {film.ratingPoint != null
+            ? <span class="movie-card__rating">★ {String(film.ratingPoint).replace('.', ',')} <small>({vnd.format(film.ratingTotal || 0)})</small></span>
+            : <span class="movie-card__status">{status === 'now' ? 'Chi tiết & lịch chiếu ↗' : 'Chi tiết phim ↗'}</span>}
+        </div>
+      </a>
+      );
+    })}
+  </div>
+  <button type="button" class="movie-rail__arrow movie-rail__arrow--next" data-rail-next aria-label="Cuộn phim tiếp">→</button>
+</div>
+
+<style is:global>
+  .movie-rail { position: relative; }
+  .movie-rail__track { display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 6px 2px 14px; scrollbar-width: none; }
+  .movie-rail__track::-webkit-scrollbar { display: none; }
+  .movie-rail__card { flex: 0 0 196px; scroll-snap-align: start; }
+  .movie-rail__rank { position: absolute; left: 8px; bottom: 2px; z-index: 1; font-size: 54px; font-weight: 800; line-height: 1; color: transparent; -webkit-text-stroke: 2px rgba(255, 255, 255, .92); text-shadow: 0 6px 22px rgba(0, 0, 0, .35); pointer-events: none; }
+  .movie-card__rating { color: #e8a13a; font-weight: 800; font-size: 12px; }
+  .movie-card__rating small { color: var(--muted); font-weight: 600; }
+  .movie-rail__arrow { position: absolute; top: 32%; z-index: 3; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border); background: #fff; color: var(--ink); font-size: 17px; cursor: pointer; box-shadow: 0 10px 26px rgba(17, 27, 46, .16); transition: transform .18s, opacity .18s; }
+  .movie-rail__arrow:hover { transform: scale(1.06); }
+  .movie-rail__arrow--prev { left: -14px; }
+  .movie-rail__arrow--next { right: -14px; }
+  .movie-rail__arrow:disabled { opacity: .35; cursor: default; transform: none; }
+  /* Dark "now showing" section: light card text, glassy arrows. */
+  .section--dark .movie-card__info h3 { color: #fff; }
+  .section--dark .movie-card__info p { color: #93a1b5; }
+  .section--dark .movie-card__rating small { color: #93a1b5; }
+  .section--dark .movie-rail__arrow { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .3); color: #fff; box-shadow: none; backdrop-filter: blur(6px); }
+  @media (max-width: 720px) {
+    .movie-rail__card { flex-basis: 158px; }
+    .movie-rail__arrow { display: none; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-movie-rail]').forEach((rail) => {
+    const track = rail.querySelector<HTMLElement>('[data-rail-track]');
+    const prev = rail.querySelector<HTMLButtonElement>('[data-rail-prev]');
+    const next = rail.querySelector<HTMLButtonElement>('[data-rail-next]');
+    if (!track || !prev || !next) return;
+    const step = () => Math.round(track.clientWidth * 0.82);
+    const sync = () => {
+      prev.disabled = track.scrollLeft <= 4;
+      next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+    };
+    prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
+    next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
+    track.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+  });
+</script>

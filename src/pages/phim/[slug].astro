@@ -28,6 +28,7 @@ const description = movie.synopsis
 ---
 <BaseLayout title={movie.title + ' | ePlus Cinema'} description={description} active={showNow ? 'now' : 'soon'} canonicalPath={'/phim/' + movie.id + '/'}>
   <section class="live-detail live-film-detail" data-page-priority aria-busy="false">
+    {movie.bannerUrl && <div class="live-detail__backdrop" aria-hidden="true"><img src={movie.bannerUrl} alt="" decoding="async" /></div>}
     <div class="container">
       <nav class="breadcrumbs breadcrumbs--light" aria-label="Đường dẫn trang">
         <a href="/">Trang chủ</a><span>/</span>

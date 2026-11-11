@@ -1,0 +1,68 @@
+---
+// "Bình luận nổi bật" for the homepage: the three most-rated films that carry
+// audience reviews, one featured review each, server-rendered from the daily
+// snapshot. Full list lives on /danh-gia/.
+import { moviesNow, moviesSoon } from '../lib/cinema-catalog';
+import { moviePath } from '../lib/cinema-routes.js';
+
+const base = import.meta.env.BASE_URL;
+const vnd = new Intl.NumberFormat('vi-VN');
+const reviewDate = (value?: string) => value ? value.slice(0, 10).split('-').reverse().join('/') : '';
+const featured = [...moviesNow, ...moviesSoon]
+  .filter((movie) => movie.momoReviews?.length && movie.ratingPoint != null)
+  .sort((a, b) => (b.ratingTotal || 0) - (a.ratingTotal || 0))
+  .slice(0, 3);
+---
+
+{featured.length > 0 && (
+<div class="featured-reviews">
+  {featured.map((movie) => {
+    const review = movie.momoReviews[0];
+    return (
+    <article class="featured-review">
+      {movie.posterUrl && <img class="featured-review__bg" src={movie.posterUrl} alt="" loading="lazy" decoding="async" />}
+      <div class="featured-review__body">
+        <div class="featured-review__film">
+          <a href={moviePath(movie.id, base)}>{movie.title}</a>
+          <span class="featured-review__score">★ {String(movie.ratingPoint).replace('.', ',')}<small> · {vnd.format(movie.ratingTotal || 0)} lượt đánh giá</small></span>
+        </div>
+        <div class="featured-review__person">
+          {review.avatar
+            ? <img src={review.avatar} alt="" loading="lazy" decoding="async" />
+            : <span class="featured-review__avatar-fallback" aria-hidden="true">{(review.name || 'K').trim().charAt(0)}</span>}
+          <strong>{review.name}</strong>
+          {review.point != null && <span class="momo-review__point">★ {review.point}/10</span>}
+          {review.createdTime && <span class="featured-review__date">{reviewDate(review.createdTime)}</span>}
+        </div>
+        {review.tags?.length ? <div class="momo-review__tags">{review.tags.map((tag) => <span>{tag}</span>)}</div> : null}
+        {review.desc && <p class="featured-review__text">{review.desc.length > 220 ? review.desc.slice(0, 220).trimEnd() + '…' : review.desc}</p>}
+        <a class="featured-review__link" href={moviePath(movie.id, base)}>Xem phim & đánh giá →</a>
+      </div>
+    </article>
+    );
+  })}
+</div>
+)}
+
+<style is:global>
+  .featured-reviews { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .featured-review { position: relative; border: 1px solid var(--border); border-radius: 19px; background: #fff; overflow: hidden; box-shadow: 0 14px 38px rgba(22, 38, 59, .05); }
+  .featured-review__bg { width: 100%; height: 120px; object-fit: cover; object-position: center 18%; display: block; }
+  .featured-review__body { padding: 16px 18px 18px; }
+  .featured-review__film { display: flex; flex-direction: column; gap: 3px; margin-bottom: 12px; }
+  .featured-review__film a { color: var(--ink); font-weight: 800; font-size: 1rem; text-decoration: none; }
+  .featured-review__film a:hover { text-decoration: underline; }
+  .featured-review__score { color: #e8a13a; font-weight: 800; font-size: .85rem; }
+  .featured-review__score small { color: var(--muted); font-weight: 600; }
+  .featured-review__person { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .featured-review__person img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: #f0f3f7; }
+  .featured-review__avatar-fallback { width: 30px; height: 30px; border-radius: 50%; background: var(--navy); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex: none; }
+  .featured-review .momo-review__tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .featured-review .momo-review__tags span { background: #f5f7fa; color: #42506a; border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 600; }
+  .featured-review__person strong { color: #1c2b44; font-size: 12px; }
+  .featured-review__date { color: var(--muted); font-size: 11px; }
+  .featured-review__text { margin: 8px 0 0; color: #33405a; font-size: 12.5px; line-height: 1.7; }
+  .featured-review__link { display: inline-block; margin-top: 12px; color: var(--navy); font-weight: 700; font-size: .84rem; text-decoration: none; }
+  .featured-review__link:hover { text-decoration: underline; }
+  @media (max-width: 900px) { .featured-reviews { grid-template-columns: 1fr; } }
+</style>

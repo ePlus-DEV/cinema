@@ -558,7 +558,11 @@ h1, h2, h3, p { margin-top: 0; }
 .momo-live[data-cinema-only="true"] .momo-live__results { width: 100%; }
 
 /* Live film and cinema details are client-rendered; retain a useful shell before fetch. */
-.live-detail { padding: 34px 0 62px; color: #fff; background: radial-gradient(circle at 82% 15%, rgba(225, 168, 73, .17), transparent 33%), linear-gradient(120deg, #131e32, #223653); }
+.live-detail { position: relative; overflow: hidden; padding: 34px 0 62px; color: #fff; background: radial-gradient(circle at 82% 15%, rgba(225, 168, 73, .17), transparent 33%), linear-gradient(120deg, #131e32, #223653); }
+.live-detail__backdrop { position: absolute; inset: 0; pointer-events: none; }
+.live-detail__backdrop img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; display: block; }
+.live-detail__backdrop::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, rgba(10, 18, 34, .93) 22%, rgba(10, 18, 34, .78) 55%, rgba(10, 18, 34, .55)), linear-gradient(to top, rgba(10, 18, 34, .88), transparent 55%); }
+.live-detail > .container { position: relative; z-index: 1; }
 .live-detail__loading { padding: 45px 20px; border: 1px dashed #69768c; border-radius: 16px; font-size: 14px; line-height: 1.8; color: #e7eaf0; }
 .live-detail__retry { display: inline-block; margin-left: 9px; color: #ffd16c; font-weight: 700; text-decoration: underline; }
 .live-detail__grid { display: grid; grid-template-columns: minmax(200px, 300px) minmax(0, 1fr); align-items: start; gap: clamp(28px, 5vw, 75px); }
