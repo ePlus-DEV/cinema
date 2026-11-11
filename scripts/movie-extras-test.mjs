@@ -37,7 +37,11 @@ assert.ok(sync.includes('autoplayTrailer:String(f.ApiAutoplayTrailer'), 'Daily s
 assert.ok(sync.includes('momoReviews:(Array.isArray(f.TopComments)'), 'Daily sync must capture MoMo audience reviews');
 assert.ok(sync.includes('ratingPoint:typeof f.ApiRatingPoint'), 'Daily sync must capture the MoMo audience score');
 assert.ok(catalog.includes('momoReviews: momoReviewsOf(row)'), 'Catalog must pass MoMo audience reviews');
+assert.ok(sync.includes('c.imageUrls'), 'Daily sync must capture audience review photos');
+assert.ok(catalog.includes('images: (Array.isArray(item.images)'), 'Catalog must pass audience review photos');
 assert.ok(component.includes('data-momo-reviews'), 'Film details must render audience reviews');
+assert.ok(component.includes('momo-review__images'), 'Audience review cards must render reviewer photos when present');
+assert.ok(component.includes("danh-gia/"), 'Detail page audience block must link to the reviews hub');
 assert.ok(!component.includes('data-trailer-player'), 'Detail page must have a single trailer entry: the poster modal, no inline player');
 assert.ok(!component.includes('KHÁN GIẢ MOMO'), 'Audience reviews must not carry third-party branding');
 assert.ok(!component.includes('MoMo Cinema'), 'UI copy must not name the data source');

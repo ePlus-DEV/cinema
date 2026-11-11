@@ -134,11 +134,12 @@ for (const [items,status] of [[now,'now'],[soon,'soon']]) {
       ratingTotal:Number(f.ApiRatingTotal) || 0,
       // Top audience reviews MoMo attaches to the film (TopComments).
       momoReviews:(Array.isArray(f.TopComments) ? f.TopComments : []).slice(0, 3).map(c => ({
-        name:String(c.creatorName || 'Khán giả MoMo'),
+        name:String(c.creatorName || 'Khán giả'),
         avatar:String(c.creatorAvatar || ''),
         point:typeof c.point === 'number' ? c.point : null,
         desc:String(c.desc || '').slice(0, 600),
         tags:(Array.isArray(c.tagsV2) ? c.tagsV2 : []).map(t => String(t.keyword || '')).filter(Boolean).slice(0, 4),
+        images:(Array.isArray(c.imageUrls) ? c.imageUrls : []).map(u => String(u || '')).filter(u => u.startsWith('https://')).slice(0, 4),
         createdTime:String(c.createdTime || '').slice(0, 19)
       })),
       synopsis:String(f.Synopsis || ''),
