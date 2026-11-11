@@ -38,7 +38,7 @@ const description = 'Lịch chiếu trực tiếp, địa chỉ và thông tin c
       <a class="section-link" href="/lich-chieu/">Tất cả rạp <span>↗</span></a>
     </div>
     <div class="schedule-shell">
-      <div class="schedule-shell__top"><div><strong>{cinema.name}</strong><span>{cinema.address} · Giờ chiếu lấy trực tiếp từ API</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
+      <div class="schedule-shell__top"><div><strong>{cinema.name}</strong><span>{cinema.address} · Giờ chiếu lấy trực tiếp từ API</span></div><span class="schedule-shell__city">⌖ <span data-city-name>TP. Hồ Chí Minh</span></span></div>
       <MomoShowtimeList cinemaOnly cinemaKey={cinema.chainId + ':' + cinema.apiCinemaId} />
     </div>
   </section>

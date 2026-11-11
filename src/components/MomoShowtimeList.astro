@@ -15,13 +15,18 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
 
 <div class="momo-live" data-momo-live data-cinema-only={cinemaOnly ? "true" : "false"} data-movie-id={movieId} data-cinema-key={cinemaKey} data-known-movies={knownMovieIds} data-known-cinemas={knownCinemaKeys}>
   <div class="momo-live__location">
-    <div class="momo-live__place"><span aria-hidden="true">⌖</span><div><small>Thành phố đang xem</small><strong>TP. Hồ Chí Minh</strong></div></div>
+    <div class="momo-live__place"><span aria-hidden="true">⌖</span><div><small>Thành phố đang xem</small><strong data-momo-city-name>TP. Hồ Chí Minh</strong></div></div>
+    <label class="momo-live__district-label">Thành phố
+      <select data-momo-city aria-label="Chọn thành phố">
+        <option value="50">TP. Hồ Chí Minh</option>
+      </select>
+    </label>
     <label class="momo-live__district-label" for="cinema-district">Khu vực
       <select id="cinema-district" data-momo-district aria-label="Lọc rạp theo quận hoặc khu vực">
         <option value="">Tất cả khu vực</option>
       </select>
     </label>
-    <span class="momo-live__location-note">Chỉ hiển thị rạp tại TP. Hồ Chí Minh</span>
+    <span class="momo-live__location-note" data-momo-city-note>Chỉ hiển thị rạp tại TP. Hồ Chí Minh</span>
   </div>
   <div class="momo-live__toolbar">
     <div class="momo-live__chips" data-momo-chips role="group" aria-label="Lọc hệ thống rạp">
@@ -124,7 +129,8 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
 </style>
 
 <script>
-  import { CHAINS, formatLabel, loadAllCinemas, momoPost, saigonDate } from '../lib/momo-client.js';
+  import { CHAINS, formatLabel, loadAllCinemas, momoPost, saigonDate, getCityId, setCityId } from '../lib/momo-client.js';
+  import { CITIES, cityDisplayName } from '../lib/cities.js';
   import { createChainLogo } from '../lib/cinema-logos.js';
 
   import { moviePath, cinemaPath } from '../lib/cinema-routes.js';
@@ -135,6 +141,9 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
     const resultsEl = root.querySelector('[data-momo-results]');
     const searchEl = root.querySelector('[data-momo-search]');
     const districtEl = root.querySelector('[data-momo-district]');
+    const cityEl = root.querySelector('[data-momo-city]');
+    const cityNameEl = root.querySelector('[data-momo-city-name]');
+    const cityNoteEl = root.querySelector('[data-momo-city-note]');
     const cinemaTitleEl = root.querySelector('[data-momo-selected-cinema]');
     const cinemaAddressEl = root.querySelector('[data-momo-selected-address]');
     const params = new URLSearchParams(window.location.search);
@@ -398,7 +407,7 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
         if (!state.cinemas.length) {
           cinemasEl.innerHTML = '';
           chipsEl.replaceChildren();
-          status('Không có rạp nào cho TP. Hồ Chí Minh.', init);
+          status('Không có rạp nào cho ' + cityDisplayName(getCityId()) + '.', init);
           return;
         }
         const requestedCinema = root.dataset.cinemaKey || params.get("cinema");
@@ -447,6 +456,26 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
       state.dayOffset = Number(event.detail?.offset ?? event.detail ?? 0);
       loadSession();
     });
+
+    function applyCityLabels() {
+      const name = cityDisplayName(getCityId());
+      if (cityNameEl) cityNameEl.textContent = name;
+      if (cityNoteEl) cityNoteEl.textContent = 'Chỉ hiển thị rạp tại ' + name;
+      document.querySelectorAll('[data-city-name]').forEach((el) => { el.textContent = name; });
+    }
+    if (cityEl) {
+      cityEl.replaceChildren(...CITIES.map((city) =>
+        new Option(city.id === 50 ? 'TP. ' + city.name : city.name, String(city.id))));
+      cityEl.value = String(getCityId());
+      cityEl.addEventListener('change', () => {
+        setCityId(Number(cityEl.value));
+        state.district = '';
+        if (districtEl) districtEl.value = '';
+        applyCityLabels();
+        init();
+      });
+    }
+    applyCityLabels();
 
     init();
   }

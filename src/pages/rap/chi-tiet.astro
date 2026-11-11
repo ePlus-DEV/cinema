@@ -32,7 +32,7 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
       <a class="section-link" href="/lich-chieu">Tất cả rạp <span>↗</span></a>
     </div>
     <div class="schedule-shell">
-      <div class="schedule-shell__top"><div><strong data-cinema-schedule-name>Suất chiếu tại rạp</strong><span>Lịch chiếu cập nhật mỗi ngày · Không hỗ trợ đặt vé</span></div><span class="schedule-shell__city">⌖ TP. Hồ Chí Minh</span></div>
+      <div class="schedule-shell__top"><div><strong data-cinema-schedule-name>Suất chiếu tại rạp</strong><span>Lịch chiếu cập nhật mỗi ngày · Không hỗ trợ đặt vé</span></div><span class="schedule-shell__city">⌖ <span data-city-name>TP. Hồ Chí Minh</span></span></div>
       <MomoShowtimeList cinemaOnly />
     </div>
   </section>
@@ -72,7 +72,7 @@ const knownCinemaKeys = cinemas.map(cinema => cinema.chainId + ':' + cinema.apiC
         const cinema = cinemas.find((item) => item.key === key);
         if (!cinema) { showError('Không tìm thấy cụm rạp trong danh sách cập nhật.'); return; }
         const chain = CHAINS[cinema.chainId] || 'Hệ thống rạp';
-        root.querySelector('[data-cinema-chain]').textContent = chain + ' · TP. Hồ Chí Minh';
+        root.querySelector('[data-cinema-chain]').textContent = chain;
         root.querySelector('[data-cinema-title]').textContent = cinema.name;
         root.querySelector('[data-cinema-address]').textContent = cinema.address || 'Chưa có thông tin địa chỉ';
         schedule.querySelector('[data-cinema-schedule-name]').textContent = 'Suất chiếu tại ' + cinema.name;

@@ -18,7 +18,29 @@ export const CORS_PROXY_URL = (
   metaEnv.PUBLIC_MOMO_CORS_PROXY || 'https://cors-eplus-bba6d8ad0ca6.herokuapp.com'
 ).replace(/\/+$/, '');
 
-export const MOMO_CITY_ID = 50; // Hồ Chí Minh
+import { CITIES, DEFAULT_CITY_ID } from './cities.js';
+
+export const MOMO_CITY_ID = DEFAULT_CITY_ID; // Default city: Hồ Chí Minh
+
+// The visitor's chosen city drives every live cinema/session request. It is
+// persisted across pages; the daily catalog snapshot stays Hồ Chí Minh.
+const CITY_STORAGE_KEY = 'eplus-cinema:city';
+let currentCityId = MOMO_CITY_ID;
+try {
+  const saved = Number(window.localStorage.getItem(CITY_STORAGE_KEY));
+  if (CITIES.some((city) => city.id === saved)) currentCityId = saved;
+} catch { /* storage unavailable */ }
+
+export function getCityId() { return currentCityId; }
+
+export function setCityId(id) {
+  const next = CITIES.some((city) => city.id === Number(id)) ? Number(id) : MOMO_CITY_ID;
+  if (next === currentCityId) return;
+  currentCityId = next;
+  cinemasPromise = null;
+  filmRequests.clear();
+  try { window.localStorage.setItem(CITY_STORAGE_KEY, String(next)); } catch { /* ignore */ }
+}
 
 export const CHAINS = {
   6: 'CGV',
@@ -182,7 +204,7 @@ async function loadCinemasForChain(chainId) {
   const items = [];
   let lastIndex = 0;
   for (;;) {
-    const path = `/cinema/ci-cinema/loadMore?t=${Date.now()}&lastIndex=${lastIndex}&count=20&sortType=5&sortDir=2&cineplex=${chainId}&apiCityId=${MOMO_CITY_ID}`;
+    const path = `/cinema/ci-cinema/loadMore?t=${Date.now()}&lastIndex=${lastIndex}&count=20&sortType=5&sortDir=2&cineplex=${chainId}&apiCityId=${currentCityId}`;
     const data = await momoGet(path);
     const page = data.Items || [];
     items.push(...page);
@@ -282,7 +304,7 @@ export function loadAllFilms(status = 'now') {
       for (let page = 0; page < 8; page++) {
         const url = '/cinema/ci-film/loadMore?apiStatus=' + apiStatus +
           '&lastIndex=' + encodeURIComponent(lastIndex) +
-          '&count=30&sortType=5&sortDir=1&apiCityId=' + MOMO_CITY_ID;
+          '&count=30&sortType=5&sortDir=1&apiCityId=' + currentCityId;
         const data = await momoGet(url);
         const items = data.Items || [];
         for (const film of items) {

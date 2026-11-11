@@ -5,7 +5,8 @@ const links = [
   { href: '/phim-dang-chieu', label: 'Phim đang chiếu', id: 'now' },
   { href: '/phim-sap-chieu', label: 'Phim sắp chiếu', id: 'soon' },
   { href: '/lich-chieu', label: 'Lịch chiếu', id: 'schedule' },
-  { href: '/rap', label: 'Rạp chiếu', id: 'cinemas' }
+  { href: '/rap', label: 'Rạp chiếu', id: 'cinemas' },
+  { href: '/danh-gia', label: 'Đánh giá', id: 'reviews' }
 ];
 ---
 <header class="site-header">
@@ -18,9 +19,9 @@ const links = [
       {links.map((link) => <a class:list={['main-nav__link', { 'is-active': active === link.id }]} href={link.href}>{link.label}</a>)}
     </nav>
     <div class="site-header__right">
-      <a class="location-chip" href="/rap" title="Khu vực dữ liệu demo: TP. Hồ Chí Minh">
+      <a class="location-chip" href="/lich-chieu" title="Khu vực đang xem — đổi thành phố trong mục Lịch chiếu">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-        <span>TP. Hồ Chí Minh</span>
+        <span data-city-name>TP. Hồ Chí Minh</span>
       </a>
       <a class="header-action" href="/lich-chieu"><span class="header-action__label">Lịch chiếu</span><span aria-hidden="true">↗</span></a>
       <button class="menu-toggle" type="button" aria-label="Mở menu" aria-controls="primary-nav" aria-expanded="false" data-menu-toggle>
@@ -30,6 +31,19 @@ const links = [
   </div>
   <button type="button" class="menu-backdrop" data-menu-backdrop aria-label="Đóng menu điều hướng" hidden></button>
 </header>
+<script>
+  import { cityDisplayName } from '../lib/cities.js';
+  // Reflect the visitor's chosen city (set in the schedule explorer) in the
+  // header chip and any other [data-city-name] label on the page.
+  try {
+    const savedCity = Number(window.localStorage.getItem('eplus-cinema:city'));
+    if (savedCity) {
+      document.querySelectorAll('[data-city-name]').forEach((el) => {
+        el.textContent = cityDisplayName(savedCity);
+      });
+    }
+  } catch { /* storage unavailable */ }
+</script>
 <script>
   const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
   const nav = document.querySelector<HTMLElement>('#primary-nav');
