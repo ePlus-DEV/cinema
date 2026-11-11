@@ -7,10 +7,11 @@ import LiveCinemaGrid from '../../components/LiveCinemaGrid.astro';
     <div class="breadcrumbs"><a href="/">Trang chủ</a><span>/</span><span>Rạp chiếu</span></div>
     <span class="eyebrow">CHỌN RẠP GẦN BẠN</span>
     <h1>Khám phá cụm rạp <span class="title-spark">✦</span></h1>
-    <p>Tra cứu cụm rạp, địa chỉ và lịch chiếu cập nhật tại TP. Hồ Chí Minh.</p>
+    <p data-rap-hcm-copy>Tra cứu cụm rạp, địa chỉ và lịch chiếu cập nhật tại TP. Hồ Chí Minh.</p>
+    <p data-rap-city-copy hidden>Đang xem danh sách rạp tại <strong data-rap-city-name></strong>. Chọn một rạp để tra cứu giờ chiếu.</p>
   </div></section>
   <section class="section container cinemas-page">
-    <LiveCinemaGrid limit={200} searchable />
+    <LiveCinemaGrid limit={200} searchable grouped />
     <p class="catalog__footnote">Danh sách và địa chỉ rạp được cập nhật mỗi ngày; dữ liệu chỉ để tham khảo.</p>
   </section>
 </BaseLayout>

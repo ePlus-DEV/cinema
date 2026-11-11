@@ -370,3 +370,33 @@
     flex-basis: 59px; min-width: 59px; width: 59px;
   }
 }
+
+/* Consistent cinema-chain logo artwork in the compact showtime explorer:
+   each slot is 34x34, each uncropped asset has a 27x27 drawing box.
+   No inherited padding reduces some marks more than others. */
+.schedule-shell .momo-live:not([data-cinema-only="true"]) :is(
+  .momo-live__chain-logo, .momo-live__list-logo, .momo-live__head-logo
+) {
+  flex: 0 0 34px;
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  min-height: 34px;
+  border-radius: 8px;
+}
+.schedule-shell .momo-live:not([data-cinema-only="true"]) :is(
+  .momo-live__chain-logo, .momo-live__list-logo, .momo-live__head-logo
+) img {
+  display: block;
+  flex: none;
+  box-sizing: border-box;
+  width: 27px;
+  min-width: 27px;
+  max-width: 27px;
+  height: 27px;
+  min-height: 27px;
+  max-height: 27px;
+  padding: 0;
+  object-fit: contain;
+  object-position: center;
+}

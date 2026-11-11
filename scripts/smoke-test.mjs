@@ -161,3 +161,56 @@ assert.match(dateSrc, /start \+= pageStep\(\)/, 'No fixed provider-imposed date 
 assert.match(dateSrc, /cinema:day/, 'Selected offset must reach live session loader');
 assert.ok((home.match(/data-day-offset="/g)||[]).length >= 9, 'Homepage must prerender at least nine days');
 assert.ok(explorer.includes('data-date-next'), 'Dedicated schedule must allow future dates');
+
+
+// Grouped cinema directory must remain fully prerendered for SEO and fast UI.
+const cinemaListPage = readFileSync('dist/rap/index.html', 'utf8');
+assert.ok(cinemaListPage.includes('data-grouped="true"'), 'Cinema catalog must group theaters by chain');
+assert.ok(cinemaListPage.includes('data-chain-filter="all"'), 'Cinema group filter must include all theaters');
+assert.ok((cinemaListPage.match(/data-chain-group="/g) || []).length >= 3, 'Cinema directory must prerender multiple chain groups');
+assert.ok((cinemaListPage.match(/data-group-index="/g) || []).length >= 20, 'Cinema directory must retain venue links even when sections collapse');
+assert.ok(cinemaListPage.includes('data-chain-toggle'), 'Large cinema groups need a show-all control');
+const cinemaGroupsSrc = readFileSync('src/components/LiveCinemaGrid.astro','utf8');
+assert.match(cinemaGroupsSrc, /search\?\.addEventListener\('input', render\)/, 'Grouped cinema search must remain interactive');
+assert.match(cinemaGroupsSrc, /selectedChain = button\.dataset\.chainFilter/, 'Cinema filters must select chain groups');
+assert.match(cinemaGroupsSrc, /section\.dataset\.expanded/, 'Cinema groups must expand and collapse');
+
+const siteHeaderSrc = readFileSync('src/components/SiteHeader.astro','utf8');
+const citySyncSrc = readFileSync('src/components/MomoShowtimeList.astro','utf8');
+assert.match(siteHeaderSrc, /data-city-trigger/, 'Header needs interactive city picker');
+assert.match(siteHeaderSrc, /data-city-search/, 'Province selector needs search');
+assert.match(siteHeaderSrc, /cinema:city-change/, 'Header selection must broadcast city change');
+assert.match(siteHeaderSrc, /setCityId\(city\.id\)/, 'Shared city preference must persist');
+assert.match(citySyncSrc, /window\.addEventListener\('cinema:city-change'/, 'Schedule must respond to global city selection');
+assert.match(citySyncSrc, /params\.get\('city'\)/, 'Direct links from non-HCM theater directory must support city query');
+
+const cityGroupedPage = readFileSync('dist/rap/index.html','utf8');
+assert.ok(cityGroupedPage.includes('data-city-directories='), 'Group directory must embed daily per-city seeds');
+assert.ok(cityGroupedPage.includes('data-rap-city-copy'), 'Province selection must update the theater page description');
+const cityGroupedSrc = readFileSync('src/components/LiveCinemaGrid.astro','utf8');
+assert.match(cityGroupedSrc, /cinema:city-change/, 'Cinema catalog must react to header selection');
+assert.match(cityGroupedSrc, /loadAllCinemas\(\)/, 'Unsnapshotted provinces must have live fallback');
+assert.match(cityGroupedSrc, /requestToken/, 'Stale provider responses must not replace another city');
+assert.match(cityGroupedSrc, /CITY_CACHE_PREFIX/, 'Previously visited provinces should render without another network call');
+
+const groupedLogoCss = readFileSync('src/components/LiveCinemaGrid.astro','utf8');
+const showtimeLogoCss = readFileSync('src/styles/cinema-compact.css','utf8');
+assert.match(groupedLogoCss, /flex:\s*0 0 44px/, 'Grouped cinema brand slots must use a uniform 44px canvas');
+assert.match(groupedLogoCss, /width:\s*34px;[\s\S]*?height:\s*34px;/, 'Grouped cinema artwork must fit identical inner boxes');
+assert.match(groupedLogoCss, /object-fit:\s*contain/, 'Do not crop provider logos to make them appear uniform');
+assert.match(groupedLogoCss, /object-position:\s*center;[\s\S]*?padding:\s*0;/, 'No double padding that shrinks brand marks');
+assert.match(showtimeLogoCss, /Consistent cinema-chain logo artwork/, 'Compact showtimes must use unified logo artwork too');
+
+const mobileMenuSrc = readFileSync('src/components/SiteHeader.astro','utf8');
+assert.match(mobileMenuSrc, /href=\{route\(link\.href\)\}/, 'Mobile navigation must retain the deployment base path');
+assert.match(mobileMenuSrc, /href=\{route\('\/'\)\}/, 'Logo must retain the preview base path');
+assert.match(mobileMenuSrc, /data-nav-city/, 'Mobile navigation needs an accessible province selector');
+assert.match(mobileMenuSrc, /cinema:city-picker-open/, 'Opening province selection must close the mobile drawer');
+assert.match(mobileMenuSrc, /cinema:nav-open/, 'Opening the navigation drawer must close the province picker');
+assert.match(mobileMenuSrc, /matchMedia\('\(min-width: 861px\)'\)/, 'Mobile drawer must close on desktop resize');
+assert.match(mobileMenuSrc, /max-height: calc\(100dvh - var\(--mobile-header-height\) - 20px\)/, 'Province picker must fit mobile viewport');
+
+const mobileHeaderCss = readFileSync('src/styles/global.css', 'utf8');
+assert.match(mobileHeaderCss, /\.header-action span:last-child \{ font-size: 18px; \}/, 'Large header icon font must apply only to the arrow');
+assert.ok(!mobileHeaderCss.includes('.header-action span { font-size: 18px; }'), 'Mobile schedule CTA label must not inherit oversized 18px font');
+assert.match(mobileHeaderCss, /\.site-header \.header-action \.header-action__label \{\s*font-size: 11px;/, 'Mobile schedule CTA label must remain compact');

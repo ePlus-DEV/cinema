@@ -1,14 +1,34 @@
 ---
 import { cinemas, routeForCinema } from '../lib/cinema-catalog';
 import { CHAIN_LOGOS, CHAIN_SHORT_LABELS } from '../lib/cinema-logos.js';
-interface Props { limit?: number; searchable?: boolean; }
-const { limit = 8, searchable = false } = Astro.props;
+import snapshot from '../data/cinema-snapshot.json';
+interface Props { limit?: number; searchable?: boolean; grouped?: boolean; }
+const { limit = 8, searchable = false, grouped = false } = Astro.props;
 const rows = cinemas.slice(0, limit);
 const base = import.meta.env.BASE_URL;
 const normalize = (text: string) => text.normalize('NFD')
   .replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const groups = [...rows.reduce((map, cinema) => {
+  const existing = map.get(cinema.chainId) ?? { id: cinema.chainId, name: cinema.chain || 'Rạp chiếu', rows: [] as typeof rows };
+  existing.rows.push(cinema);
+  map.set(cinema.chainId, existing);
+  return map;
+}, new Map<number, { id: number; name: string; rows: typeof rows }>()).values()]
+  .sort((a,b) => b.rows.length - a.rows.length || a.name.localeCompare(b.name, 'vi'));
+const previewCount = 4;
+// Daily catalog already includes other major cities. Keep this snapshot data
+// attached to the grouped directory so selecting them does not need a request.
+type Venue = { chainId: number; apiCinemaId: string; name: string; address: string; chain?: string };
+const cityDirectories = (snapshot as unknown as {
+  cinemasByCity?: Record<string, { fetchedAt: string; cinemas: Venue[] }>
+}).cinemasByCity || {};
+const directorySeeds: Record<string, Venue[]> = { '50': rows };
+for (const [city, entry] of Object.entries(cityDirectories)) {
+  if (entry?.cinemas?.length) directorySeeds[city] = entry.cinemas;
+}
 ---
-<div class="live-cinema-catalog" data-live-cinema-catalog>
+<div class="live-cinema-catalog" data-live-cinema-catalog data-grouped={grouped ? 'true' : 'false'}
+  data-city-directories={grouped ? JSON.stringify(directorySeeds) : undefined}>
   {searchable && <div class="live-catalog__tools">
     <label class="catalog__search">
       <span aria-hidden="true">⌕</span>
@@ -16,7 +36,58 @@ const normalize = (text: string) => text.normalize('NFD')
     </label>
     <span class="live-catalog__count" data-live-cinema-count aria-live="polite">{rows.length} cụm rạp</span>
   </div>}
-  <div class="cinema-grid" data-live-cinemas aria-busy="false">
+  {grouped ? <>
+    <nav class="cinema-chain-nav" aria-label="Lọc rạp theo hệ thống" data-chain-nav>
+      <button type="button" class="cinema-chain-nav__button" data-chain-filter="all" aria-pressed="true">
+        Tất cả <span>{rows.length}</span>
+      </button>
+      {groups.map((group) =>
+        <button type="button" class="cinema-chain-nav__button" data-chain-filter={group.id} aria-pressed="false">
+          {group.name} <span>{group.rows.length}</span>
+        </button>
+      )}
+    </nav>
+    <div class="cinema-groups" data-live-cinemas aria-busy="false">
+      {groups.map((group) =>
+        <section class="cinema-group" data-chain-group={group.id} aria-label={'Hệ thống ' + group.name}>
+          <header class="cinema-group__heading">
+            <span class="chain-logo cinema-group__logo">
+              {CHAIN_LOGOS[group.id] && <img src={CHAIN_LOGOS[group.id]} alt="" loading="lazy" decoding="async" />}
+              <span class="chain-logo__fallback">{CHAIN_SHORT_LABELS[group.id] || group.name}</span>
+            </span>
+            <div class="cinema-group__heading-text">
+              <h2>{group.name}</h2>
+              <span data-chain-count>{group.rows.length} cụm rạp</span>
+            </div>
+            <button type="button" class="cinema-group__toggle" data-chain-toggle
+              aria-expanded="false" hidden={group.rows.length <= previewCount}>
+              Xem tất cả <span aria-hidden="true">⌄</span>
+            </button>
+          </header>
+          <div class="cinema-grid cinema-group__grid">
+            {group.rows.map((cinema, index) =>
+              <a class="cinema-tile cinema-tile--live"
+                href={routeForCinema(cinema, base)}
+                aria-label={'Xem chi tiết rạp ' + cinema.name}
+                data-search={normalize(cinema.name + ' ' + cinema.chain + ' ' + cinema.address)}
+                data-group-index={index}
+                hidden={index >= previewCount}>
+                <span class="chain-logo">
+                  {CHAIN_LOGOS[cinema.chainId] && <img src={CHAIN_LOGOS[cinema.chainId]} alt="" loading="lazy" decoding="async" />}
+                  <span class="chain-logo__fallback">{CHAIN_SHORT_LABELS[cinema.chainId] || cinema.chain || 'RẠP'}</span>
+                </span>
+                <span class="cinema-tile__body">
+                  <strong>{cinema.name}</strong>
+                  <small>{cinema.address || 'TP. Hồ Chí Minh'}</small>
+                </span>
+                <span class="cinema-tile__arrow" aria-hidden="true">↗</span>
+              </a>
+            )}
+          </div>
+        </section>
+      )}
+    </div>
+  </> : <div class="cinema-grid" data-live-cinemas aria-busy="false">
     {rows.map((cinema) => <a
       class="cinema-tile cinema-tile--live"
       href={routeForCinema(cinema, base)}
@@ -33,38 +104,356 @@ const normalize = (text: string) => text.normalize('NFD')
       </span>
       <span class="cinema-tile__arrow" aria-hidden="true">↗</span>
     </a>)}
-  </div>
+  </div>}
   <p class="empty-results" data-live-cinema-empty hidden>Không tìm thấy rạp phù hợp.</p>
   {rows.length === 0 && <p class="live-status">Chưa có dữ liệu cụm rạp trong bản cập nhật gần nhất.</p>}
 </div>
 <script>
+  import { CITIES, cityDisplayName } from '../lib/cities.js';
+  import { getCityId, loadAllCinemas } from '../lib/momo-client.js';
+  import { CHAIN_LOGOS, CHAIN_SHORT_LABELS } from '../lib/cinema-logos.js';
   const normalize = (value: string) => String(value || '').normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+
   document.querySelectorAll<HTMLElement>('[data-live-cinema-catalog]').forEach((root) => {
     const grid = root.querySelector<HTMLElement>('[data-live-cinemas]');
     const search = root.querySelector<HTMLInputElement>('[data-live-cinema-search]');
     const count = root.querySelector<HTMLElement>('[data-live-cinema-count]');
     const empty = root.querySelector<HTMLElement>('[data-live-cinema-empty]');
+    const nav = root.querySelector<HTMLElement>('[data-chain-nav]');
+    const grouped = root.dataset.grouped === 'true' && !!nav;
     if (!grid) return;
-    // The wordmark is readable when CDN assets fail.
-    grid.querySelectorAll<HTMLImageElement>('.chain-logo img').forEach((image) => {
-      const fallback = image.nextElementSibling as HTMLElement | null;
-      image.addEventListener('load', () => { if (fallback) fallback.hidden = true; });
-      image.addEventListener('error', () => image.remove());
-      if (image.complete && image.naturalWidth) { if (fallback) fallback.hidden = true; }
+
+    const initialHcmHtml = grid.innerHTML;
+    const seeds = (() => {
+      try { return JSON.parse(root.dataset.cityDirectories || '{}') as Record<string, any[]>; }
+      catch { return {} as Record<string, any[]>; }
+    })();
+    const CITY_CACHE_PREFIX = 'eplus-cinema:cinemas:v2:';
+    const chainNames = new Map<number, string>();
+    (seeds['50'] || []).forEach((row) => {
+      if (row?.chainId && row?.chain) chainNames.set(Number(row.chainId), String(row.chain));
     });
-    const filter = () => {
-      const q = normalize(search?.value || '');
-      let visible = 0;
-      const cards = grid.querySelectorAll<HTMLElement>('.cinema-tile--live');
-      cards.forEach((card) => {
-        card.hidden = !!q && !(card.dataset.search || '').includes(q);
-        if (!card.hidden) visible++;
+    let selectedChain = 'all', requestToken = 0;
+
+    const attachImageFallback = () => {
+      root.querySelectorAll<HTMLImageElement>('.chain-logo img').forEach((image) => {
+        if (image.dataset.fallbackBound === 'true') return;
+        image.dataset.fallbackBound = 'true';
+        const fallback = image.nextElementSibling as HTMLElement | null;
+        image.addEventListener('load', () => { if (fallback) fallback.hidden = true; });
+        image.addEventListener('error', () => image.remove());
+        if (image.complete && image.naturalWidth && fallback) fallback.hidden = true;
       });
-      if (count) count.textContent = visible + ' cụm rạp';
-      if (empty) empty.hidden = visible > 0 || cards.length === 0;
     };
-    search?.addEventListener('input', filter);
-    filter();
+    const createLogo = (chainId: number, extraClass = '') => {
+      const logo = document.createElement('span');
+      logo.className = 'chain-logo ' + extraClass;
+      const src = CHAIN_LOGOS[chainId as keyof typeof CHAIN_LOGOS];
+      if (src) {
+        const image = document.createElement('img');
+        image.src = src; image.alt = ''; image.loading = 'lazy'; image.decoding = 'async';
+        logo.append(image);
+      }
+      const fallback = document.createElement('span');
+      fallback.className = 'chain-logo__fallback';
+      fallback.textContent = CHAIN_SHORT_LABELS[chainId as keyof typeof CHAIN_SHORT_LABELS] || chainNames.get(chainId) || 'RẠP';
+      logo.append(fallback);
+      return logo;
+    };
+    const make = (tag: string, className: string, value = '') => {
+      const element = document.createElement(tag);
+      element.className = className;
+      element.textContent = value;
+      return element;
+    };
+    const newCard = (row: any, city: number, index: number) => {
+      const card = document.createElement('a');
+      card.className = 'cinema-tile cinema-tile--live';
+      const id = Number(row.chainId), cinemaId = String(row.apiCinemaId || '');
+      card.href = import.meta.env.BASE_URL + 'lich-chieu/?city=' + city +
+        '&cinema=' + encodeURIComponent(id + ':' + cinemaId);
+      card.setAttribute('aria-label', 'Xem lịch chiếu rạp ' + row.name);
+      card.dataset.groupIndex = String(index);
+      card.dataset.search = normalize(String(row.name || '') + ' ' + String(row.chain || '') + ' ' + String(row.address || ''));
+      card.hidden = index >= 4;
+      const body = make('span', 'cinema-tile__body');
+      body.append(make('strong', '', String(row.name || 'Rạp chiếu')),
+        make('small', '', String(row.address || '')));
+      card.append(createLogo(id), body, make('span','cinema-tile__arrow','↗'));
+      return card;
+    };
+    const createGroup = (id: number, rows: any[], city: number) => {
+      const group = document.createElement('section');
+      group.className = 'cinema-group';
+      group.dataset.chainGroup = String(id);
+      group.setAttribute('aria-label', 'Hệ thống ' + (chainNames.get(id) || 'Rạp'));
+      const header = make('header', 'cinema-group__heading');
+      const name = chainNames.get(id) || String(rows[0]?.chain || '') ||
+        (CHAIN_SHORT_LABELS[id as keyof typeof CHAIN_SHORT_LABELS] || 'Hệ thống rạp');
+      const info = make('div', 'cinema-group__heading-text');
+      info.append(make('h2','',name), make('span','',rows.length + ' cụm rạp'));
+      const counter = info.lastElementChild as HTMLElement;
+      counter.dataset.chainCount = '';
+      const toggle = document.createElement('button');
+      toggle.type = 'button'; toggle.className = 'cinema-group__toggle';
+      toggle.dataset.chainToggle = ''; toggle.setAttribute('aria-expanded', 'false');
+      toggle.textContent = 'Xem tất cả ⌄'; toggle.hidden = rows.length <= 4;
+      header.append(createLogo(id,'cinema-group__logo'), info, toggle);
+      const cards = make('div','cinema-grid cinema-group__grid');
+      rows.forEach((row, index) => cards.append(newCard(row, city, index)));
+      group.append(header, cards);
+      return group;
+    };
+    const navButton = (id: string, label: string, amount: number) => {
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'cinema-chain-nav__button';
+      button.dataset.chainFilter = id; button.setAttribute('aria-pressed', String(id === selectedChain));
+      button.append(document.createTextNode(label + ' '), make('span','',String(amount)));
+      return button;
+    };
+    const render = () => {
+      const q = normalize(search?.value || '');
+      let matchedTotal = 0;
+      const groups = [...grid.querySelectorAll<HTMLElement>('[data-chain-group]')];
+      if (grouped) {
+        groups.forEach((section) => {
+          const allowed = selectedChain === 'all' || selectedChain === section.dataset.chainGroup;
+          const cards = [...section.querySelectorAll<HTMLElement>('.cinema-tile--live')];
+          const matches = cards.filter((card) => !q || (card.dataset.search || '').includes(q));
+          section.hidden = !allowed || !matches.length;
+          if (!allowed) return;
+          matchedTotal += matches.length;
+          const expanded = section.dataset.expanded === 'true';
+          cards.forEach((card) => {
+            const match = !q || (card.dataset.search || '').includes(q);
+            card.hidden = !match || (!q && !expanded && Number(card.dataset.groupIndex) >= 4);
+          });
+          const badge = section.querySelector<HTMLElement>('[data-chain-count]');
+          if (badge) badge.textContent = matches.length + (q ? ' rạp phù hợp' : ' cụm rạp');
+          const toggle = section.querySelector<HTMLButtonElement>('[data-chain-toggle]');
+          if (toggle) {
+            toggle.hidden = !!q || matches.length <= 4;
+            toggle.setAttribute('aria-expanded', String(expanded));
+            toggle.textContent = expanded ? 'Thu gọn ⌃' : 'Xem tất cả ⌄';
+          }
+        });
+        nav?.querySelectorAll<HTMLButtonElement>('[data-chain-filter]').forEach((button) => {
+          button.setAttribute('aria-pressed', String(button.dataset.chainFilter === selectedChain));
+        });
+      } else {
+        grid.querySelectorAll<HTMLElement>('.cinema-tile--live').forEach((card) => {
+          card.hidden = !!q && !(card.dataset.search || '').includes(q);
+          if (!card.hidden) matchedTotal++;
+        });
+      }
+      if (count) count.textContent = matchedTotal + ' cụm rạp';
+      if (empty) empty.hidden = matchedTotal !== 0 || !!grid.querySelector('[data-city-load-state]');
+    };
+    const renderCity = (city: number, rows: any[]) => {
+      const hcm = city === 50;
+      grid.setAttribute('aria-busy','false');
+      grid.replaceChildren();
+      if (hcm) {
+        grid.innerHTML = initialHcmHtml;
+      } else {
+        const byChain = new Map<number, any[]>();
+        rows.forEach((row) => {
+          const chain = Number(row.chainId);
+          if (!chain || !row.apiCinemaId || !row.name) return;
+          const list = byChain.get(chain) || [];
+          list.push(row); byChain.set(chain,list);
+          if (row.chain && !chainNames.has(chain)) chainNames.set(chain,String(row.chain));
+        });
+        [...byChain.entries()].sort((a,b) => b[1].length-a[1].length ||
+          (chainNames.get(a[0]) || '').localeCompare(chainNames.get(b[0]) || '','vi'))
+          .forEach(([id,list]) => grid.append(createGroup(id,list,city)));
+      }
+      const groups = [...grid.querySelectorAll<HTMLElement>('[data-chain-group]')];
+      const stats = groups.map((section) => ({
+        id: section.dataset.chainGroup || '',
+        label: section.querySelector('h2')?.textContent || 'Rạp chiếu',
+        count: section.querySelectorAll('.cinema-tile--live').length
+      }));
+      selectedChain = 'all';
+      nav?.replaceChildren(navButton('all','Tất cả',rows.length),
+        ...stats.map((item) => navButton(item.id,item.label,item.count)));
+      attachImageFallback();
+      render();
+    };
+    const showCityMessage = (message: string, loading = false) => {
+      grid.replaceChildren(make('p','live-status',message));
+      const msg = grid.firstElementChild as HTMLElement;
+      msg.dataset.cityLoadState = '';
+      grid.setAttribute('aria-busy',String(loading));
+      nav?.replaceChildren();
+      if (count) count.textContent = loading ? 'Đang tải rạp…' : '0 cụm rạp';
+      if (empty) empty.hidden = true;
+    };
+    const saved = (city: number) => {
+      try {
+        const data = JSON.parse(localStorage.getItem(CITY_CACHE_PREFIX+city) || 'null');
+        return data && Array.isArray(data.cinemas) && data.cinemas.length ? data.cinemas : null;
+      } catch { return null; }
+    };
+    const loadCity = async (city: number) => {
+      if (!grouped) return;
+      const id = ++requestToken;
+      const copy = document.querySelector<HTMLElement>('[data-rap-hcm-copy]');
+      const custom = document.querySelector<HTMLElement>('[data-rap-city-copy]');
+      const customName = document.querySelector<HTMLElement>('[data-rap-city-name]');
+      if (copy) copy.hidden = city !== 50;
+      if (custom) custom.hidden = city === 50;
+      if (customName) customName.textContent = cityDisplayName(city);
+      if (search) search.value = '';
+      const seed = seeds[String(city)] || saved(city);
+      if (Array.isArray(seed) && seed.length) {
+        renderCity(city, seed);
+        return;
+      }
+      showCityMessage('Đang tải danh sách rạp tại ' + cityDisplayName(city) + '…', true);
+      try {
+        const rows = await loadAllCinemas();
+        if (id !== requestToken || getCityId() !== city) return;
+        if (!rows.length) {
+          showCityMessage('Hiện chưa có dữ liệu rạp tại ' + cityDisplayName(city) + '.');
+          return;
+        }
+        renderCity(city,rows);
+      } catch {
+        if (id !== requestToken || getCityId() !== city) return;
+        showCityMessage('Chưa tải được danh sách rạp tại ' + cityDisplayName(city) + '. Vui lòng thử lại trong mục Lịch chiếu.');
+        const link = make('a','','Mở tra cứu lịch chiếu');
+        link.setAttribute('href', import.meta.env.BASE_URL + 'lich-chieu/');
+        grid.querySelector('[data-city-load-state]')?.append(' ',link);
+      }
+    };
+    nav?.addEventListener('click', (event) => {
+      const button = (event.target as Element).closest<HTMLButtonElement>('[data-chain-filter]');
+      if (!button) return;
+      selectedChain = button.dataset.chainFilter || 'all';
+      render();
+    });
+    grid.addEventListener('click', (event) => {
+      const button = (event.target as Element).closest<HTMLButtonElement>('[data-chain-toggle]');
+      const group = button?.closest<HTMLElement>('[data-chain-group]');
+      if (!group) return;
+      group.dataset.expanded = String(group.dataset.expanded !== 'true');
+      render();
+    });
+    search?.addEventListener('input', render);
+    if (grouped) {
+      window.addEventListener('cinema:city-change', (event) => {
+        const id = Number((event as CustomEvent<{cityId:number}>).detail?.cityId);
+        if (CITIES.some((city) => city.id === id)) loadCity(id);
+      });
+      loadCity(getCityId());
+    } else {
+      attachImageFallback();
+      render();
+    }
   });
 </script>
+<style is:global>
+  .live-cinema-catalog[data-grouped="true"] .cinema-chain-nav {
+    display: flex; flex-wrap: nowrap; gap: 8px; overflow-x: auto;
+    padding: 3px 0 17px; margin-bottom: 18px;
+    scrollbar-width: thin; overscroll-behavior-inline: contain;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-chain-nav__button {
+    display: inline-flex; align-items: center; gap: 8px; flex: 0 0 auto;
+    min-height: 38px; padding: 8px 13px; border: 1px solid #e1e6ee;
+    border-radius: 10px; background: #fff; color: #44546b;
+    font: inherit; font-size: 12px; font-weight: 700; cursor: pointer;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-chain-nav__button span {
+    color: #8794a6; font-size: 11px;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-chain-nav__button[aria-pressed="true"] {
+    background: #14233c; border-color: #14233c; color: #fff;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-chain-nav__button[aria-pressed="true"] span { color: #f6c878; }
+  .live-cinema-catalog[data-grouped="true"] .cinema-groups { display: grid; gap: 24px; }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group {
+    padding: 21px; border-radius: 18px; border: 1px solid #e5eaf2;
+    background: #fff; box-shadow: 0 11px 30px rgba(16,30,51,.035);
+    scroll-margin-top: 96px;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__heading {
+    display: flex; align-items: center; gap: 13px; margin-bottom: 18px;
+  }
+  /* Use one 44px artwork slot for group headers and every cinema card.
+     Previous group headers had a 50px slot with a 36px image AND inherited
+     image padding, so several brand marks looked half the size of others. */
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__logo,
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__grid .chain-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 44px;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    border: 1px solid #e6ebf2;
+    border-radius: 11px;
+    background: #fff;
+    overflow: hidden;
+  }
+  /* A fixed inner box and no inherited padding prevents inconsistent logo
+     scale. 'contain' preserves portrait/landscape brand proportions. */
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__logo img,
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__grid .chain-logo img {
+    display: block;
+    flex: none;
+    box-sizing: border-box;
+    width: 34px;
+    min-width: 34px;
+    max-width: 34px;
+    height: 34px;
+    min-height: 34px;
+    max-height: 34px;
+    object-fit: contain;
+    object-position: center;
+    padding: 0;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__logo .chain-logo__fallback,
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__grid .chain-logo__fallback {
+    display: grid;
+    place-items: center;
+    max-width: 100%;
+    max-height: 100%;
+    padding: 3px;
+    font-size: 9px;
+    line-height: 1.1;
+    text-align: center;
+    overflow: hidden;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__heading-text { flex: 1; min-width: 0; }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__heading-text h2 {
+    margin: 0 0 4px; font-size: 17px; line-height: 1.3; color: #1c2c44;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__heading-text > span { color: #718096; font-size: 11px; }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__toggle {
+    padding: 9px 12px; flex: none; border-radius: 9px; border: 1px solid #dfe5ed;
+    background: #fff; color: #334864; font-size: 11px; font-weight: 800;
+    cursor: pointer; white-space: nowrap;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__toggle:hover { background: #fff8e9; border-color: #dfbb7d; }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__grid .cinema-tile--live {
+    min-height: 85px; padding: 13px; border-radius: 12px;
+    box-shadow: none;
+  }
+  .live-cinema-catalog[data-grouped="true"] .cinema-group__grid .cinema-tile__body strong { font-size: 12px; }
+  .live-cinema-catalog[data-grouped="true"] [hidden] { display: none !important; }
+  .live-cinema-catalog[data-grouped="true"] :is(button,a):focus-visible {
+    outline: 3px solid #d6aa52; outline-offset: 2px;
+  }
+  @media (max-width: 720px) {
+    .live-cinema-catalog[data-grouped="true"] .cinema-group { padding: 15px; border-radius: 14px; }
+    .live-cinema-catalog[data-grouped="true"] .cinema-group__grid { grid-template-columns: 1fr; }
+    .live-cinema-catalog[data-grouped="true"] .cinema-group__heading { gap: 10px; }
+    .live-cinema-catalog[data-grouped="true"] .cinema-group__heading-text h2 { font-size: 15px; }
+    /* Preserve identical logo sizing at every breakpoint. */
+  }
+</style>
