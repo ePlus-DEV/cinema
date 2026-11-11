@@ -86,6 +86,13 @@ assert.match(scheduleSrc, /storeSession\(/, 'Fresh showtime results must refresh
 assert.match(scheduleSrc, /momo-live__cached-note/, 'Unverified cached times must be visibly labeled');
 
 assert.ok(explorer.includes('data-directory-seeds='), 'Standalone schedule must reuse the daily city directory seed');
+const cinemaExplorerSource = readFileSync('src/components/MomoShowtimeList.astro', 'utf8');
+assert.match(cinemaExplorerSource, /function skeletonDirectory\(cityId\)/, 'Selecting an uncached city must render directory skeletons');
+assert.match(cinemaExplorerSource, /momo-live__cinema-placeholder skeleton/, 'Directory loading must show cinema-row skeletons');
+assert.match(cinemaExplorerSource, /momo-live__chip-placeholder skeleton/, 'Directory loading must show chain-filter skeletons');
+assert.match(cinemaExplorerSource, /skeletonDirectory\(cityId\);/, 'Uncached city initialization must invoke skeletonDirectory');
+assert.match(cinemaExplorerSource, /districtEl\.disabled = false/, 'District selection must be restored after directory loading');
+
 assert.ok(existsSync('src/styles/cinema-compact.css'), 'Compact cinema explorer stylesheet missing');
 const compactScheduleCss = readFileSync('src/styles/cinema-compact.css', 'utf8');
 assert.ok(compactScheduleCss.includes('#lich-chieu .schedule-shell__top { display: none; }'), 'Homepage schedule must remove redundant title row');

@@ -333,6 +333,30 @@ const initialChips = [
       resultsEl.setAttribute('aria-busy', 'true');
     }
 
+    // Only a new city without a usable daily/browser directory needs a
+    // theater skeleton. Avoid stale names from the previous city while its
+    // directory is loading; never delay a city that already has cached rows.
+    function skeletonDirectory(cityId) {
+      if (isCinemaOnly) return;
+      cinemasEl.setAttribute('aria-busy', 'true');
+      cinemasEl.innerHTML = Array.from({ length: 5 }, () =>
+        '<div class="momo-live__cinema-placeholder skeleton" aria-hidden="true">' +
+        '<span class="skeleton__line" style="width:73%"></span>' +
+        '<span class="skeleton__line skeleton__line--short"></span></div>'
+      ).join('');
+      chipsEl.innerHTML = Array.from({ length: 4 }, () =>
+        '<span class="momo-live__chip-placeholder skeleton" aria-hidden="true"></span>'
+      ).join('');
+      if (districtEl) {
+        districtEl.disabled = true;
+        districtEl.replaceChildren(new Option('Đang tải khu vực…', ''));
+      }
+      if (cinemaTitleEl) cinemaTitleEl.textContent = 'Đang tải rạp tại ' + cityDisplayName(cityId);
+      if (cinemaAddressEl) cinemaAddressEl.textContent = '';
+      currentShows = [];
+      skeletonResults('Đang tải danh sách rạp tại ' + cityDisplayName(cityId) + '…');
+    }
+
     function renderChips() {
       const counts = new Map();
       for (const cinema of state.cinemas) counts.set(cinema.chainId, (counts.get(cinema.chainId) || 0) + 1);
@@ -394,6 +418,7 @@ const initialChips = [
     }
     function renderDistricts() {
       if (!districtEl || isCinemaOnly) return;
+      districtEl.disabled = false;
       const districts = [...new Set(state.cinemas.map(districtFor).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'vi', {numeric:true}));
       districtEl.replaceChildren(new Option('Tất cả khu vực (' + state.cinemas.length + ')', ''), ...districts.map((name) => new Option(name, name)));
       if (districts.includes(state.district)) districtEl.value = state.district;
@@ -588,12 +613,10 @@ const initialChips = [
         if (Number.isFinite(age) && age >= 0 && age < CACHE_MAX_AGE) return;
         // Refresh stale venue names quietly while keeping visible cached rows.
       } else {
-        cinemasEl.setAttribute('aria-busy', 'true');
-        if (!isCinemaOnly) {
-          cinemasEl.innerHTML = '<p class="momo-live__status">Đang tải danh sách rạp của thành phố đã chọn…</p>';
-          chipsEl.innerHTML = '';
-        }
-        status('Đang tải danh sách rạp để tra cứu suất chiếu…');
+        // No current-city snapshot or browser cache: show localized skeletons
+        // in both cinema directory panes instead of plain text/old-city data.
+        skeletonDirectory(cityId);
+        if (isCinemaOnly) skeletonResults('Đang tải danh sách rạp để tra cứu suất chiếu…');
       }
       try {
         const fresh = await loadAllCinemas();
@@ -603,6 +626,11 @@ const initialChips = [
             cinemasEl.innerHTML = '';
             chipsEl.replaceChildren();
             cinemasEl.setAttribute('aria-busy', 'false');
+            if (districtEl) {
+              districtEl.disabled = false;
+              districtEl.replaceChildren(new Option('Tất cả khu vực', ''));
+            }
+            if (cinemaTitleEl) cinemaTitleEl.textContent = 'Chưa có danh sách rạp';
             status('Chưa tải được danh sách rạp tại ' + cityDisplayName(cityId) + '.', init);
           }
           return;
@@ -618,6 +646,11 @@ const initialChips = [
           cinemasEl.innerHTML = '';
           chipsEl.replaceChildren();
           cinemasEl.setAttribute('aria-busy', 'false');
+          if (districtEl) {
+            districtEl.disabled = false;
+            districtEl.replaceChildren(new Option('Tất cả khu vực', ''));
+          }
+          if (cinemaTitleEl) cinemaTitleEl.textContent = 'Chưa có danh sách rạp';
           status(`Không tải được danh sách rạp (${error.message}).`, init);
         }
       }
@@ -637,9 +670,18 @@ const initialChips = [
     districtEl?.addEventListener('change', () => {
       state.district = districtEl.value;
       const available = visibleCinemas();
-      if (available.length && !available.some(item => item.key === state.selected)) {
+      if (!available.length) {
+        // District filters are local and synchronous. Don't animate a fake
+        // network request, but also don't leave the previous area's sessions.
+        ++state.sessionToken;
+        state.selected = null;
+        currentShows = [];
+        if (cinemaTitleEl) cinemaTitleEl.textContent = 'Không có rạp trong khu vực đã chọn';
+        if (cinemaAddressEl) cinemaAddressEl.textContent = '';
+        status('Không có rạp phù hợp tại khu vực này.');
+      } else if (!available.some(item => item.key === state.selected)) {
         state.selected = available[0].key;
-        loadSession();
+        loadSession(); // its local skeleton starts only if session is uncached
       }
       renderCinemas();
     });
