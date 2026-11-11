@@ -37,6 +37,12 @@ const home = readFileSync('dist/index.html', 'utf8');
 assert.ok(home.includes('href="' + base + 'phim-dang-chieu'), 'Movie navigation not Pages-base-aware');
 assert.ok(home.includes('data-movie-rail'), 'Film discovery rails missing on homepage');
 assert.ok(home.includes('data-home-hero'), 'Homepage spotlight hero missing');
+assert.ok(home.includes('data-hero-banner'), 'Hero background must be separate from the small thumb image');
+assert.ok(home.includes('data-banner-fallback='), 'Large hero banner must retain a provider fallback');
+const heroBackgrounds = [...home.matchAll(/<img[^>]*class="home-hero__bg"[^>]*>/g)].map(match => match[0]);
+assert.ok(heroBackgrounds.length > 0, 'Expected SSR hero banners');
+assert.ok(heroBackgrounds.every(tag => !/src="[^"]*\?size=M"/.test(tag)), 'Full-screen hero must not use the medium thumbnail variant');
+
 assert.ok(home.includes('href="' + base + 'favicon.svg'), 'Favicon not Pages-base-aware');
 assert.ok(home.includes('href="' + base + '_astro/') || home.includes('src="' + base + '_astro/'), 'Astro assets not Pages-base-aware');
 assert.ok(existsSync('dist/_astro'), 'Astro assets directory missing');

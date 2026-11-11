@@ -1,6 +1,5 @@
 ---
 import '../styles/global.css';
-import '../styles/cinema-refresh.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import PageSkeleton from '../components/PageSkeleton.astro';
 import SeoHead from '../components/SeoHead.astro';
@@ -41,16 +40,16 @@ const isPrPreview = /\/previews\/pr-\d+\//.test(import.meta.env.BASE_URL || '/')
       window.setTimeout(() => document.documentElement.classList.add('page-skeleton-done'), 5000);
     </script>
   </head>
-  <body class="cinema-ui">
+  <body>
     <a class="skip-link" href="#main-content">Bỏ qua điều hướng</a>
     {isPrPreview && <div class="preview-banner" role="note">
       <span class="preview-banner__dot"></span>
       Bản xem trước của ePlus Cinema · Thông tin phim/rạp tải từ bản cập nhật hằng ngày; lịch chiếu được tra cứu trực tiếp.
     </div>}
     <SiteHeader active={active} />
-    {/* The homepage hero and movie rails are already server-rendered from the
-        daily catalog. Never cover them with a page-wide loading overlay;
-        only live showtimes keep their own local skeletons. */}
+    {/* Homepage movie data is pre-rendered from the daily snapshot, so a
+        full-page loading overlay would hide finished content unnecessarily.
+        The live showtime section still manages its own loading skeleton. */}
     {active !== 'home' && <PageSkeleton active={active} />}
     <main id="main-content"><slot /></main>
     <footer class="footer">
