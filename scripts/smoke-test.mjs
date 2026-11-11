@@ -138,3 +138,12 @@ for (const [directory,id] of [['phim',filmIds[0]], ['rap',theaterIds[0]]]) {
   assert.ok(main >= 0 && close > main && footer > close, 'Incorrect detail DOM layout');
 }
 console.log('PASS: real prerendered routes and document ordering (' + filmIds.length + ' films, ' + theaterIds.length + ' cinemas)');
+
+const dateSrc = readFileSync('src/components/DatePicker.astro','utf8');
+assert.match(dateSrc, /length: 9/, 'Nine independent visible dates must be created');
+assert.match(dateSrc, /data-date-next/, 'Date picker must have forward navigation');
+assert.match(dateSrc, /data-date-prev/, 'Date picker must have backwards navigation');
+assert.match(dateSrc, /start \+= pageStep\(\)/, 'No fixed provider-imposed date range');
+assert.match(dateSrc, /cinema:day/, 'Selected offset must reach live session loader');
+assert.ok((home.match(/data-day-offset="/g)||[]).length >= 9, 'Homepage must prerender at least nine days');
+assert.ok(explorer.includes('data-date-next'), 'Dedicated schedule must allow future dates');
