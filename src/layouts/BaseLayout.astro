@@ -50,7 +50,9 @@ const isPrPreview = /\/previews\/pr-\d+\//.test(import.meta.env.BASE_URL || '/')
     {/* Homepage movie data is pre-rendered from the daily snapshot, so a
         full-page loading overlay would hide finished content unnecessarily.
         The live showtime section still manages its own loading skeleton. */}
-    {active !== 'home' && <PageSkeleton active={active} />}
+    {/* Reviews load inside their own skeleton cards; do not obscure them with
+        the unrelated full-page overlay (which has no review layout). */}
+    {active !== 'home' && active !== 'reviews' && <PageSkeleton active={active} />}
     <main id="main-content"><slot /></main>
     <footer class="footer">
       <div class="container footer__inner">
