@@ -75,6 +75,12 @@ assert.ok(explorer.includes('schedule-page--explorer'), 'Standalone schedule mus
 assert.ok(explorer.includes('data-momo-district'), 'Missing functional location/district selector');
 assert.ok(explorer.includes('data-momo-chips'), 'Missing cinema chain filters');
 assert.ok(explorer.includes('data-momo-cinemas'), 'Missing cinema selector');
+const homeDirectory = home.match(/data-momo-cinemas[^>]*aria-busy="false"/);
+assert.ok(homeDirectory, 'Daily cinema snapshot must provide a ready SSR theater list on homepage');
+assert.ok((home.match(/class="momo-live__cinema" data-cinema=/g) || []).length >= 10, 'Homepage must pre-render theater names before API calls');
+assert.ok(home.includes('data-directory-seeds='), 'Listing must embed per-city cached directory data for client hydration');
+assert.ok(home.includes('momo-live__loading-program'), 'Live session loading must remain visible separately');
+assert.ok(explorer.includes('data-directory-seeds='), 'Standalone schedule must reuse the daily city directory seed');
 assert.ok(existsSync('src/styles/cinema-compact.css'), 'Compact cinema explorer stylesheet missing');
 const compactScheduleCss = readFileSync('src/styles/cinema-compact.css', 'utf8');
 assert.ok(compactScheduleCss.includes('#lich-chieu .schedule-shell__top { display: none; }'), 'Homepage schedule must remove redundant title row');

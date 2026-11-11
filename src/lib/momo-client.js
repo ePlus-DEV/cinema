@@ -200,11 +200,11 @@ async function momoFetch(method, path, bodyObject) {
 export const momoGet = (path) => momoFetch('get', path, null);
 export const momoPost = (path, bodyObject) => momoFetch('post', path, bodyObject);
 
-async function loadCinemasForChain(chainId) {
+async function loadCinemasForChain(chainId, cityId) {
   const items = [];
   let lastIndex = 0;
   for (;;) {
-    const path = `/cinema/ci-cinema/loadMore?t=${Date.now()}&lastIndex=${lastIndex}&count=20&sortType=5&sortDir=2&cineplex=${chainId}&apiCityId=${currentCityId}`;
+    const path = `/cinema/ci-cinema/loadMore?t=${Date.now()}&lastIndex=${lastIndex}&count=20&sortType=5&sortDir=2&cineplex=${chainId}&apiCityId=${cityId}`;
     const data = await momoGet(path);
     const page = data.Items || [];
     items.push(...page);
@@ -223,9 +223,10 @@ let cinemasPromise = null;
  */
 export function loadAllCinemas() {
   if (!cinemasPromise) {
+    const requestCity = currentCityId;
     cinemasPromise = (async () => {
       const perChain = await Promise.all(Object.keys(CHAINS).map(async (key) => {
-        try { return await loadCinemasForChain(Number(key)); } catch { return []; }
+        try { return await loadCinemasForChain(Number(key), requestCity); } catch { return []; }
       }));
       const seen = new Set();
       const cinemas = [];
@@ -247,7 +248,7 @@ export function loadAllCinemas() {
       cinemas.sort((a, b) => a.name.localeCompare(b.name, 'vi'));
       // A temporary proxy/provider outage can produce an empty snapshot.
       // Do not memoize that forever: the "Thử lại" action must re-fetch.
-      if (!cinemas.length) cinemasPromise = null;
+      if (!cinemas.length && currentCityId === requestCity) cinemasPromise = null;
       return cinemas;
     })();
   }
