@@ -28,6 +28,7 @@ assert.match(publish, /group: cinema-pages-publish/, 'Publisher needs serial dep
 assert.match(publish, /preview_pr:/, 'Publisher should accept a PR number from staging');
 assert.match(publish, /preview_sha:/, 'Publisher should accept the exact preview commit');
 assert.match(publish, /issues: write/, 'Trusted publisher needs permission to post issue comments');
+assert.match(publish, /pull-requests: read/, 'Notifier must be able to fetch PR metadata before commenting');
 assert.match(publish, /if: inputs\.preview_pr != ''/, 'Only preview deployments should notify PRs');
 assert.ok(publish.indexOf('Post or update PR preview link') > publish.indexOf('uses: actions/deploy-pages@v4'), 'Never notify before Pages successfully deploys');
 assert.match(publish, /bash automation\/scripts\/post-preview-link\.sh/, 'Notifier must come from the trusted branch');
